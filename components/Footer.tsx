@@ -11,18 +11,18 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="footer">
+    <footer id="contact" className="footer">
       <div className="container">
         <div className="footer-grid">
           {/* Brand */}
           <div className="footer-about">
             <div className="footer-brand">
-              <img src="/images/logo.png" alt="LQD Table Tennis Club" className="footer-logo" />
-              <span className="footer-title">TABLE TENNIS LQD</span>
+              <img src="/images/logo.png" alt="CLB Bóng Bàn LQD" className="footer-logo" />
+              <span className="footer-title">BÓNG BÀN LQD</span>
             </div>
             <p className="footer-description">
               CLB Bóng Bàn Lê Quý Đôn - Nơi đam mê được nuôi dưỡng và tài năng được phát triển.
-              Train Hard, Play Smart, Win Together.
+              Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau.
             </p>
             <div className="footer-social">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
@@ -45,34 +45,31 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div className="footer-links-section">
-            <h4 className="footer-heading">Quick Links</h4>
             <ul className="footer-links">
               <li><a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Trang Chủ</a></li>
-              <li><a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>Về Chúng Tôi</a></li>
-              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Chương Trình</a></li>
+              <li><a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>Giới Thiệu</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Khóa Học</a></li>
               <li><a href="#schedule" onClick={(e) => { e.preventDefault(); scrollToSection('schedule'); }}>Lịch Tập</a></li>
-              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Thư Viện Ảnh</a></li>
+              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Hình Ảnh</a></li>
             </ul>
           </div>
 
-          {/* Programs */}
+          {/* Services */}
           <div className="footer-links-section">
-            <h4 className="footer-heading">Programs</h4>
             <ul className="footer-links">
-              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Lớp Cơ Bản</a></li>
-              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Lớp Trung Cấp</a></li>
-              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Lớp Thi Đấu</a></li>
-              <li><a href="#tournaments" onClick={(e) => { e.preventDefault(); scrollToSection('tournaments'); }}>Giải Đấu</a></li>
-              <li><a href="#members" onClick={(e) => { e.preventDefault(); scrollToSection('members'); }}>Thành Viên</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Bảng Giá</a></li>
+              <li><a href="#shop" onClick={(e) => { e.preventDefault(); scrollToSection('shop'); }}>Cửa Hàng</a></li>
+              <li><a href="#support" onClick={(e) => { e.preventDefault(); scrollToSection('support'); }}>Hỗ Trợ</a></li>
+              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Hình Ảnh</a></li>
+              <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Liên Hệ</a></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div className="footer-contact">
-            <h4 className="footer-heading">Liên Hệ</h4>
             <div className="footer-contact-item">
               <i className="fas fa-map-marker-alt"></i>
-              <span>Trường THPT Lê Quý Đôn, TP.HCM</span>
+              <span>3B Lê Quý Đôn, Phú Nhuận, TP.HCM</span>
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-phone"></i>
@@ -80,18 +77,18 @@ const Footer: React.FC = () => {
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-envelope"></i>
-              <span>contact@clbbongban-lqd.edu.vn</span>
+              <span>lienhe@clbbongban-lqd.edu.vn</span>
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-clock"></i>
-              <span>T2-T6: 17:00-21:00 | T7-CN: 08:00-18:00</span>
+              <span>T2-CN: 08:00-21:30</span>
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © {currentYear} CLB Bóng Bàn Lê Quý Đôn. All rights reserved.
+            © {currentYear} CLB Bóng Bàn Lê Quý Đôn. Bảo lưu mọi quyền.
           </p>
           <div className="footer-legal">
             <a href="#privacy">Chính sách bảo mật</a>

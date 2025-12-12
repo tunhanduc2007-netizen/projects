@@ -25,7 +25,7 @@ const About: React.FC = () => {
           </div>
 
           <div className="about-content slide-in-right">
-            <span className="section-subtitle">About Us</span>
+            <span className="section-subtitle">Về Chúng Tôi</span>
             <h2>
               Câu Lạc Bộ Bóng Bàn <span className="text-gradient">Lê Quý Đôn</span>
             </h2>

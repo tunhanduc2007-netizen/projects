@@ -5,25 +5,45 @@ import WhyJoinUs from './components/WhyJoinUs';
 import About from './components/About';
 import Programs from './components/Programs';
 import Schedule from './components/Schedule';
+import Shop from './components/Shop';
+import Support from './components/Support';
 import Gallery from './components/Gallery';
-import Tournaments from './components/Tournaments';
-import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
+    // Check if user is at bottom of page (for footer/contact)
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+
+      // If near bottom of page (within 200px), set contact as active
+      if (scrollTop + windowHeight >= documentHeight - 200) {
+        setActiveSection('contact');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     // Scroll animation observer
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            // Update active section for navigation
+            // Update active section for navigation (except when at bottom)
             const sectionId = entry.target.getAttribute('id');
-            if (sectionId) {
-              setActiveSection(sectionId);
+            if (sectionId && sectionId !== 'contact') {
+              // Check if not at bottom
+              const scrollTop = window.scrollY;
+              const windowHeight = window.innerHeight;
+              const documentHeight = document.documentElement.scrollHeight;
+              if (scrollTop + windowHeight < documentHeight - 200) {
+                setActiveSection(sectionId);
+              }
             }
           }
         });
@@ -41,7 +61,16 @@ const App: React.FC = () => {
       observer.observe(section);
     });
 
-    return () => observer.disconnect();
+    // Also observe footer
+    const footer = document.getElementById('contact');
+    if (footer) {
+      observer.observe(footer);
+    }
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   return (
@@ -53,9 +82,9 @@ const App: React.FC = () => {
         <About />
         <Programs />
         <Schedule />
+        <Shop />
+        <Support />
         <Gallery />
-        <Tournaments />
-        <Contact />
       </main>
       <Footer />
     </>

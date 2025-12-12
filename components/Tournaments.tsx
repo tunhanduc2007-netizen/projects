@@ -36,7 +36,7 @@ const Tournaments: React.FC = () => {
         <section id="tournaments" className="section tournaments">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Competitions</span>
+                    <span className="section-subtitle">Cuộc Thi</span>
                     <h2 className="section-title">
                         Các <span>Giải Đấu</span>
                     </h2>

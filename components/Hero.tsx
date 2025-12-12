@@ -22,20 +22,20 @@ const Hero: React.FC = () => {
 
       {/* Content */}
       <div className="hero-content">
-        <img src="/images/logo.png" alt="LQD Table Tennis Club Logo" className="hero-logo" />
+        <img src="/images/logo.png" alt="CLB Bóng Bàn LQD" className="hero-logo" />
 
         <span className="hero-badge">
           <i className="fas fa-star" style={{ marginRight: '8px' }}></i>
-          Est. 2020 • Professional Training
+          Thành lập 2020 • Đào tạo Chuyên nghiệp
         </span>
 
         <h1 className="hero-title">
-          TABLE TENNIS CLUB
+          CÂU LẠC BỘ BÓNG BÀN
           <span>LÊ QUÝ ĐÔN</span>
         </h1>
 
         <p className="hero-slogan">
-          "Train Hard, Play Smart, Win Together."
+          "Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau"
         </p>
 
         <p className="hero-description">
@@ -58,7 +58,7 @@ const Hero: React.FC = () => {
 
       {/* Scroll Indicator */}
       <div className="hero-scroll" onClick={() => scrollToSection('why-join')}>
-        <span>Scroll Down</span>
+        <span>Cuộn Xuống</span>
         <i className="fas fa-chevron-down"></i>
       </div>
     </section>

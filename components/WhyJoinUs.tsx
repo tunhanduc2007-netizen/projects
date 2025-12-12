@@ -38,9 +38,9 @@ const WhyJoinUs: React.FC = () => {
         <section id="why-join" className="section why-join">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Why Choose Us</span>
+                    <span className="section-subtitle">Tại Sao Chọn Chúng Tôi</span>
                     <h2 className="section-title">
-                        Tại Sao Chọn <span>CLB Bóng Bàn LQD?</span>
+                        Lý Do Tham Gia <span>CLB Bóng Bàn LQD</span>
                     </h2>
                     <p className="section-description">
                         Chúng tôi cung cấp môi trường tập luyện tốt nhất để bạn phát triển kỹ năng và đam mê bóng bàn

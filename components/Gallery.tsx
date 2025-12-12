@@ -3,16 +3,16 @@ import React, { useState } from 'react';
 const galleryItems = [
     { id: 1, src: 'https://images.unsplash.com/photo-1534158914592-062992fbe900?w=600&q=80', category: 'training', title: 'Buổi tập luyện' },
     { id: 2, src: 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&q=80', category: 'tournament', title: 'Giải đấu nội bộ' },
-    { id: 3, src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', category: 'training', title: 'Kỹ thuật serve' },
+    { id: 3, src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', category: 'training', title: 'Kỹ thuật giao bóng' },
     { id: 4, src: 'https://images.unsplash.com/photo-1511067007398-7e4b90cfa4bc?w=600&q=80', category: 'friendly', title: 'Giao hữu CLB' },
     { id: 5, src: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=600&q=80', category: 'awards', title: 'Trao giải thưởng' },
     { id: 6, src: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80', category: 'training', title: 'Tập đánh đôi' },
     { id: 7, src: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80', category: 'tournament', title: 'Chung kết 2024' },
     { id: 8, src: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80', category: 'friendly', title: 'Team building' },
-    { id: 9, src: 'https://images.unsplash.com/photo-1461896836934- voices?w=600&q=80', category: 'awards', title: 'Vinh danh VĐV' },
-    { id: 10, src: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80', category: 'training', title: 'Lớp cơ bản' },
-    { id: 11, src: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&q=80', category: 'tournament', title: 'Bảng đấu' },
-    { id: 12, src: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80', category: 'friendly', title: 'Picnic thường niên' }
+    { id: 9, src: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80', category: 'training', title: 'Lớp cơ bản' },
+    { id: 10, src: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&q=80', category: 'tournament', title: 'Bảng đấu' },
+    { id: 11, src: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80', category: 'friendly', title: 'Picnic thường niên' },
+    { id: 12, src: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&q=80', category: 'awards', title: 'Vinh danh VĐV' }
 ];
 
 const categories = [
@@ -55,9 +55,9 @@ const Gallery: React.FC = () => {
         <section id="gallery" className="section gallery">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Photo Gallery</span>
+                    <span className="section-subtitle">Thư Viện Ảnh</span>
                     <h2 className="section-title">
-                        Thư Viện <span>Hình Ảnh</span>
+                        Hình Ảnh <span>Hoạt Động</span>
                     </h2>
                     <p className="section-description">
                         Những khoảnh khắc đáng nhớ của CLB Bóng Bàn Lê Quý Đôn

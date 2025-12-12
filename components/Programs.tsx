@@ -1,53 +1,35 @@
 import React from 'react';
 
-const programs = [
+const pricingOptions = [
     {
-        level: 'Beginner',
-        title: 'Lớp Cơ Bản',
+        icon: 'fas fa-table-tennis-paddle-ball',
+        title: 'Chơi Theo Lượt',
+        price: '35K',
+        period: '/lượt',
+        description: 'Phù hợp cho người chơi thỉnh thoảng, đến khi nào chơi khi đó.',
+        features: [
+            'Không cần đăng ký trước',
+            'Đến là chơi ngay',
+            'Tự do chọn giờ tập'
+        ],
+        highlighted: false,
+        ctaText: 'Đến Là Chơi!'
+    },
+    {
+        icon: 'fas fa-calendar-check',
+        title: 'Gói Tháng',
         price: '500K',
         period: '/tháng',
-        description: 'Dành cho người mới bắt đầu, học các kỹ thuật cơ bản và luật chơi.',
+        description: 'Tiết kiệm hơn cho ai chơi thường xuyên. Chơi thoải mái cả tháng!',
         features: [
-            'Kỹ thuật cầm vợt đúng cách',
-            'Các đường đánh cơ bản',
-            'Footwork và di chuyển',
-            'Quy tắc và luật thi đấu',
-            '4 buổi / tuần (60 phút)',
-            'Vợt và bóng được cung cấp'
+            'Chơi không giới hạn lượt',
+            'Ưu tiên đặt bàn',
+            'Không cần đăng ký trước',
+            'Đến là chơi ngay',
+            'Tự do chọn giờ tập'
         ],
-        featured: false
-    },
-    {
-        level: 'Intermediate',
-        title: 'Lớp Trung Cấp',
-        price: '800K',
-        period: '/tháng',
-        description: 'Nâng cao kỹ thuật, học chiến thuật và chuẩn bị thi đấu.',
-        features: [
-            'Kỹ thuật spin nâng cao',
-            'Chiến thuật tấn công & phòng thủ',
-            'Phân tích đối thủ',
-            'Tập luyện với máy bắn bóng',
-            '5 buổi / tuần (90 phút)',
-            'Tham gia giải nội bộ'
-        ],
-        featured: true
-    },
-    {
-        level: 'Advanced',
-        title: 'Lớp Thi Đấu',
-        price: '1.2M',
-        period: '/tháng',
-        description: 'Dành cho VĐV muốn tham gia các giải đấu chuyên nghiệp.',
-        features: [
-            'Chương trình cá nhân hóa',
-            'Phân tích video kỹ thuật',
-            'Chuẩn bị tâm lý thi đấu',
-            'Tham gia giải đấu bên ngoài',
-            '6 buổi / tuần (120 phút)',
-            'HLV 1-1 chuyên biệt'
-        ],
-        featured: false
+        highlighted: true,
+        ctaText: 'Đăng Ký Ngay!'
     }
 ];
 
@@ -56,31 +38,34 @@ const Programs: React.FC = () => {
         <section id="programs" className="section programs">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Training Programs</span>
+                    <span className="section-subtitle">Bảng Giá</span>
                     <h2 className="section-title">
-                        Chương Trình <span>Huấn Luyện</span>
+                        Giá <span>Tập Luyện</span>
                     </h2>
                     <p className="section-description">
-                        Lựa chọn chương trình phù hợp với trình độ và mục tiêu của bạn
+                        Đến là chơi - Không cần đăng ký hội viên. Chọn hình thức phù hợp với bạn!
                     </p>
                 </div>
 
-                <div className="programs-grid">
-                    {programs.map((program, index) => (
+                <div className="pricing-grid">
+                    {pricingOptions.map((option, index) => (
                         <div
                             key={index}
-                            className={`program-card fade-in stagger-${index + 1} ${program.featured ? 'featured' : ''}`}
+                            className={`pricing-card fade-in stagger-${index + 1} ${option.highlighted ? 'highlighted' : ''}`}
                         >
-                            <span className="program-level">{program.level}</span>
-                            <h3 className="program-title">{program.title}</h3>
-                            <div className="program-price">
-                                {program.price}<span>{program.period}</span>
+                            {option.highlighted && <span className="pricing-badge">Tiết Kiệm</span>}
+                            <div className="pricing-icon">
+                                <i className={option.icon}></i>
                             </div>
-                            <p className="program-description">{program.description}</p>
+                            <h3 className="pricing-title">{option.title}</h3>
+                            <div className="pricing-price">
+                                {option.price}<span>{option.period}</span>
+                            </div>
+                            <p className="pricing-description">{option.description}</p>
 
-                            <ul className="program-features">
-                                {program.features.map((feature, i) => (
-                                    <li key={i} className="program-feature">
+                            <ul className="pricing-features">
+                                {option.features.map((feature, i) => (
+                                    <li key={i} className="pricing-feature">
                                         <i className="fas fa-check"></i>
                                         <span>{feature}</span>
                                     </li>
@@ -88,13 +73,22 @@ const Programs: React.FC = () => {
                             </ul>
 
                             <button
-                                className={`btn ${program.featured ? 'btn-primary' : 'btn-secondary'}`}
+                                className={`btn ${option.highlighted ? 'btn-primary' : 'btn-secondary'}`}
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
-                                Đăng Ký Ngay
+                                {option.ctaText}
                             </button>
                         </div>
                     ))}
+                </div>
+
+                {/* Note */}
+                <div className="pricing-note fade-in">
+                    <i className="fas fa-info-circle"></i>
+                    <p>
+                        <strong>Lưu ý:</strong> Giờ hoạt động từ 08:00 - 21:30 (Thứ 2 - Chủ Nhật).
+                        Vui lòng đến trực tiếp hoặc gọi điện để biết tình trạng bàn trống.
+                    </p>
                 </div>
             </div>
         </section>
