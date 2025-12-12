@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Schedule: React.FC = () => {
-    // Dữ liệu lịch tập mẫu - có thể điền sau
+    // Dữ liệu lịch tập - để trống cho người dùng tự điền
     const scheduleData = [
         { day: 'Thứ 2', morning: '', afternoon: '', evening: '' },
         { day: 'Thứ 3', morning: '', afternoon: '', evening: '' },

@@ -31,9 +31,9 @@ const Contact: React.FC = () => {
                             <i className="fas fa-phone"></i>
                         </div>
                         <h3>Điện Thoại</h3>
-                        <p className="contact-highlight">0909 123 456</p>
+                        <p className="contact-highlight">0913 909 012</p>
                         <p>Gọi để hỏi tình trạng bàn</p>
-                        <a href="tel:0909123456" className="btn btn-primary btn-small">
+                        <a href="tel:0913909012" className="btn btn-primary btn-small">
                             <i className="fas fa-phone"></i> Gọi Ngay
                         </a>
                     </div>
@@ -62,7 +62,7 @@ const Contact: React.FC = () => {
                 <div className="contact-social-section fade-in">
                     <h3>Kết Nối Với Chúng Tôi</h3>
                     <div className="contact-social-buttons">
-                        <a href="https://zalo.me/0909123456" target="_blank" rel="noopener noreferrer" className="social-btn zalo">
+                        <a href="https://zalo.me/0913909012" target="_blank" rel="noopener noreferrer" className="social-btn zalo">
                             <i className="fas fa-comment-dots"></i>
                             Nhắn Zalo
                         </a>

@@ -3065,11 +3065,438 @@ h6 {
     width: 100%;
     justify-content: center;
   }
+
+  .schedule-legend {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+/* Schedule Legend */
+.schedule-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.schedule-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--gray-700);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+}
+
+.legend-free {
+  background: var(--success);
+}
+
+.legend-class {
+  background: var(--primary-blue);
+}
+
+.legend-match {
+  background: var(--primary-red);
 }
 
 /* =====================================================
-   SUPPORT SECTION
+   REGISTRATION FORM SECTION
    ===================================================== */
+.registration {
+  background: var(--white);
+}
+
+.registration-container {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-12);
+  max-width: 1000px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.registration-benefits {
+  background: var(--gradient-primary);
+  color: var(--white);
+  padding: var(--space-10);
+  display: flex;
+  flex-direction: column;
+}
+
+.registration-benefits h3 {
+  font-size: var(--text-2xl);
+  color: var(--white);
+  margin-bottom: var(--space-8);
+}
+
+.registration-benefits ul {
+  list-style: none;
+  flex: 1;
+}
+
+.registration-benefits li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-base);
+}
+
+.registration-benefits li i {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.registration-contact {
+  margin-top: auto;
+  padding-top: var(--space-8);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.registration-contact p {
+  margin-bottom: var(--space-3);
+  opacity: 0.9;
+}
+
+.btn-outline-dark {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid var(--white);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all var(--transition-base);
+}
+
+.btn-outline-dark:hover {
+  background: var(--white);
+  color: var(--primary-blue);
+}
+
+.registration-form {
+  padding: var(--space-10);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.form-group {
+  margin-bottom: var(--space-5);
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.form-group .required {
+  color: var(--primary-red);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--space-4);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
+  background: var(--white);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.form-message {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 500;
+}
+
+.form-message.success {
+  background: rgba(46, 125, 50, 0.1);
+  color: var(--success);
+}
+
+.form-message.error {
+  background: rgba(198, 40, 40, 0.1);
+  color: var(--error);
+}
+
+/* Mobile responsive for registration */
+@media (max-width: 768px) {
+  .registration-container {
+    grid-template-columns: 1fr;
+  }
+
+  .registration-benefits {
+    padding: var(--space-6);
+  }
+
+  .registration-form {
+    padding: var(--space-6);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =====================================================
+   SUPPORT / CONTACT CHANNELS SECTION
+   ===================================================== */
+.support-contact {
+  background: linear-gradient(135deg, var(--off-white) 0%, var(--gray-100) 100%);
+}
+
+.contact-channels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-channel-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-channel-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transform: scaleX(0);
+  transition: transform var(--transition-base);
+}
+
+.contact-channel-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-2xl);
+}
+
+.contact-channel-card:hover::before {
+  transform: scaleX(1);
+}
+
+.channel-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-2xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-5);
+  transition: all var(--transition-base);
+}
+
+/* Icon Colors */
+.icon-red {
+  background: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%);
+}
+
+.icon-blue {
+  background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%);
+}
+
+.icon-zalo {
+  background: linear-gradient(135deg, #0068ff 0%, #0041b3 100%);
+}
+
+.icon-gradient {
+  background: var(--gradient-primary);
+}
+
+.channel-icon i {
+  font-size: var(--text-3xl);
+  color: var(--white);
+}
+
+.contact-channel-card:hover .channel-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.channel-content {
+  flex: 1;
+  margin-bottom: var(--space-4);
+}
+
+.channel-title {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-2);
+}
+
+.channel-main {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-bottom: var(--space-1);
+}
+
+.channel-sub {
+  font-size: var(--text-sm);
+  color: var(--gray-500);
+}
+
+.channel-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  color: var(--white);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: all var(--transition-base);
+}
+
+/* Button Colors */
+.btn-red {
+  background: var(--error);
+  box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
+}
+
+.btn-blue {
+  background: #0084ff;
+  box-shadow: 0 4px 10px rgba(0, 132, 255, 0.3);
+}
+
+.btn-zalo {
+  background: #0068ff;
+  box-shadow: 0 4px 10px rgba(0, 104, 255, 0.3);
+}
+
+.btn-gradient {
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3);
+}
+
+.channel-action i {
+  transition: transform var(--transition-base);
+}
+
+/* Hover Effects Specific */
+.btn-red-hover:hover .channel-action {
+  background: #b71c1c;
+  box-shadow: 0 4px 15px rgba(183, 28, 28, 0.4);
+}
+
+.btn-blue-hover:hover .channel-action {
+  background: #006add;
+  box-shadow: 0 4px 15px rgba(0, 106, 221, 0.4);
+}
+
+.btn-zalo-hover:hover .channel-action {
+  background: #0041b3;
+  box-shadow: 0 4px 15px rgba(0, 65, 179, 0.4);
+}
+
+.contact-channel-card:hover .channel-action i {
+  transform: translateX(4px);
+}
+
+/* Responsive for contact channels */
+@media (max-width: 1024px) {
+  .contact-channels-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-channels-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .contact-channel-card {
+    flex-direction: row;
+    text-align: left;
+    padding: var(--space-5);
+    gap: var(--space-4);
+  }
+
+  .channel-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .channel-icon i {
+    font-size: var(--text-2xl);
+  }
+
+  .channel-content {
+    margin-bottom: 0;
+    flex: 1;
+  }
+
+  .channel-action {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-xs);
+  }
+}
+
+/* Keep old support styles for backwards compatibility */
 .support {
   background: var(--off-white);
 }
