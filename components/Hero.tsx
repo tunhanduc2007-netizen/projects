@@ -34,7 +34,7 @@ const Hero: React.FC = () => {
 
         <span className="hero-badge">
           <i className="fas fa-star" style={{ marginRight: '8px' }}></i>
-          Thành lập 2020 • Đào tạo Chuyên nghiệp
+          Thành lập 2022 • Đào tạo Chuyên nghiệp
         </span>
 
         <h1 className="hero-title">

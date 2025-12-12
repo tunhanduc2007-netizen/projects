@@ -1,7 +1,9 @@
 {
-  "name": "aura-quiet-living",
+  "name": "clb-bong-ban-le-quy-don",
+  "description": "Website CLB Bóng Bàn Lê Quý Đôn - Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau",
+  "author": "TNDUCK <tunhanduc2007@gmail.com>",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^1.29.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

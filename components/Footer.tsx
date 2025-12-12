@@ -87,12 +87,8 @@ const Footer: React.FC = () => {
 
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © 2020-{currentYear} CLB Bóng Bàn Lê Quý Đôn. Bảo lưu mọi quyền.
+            © 2022-{currentYear} CLB Bóng Bàn Lê Quý Đôn. Bảo lưu mọi quyền.
           </p>
-          <div className="footer-legal">
-            <a href="#privacy">Chính sách bảo mật</a>
-            <a href="#terms">Điều khoản sử dụng</a>
-          </div>
         </div>
       </div>
     </footer>
