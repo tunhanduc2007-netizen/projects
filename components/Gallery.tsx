@@ -27,6 +27,8 @@ const Gallery: React.FC = () => {
     const [activeCategory, setActiveCategory] = useState('all');
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [currentImage, setCurrentImage] = useState(0);
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
 
     const filteredItems = activeCategory === 'all'
         ? galleryItems
@@ -50,6 +52,36 @@ const Gallery: React.FC = () => {
     const prevImage = () => {
         setCurrentImage((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
     };
+
+    // Touch handlers for swipe
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStart - touchEnd > 75) {
+            nextImage();
+        }
+        if (touchEnd - touchStart > 75) {
+            prevImage();
+        }
+    };
+
+    // Keyboard navigation
+    React.useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!lightboxOpen) return;
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
+            if (e.key === 'Escape') closeLightbox();
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [lightboxOpen, filteredItems.length]);
 
     return (
         <section id="gallery" className="section gallery">
@@ -95,7 +127,13 @@ const Gallery: React.FC = () => {
 
             {/* Lightbox */}
             <div className={`lightbox ${lightboxOpen ? 'active' : ''}`} onClick={closeLightbox}>
-                <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+                <div
+                    className="lightbox-content"
+                    onClick={(e) => e.stopPropagation()}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
                     <button className="lightbox-close" onClick={closeLightbox}>
                         <i className="fas fa-times"></i>
                     </button>
@@ -108,6 +146,9 @@ const Gallery: React.FC = () => {
                     <button className="lightbox-nav lightbox-next" onClick={nextImage}>
                         <i className="fas fa-chevron-right"></i>
                     </button>
+                    <div className="lightbox-counter">
+                        {currentImage + 1} / {filteredItems.length}
+                    </div>
                 </div>
             </div>
         </section>

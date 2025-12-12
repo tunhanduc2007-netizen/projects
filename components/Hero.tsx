@@ -22,7 +22,15 @@ const Hero: React.FC = () => {
 
       {/* Content */}
       <div className="hero-content">
-        <img src="/images/logo.png" alt="CLB Bóng Bàn LQD" className="hero-logo" />
+        <img
+          src="/images/logo.png"
+          alt="CLB Bóng Bàn LQD"
+          className="hero-logo"
+          loading="eager"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150x150?text=LQD';
+          }}
+        />
 
         <span className="hero-badge">
           <i className="fas fa-star" style={{ marginRight: '8px' }}></i>

@@ -58,7 +58,6 @@ const Footer: React.FC = () => {
           <div className="footer-links-section">
             <ul className="footer-links">
               <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Bảng Giá</a></li>
-              <li><a href="#shop" onClick={(e) => { e.preventDefault(); scrollToSection('shop'); }}>Cửa Hàng</a></li>
               <li><a href="#support" onClick={(e) => { e.preventDefault(); scrollToSection('support'); }}>Hỗ Trợ</a></li>
               <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Hình Ảnh</a></li>
               <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Liên Hệ</a></li>
@@ -73,11 +72,11 @@ const Footer: React.FC = () => {
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-phone"></i>
-              <span>0909 123 456</span>
+              <span>0913 909 012</span>
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-envelope"></i>
-              <span>lienhe@clbbongban-lqd.edu.vn</span>
+              <span>clbbongbanlqd@gmail.com</span>
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-clock"></i>
@@ -88,7 +87,7 @@ const Footer: React.FC = () => {
 
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © {currentYear} CLB Bóng Bàn Lê Quý Đôn. Bảo lưu mọi quyền.
+            © 2020-{currentYear} CLB Bóng Bàn Lê Quý Đôn. Bảo lưu mọi quyền.
           </p>
           <div className="footer-legal">
             <a href="#privacy">Chính sách bảo mật</a>

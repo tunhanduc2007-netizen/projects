@@ -4,9 +4,9 @@ const supportItems = [
     {
         icon: 'fas fa-phone-alt',
         title: 'Hotline Hỗ Trợ',
-        content: '0909 123 456',
-        subtext: 'Thứ 2 - CN: 8:00 - 21:00',
-        action: 'tel:0909123456',
+        content: '0913 909 012',
+        subtext: 'Thứ 2 - CN: 8:00 - 21:30',
+        action: 'tel:0913909012',
         actionText: 'Gọi ngay'
     },
     {
@@ -20,17 +20,17 @@ const supportItems = [
     {
         icon: 'fas fa-comments',
         title: 'Zalo',
-        content: '0909 123 456',
+        content: '0913 909 012',
         subtext: 'Hỗ trợ 24/7',
-        action: 'https://zalo.me/0909123456',
+        action: 'https://zalo.me/0913909012',
         actionText: 'Nhắn Zalo'
     },
     {
         icon: 'fas fa-envelope',
         title: 'Email',
-        content: 'support@clbbongban-lqd.edu.vn',
+        content: 'clbbongbanlqd@gmail.com',
         subtext: 'Phản hồi trong 24h',
-        action: 'mailto:support@clbbongban-lqd.edu.vn',
+        action: 'mailto:clbbongbanlqd@gmail.com',
         actionText: 'Gửi email'
     }
 ];
@@ -88,7 +88,7 @@ const Support: React.FC = () => {
         <section id="support" className="section support">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Customer Service</span>
+                    <span className="section-subtitle">Hỗ Trợ Khách Hàng</span>
                     <h2 className="section-title">
                         Hỗ Trợ <span>Khách Hàng</span>
                     </h2>
@@ -172,7 +172,7 @@ const Support: React.FC = () => {
                         <h3>Cần hỗ trợ ngay?</h3>
                         <p>Đội ngũ tư vấn viên đang online và sẵn sàng hỗ trợ bạn!</p>
                     </div>
-                    <a href="https://zalo.me/0909123456" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large">
+                    <a href="https://zalo.me/0913909012" target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-large">
                         <i className="fas fa-headset"></i>
                         Chat Với Chúng Tôi
                     </a>

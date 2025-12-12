@@ -124,14 +124,6 @@ const App: React.FC = () => {
               <span>Bảng giá</span>
             </a>
             <a
-              href="#about"
-              className={activeSection === 'about' ? 'active' : ''}
-              onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}
-            >
-              <i className="fas fa-info-circle"></i>
-              <span>Giới thiệu</span>
-            </a>
-            <a
               href="#gallery"
               className={activeSection === 'gallery' ? 'active' : ''}
               onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}
@@ -150,7 +142,7 @@ const App: React.FC = () => {
           </nav>
 
           {/* FAB Call Button */}
-          <a href="tel:0977991490" className="mobile-fab" aria-label="Gọi ngay">
+          <a href="tel:0913909012" className="mobile-fab" aria-label="Gọi ngay">
             <i className="fas fa-phone-alt"></i>
           </a>
         </>
