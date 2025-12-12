@@ -5,7 +5,6 @@ import WhyJoinUs from './components/WhyJoinUs';
 import About from './components/About';
 import Programs from './components/Programs';
 import Schedule from './components/Schedule';
-import Shop from './components/Shop';
 import Support from './components/Support';
 import Gallery from './components/Gallery';
 import Footer from './components/Footer';
@@ -82,7 +81,6 @@ const App: React.FC = () => {
         <About />
         <Programs />
         <Schedule />
-        <Shop />
         <Support />
         <Gallery />
       </main>

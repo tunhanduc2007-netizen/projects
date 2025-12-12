@@ -427,25 +427,52 @@ h6 {
   color: var(--white) !important;
 }
 
-/* Mobile Menu */
+/* Mobile Menu Toggle Button */
 .navbar-toggle {
   display: none;
   flex-direction: column;
   gap: 5px;
-  padding: var(--space-2);
+  padding: var(--space-3);
   cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all var(--transition-base);
+  z-index: 1001;
+}
+
+.navbar-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.navbar-toggle:active {
+  transform: scale(0.95);
 }
 
 .navbar-toggle span {
   display: block;
-  width: 25px;
-  height: 2px;
+  width: 24px;
+  height: 3px;
   background: var(--white);
+  border-radius: 2px;
   transition: all var(--transition-base);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.navbar.scrolled .navbar-toggle {
+  background: var(--gray-100);
+  border-color: var(--gray-200);
+}
+
+.navbar.scrolled .navbar-toggle:hover {
+  background: var(--gray-200);
 }
 
 .navbar.scrolled .navbar-toggle span {
   background: var(--gray-800);
+  box-shadow: none;
 }
 
 /* =====================================================
