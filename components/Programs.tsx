@@ -30,6 +30,21 @@ const pricingOptions = [
         ],
         highlighted: true,
         ctaText: 'Đăng Ký Ngay!'
+    },
+    {
+        icon: 'fas fa-user-shield',
+        title: 'Thuê Bàn Riêng',
+        price: '50K',
+        period: '/người',
+        description: 'Dành cho nhóm bạn hoặc cá nhân muốn không gian tập luyện riêng tư.',
+        features: [
+            'Bao trọn bàn tập',
+            'Không gian riêng tư',
+            'Thoải mái tập luyện',
+            'Đặt bàn trước qua hotline'
+        ],
+        highlighted: false,
+        ctaText: 'Đặt Bàn Ngay'
     }
 ];
 

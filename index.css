@@ -1218,9 +1218,9 @@ h6 {
 /* New Pricing Grid */
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-8);
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto var(--space-12);
   position: relative;
   z-index: 1;
