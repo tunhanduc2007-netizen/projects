@@ -3678,3 +3678,401 @@ h6 {
     transform: scale(0.99);
   }
 }
+
+/* =====================================================
+   MOBILE APP THEME - CHỈ ÁP DỤNG CHO MOBILE
+   Màu chủ đạo: Cam #FF7A00 + Xanh đậm #0A2540
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+  /* Mobile Theme Variables Override */
+  :root {
+    --mobile-orange: #FF7A00;
+    --mobile-orange-light: #FF9A33;
+    --mobile-orange-dark: #E66A00;
+    --mobile-navy: #0A2540;
+    --mobile-navy-light: #1A3550;
+    --mobile-navy-dark: #051525;
+  }
+
+  /* ===== MOBILE HERO REDESIGN ===== */
+  .hero {
+    background: linear-gradient(180deg, var(--mobile-navy) 0%, var(--mobile-navy-light) 100%);
+    padding-top: 90px;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 122, 0, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 122, 0, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-badge {
+    background: var(--mobile-orange);
+    border: none;
+    color: var(--white);
+    font-weight: 700;
+    padding: var(--space-2) var(--space-4);
+    box-shadow: 0 4px 15px rgba(255, 122, 0, 0.4);
+  }
+
+  .hero-title span {
+    background: linear-gradient(135deg, var(--mobile-orange) 0%, #FFB347 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-buttons .btn-primary {
+    background: var(--mobile-orange);
+    box-shadow: 0 4px 20px rgba(255, 122, 0, 0.4);
+  }
+
+  .hero-buttons .btn-primary:active {
+    background: var(--mobile-orange-dark);
+  }
+
+  .hero-buttons .btn-outline {
+    border-color: var(--mobile-orange);
+    color: var(--mobile-orange);
+    background: rgba(255, 122, 0, 0.1);
+  }
+
+  .hero-buttons .btn-outline:active {
+    background: var(--mobile-orange);
+    color: var(--white);
+  }
+
+  /* ===== MOBILE NAVBAR REDESIGN ===== */
+  .navbar {
+    background: var(--mobile-navy);
+  }
+
+  .navbar.scrolled {
+    background: var(--white);
+    box-shadow: 0 2px 20px rgba(10, 37, 64, 0.15);
+  }
+
+  .navbar-toggle {
+    background: rgba(255, 122, 0, 0.2);
+    border-color: var(--mobile-orange);
+  }
+
+  .navbar-toggle span {
+    background: var(--mobile-orange);
+  }
+
+  .navbar.scrolled .navbar-toggle {
+    background: rgba(255, 122, 0, 0.1);
+    border-color: var(--mobile-orange);
+  }
+
+  .navbar.scrolled .navbar-toggle span {
+    background: var(--mobile-orange);
+  }
+
+  .navbar-menu {
+    background: var(--mobile-navy);
+  }
+
+  .navbar-link:hover,
+  .navbar-link.active {
+    color: var(--mobile-orange);
+    background: rgba(255, 122, 0, 0.1);
+  }
+
+  .navbar-cta {
+    background: var(--mobile-orange) !important;
+    color: var(--white) !important;
+    box-shadow: 0 4px 15px rgba(255, 122, 0, 0.3);
+  }
+
+  /* ===== MOBILE SECTIONS ===== */
+  .section-subtitle {
+    color: var(--mobile-orange);
+  }
+
+  .section-title span {
+    background: linear-gradient(135deg, var(--mobile-navy) 0%, var(--mobile-orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ===== MOBILE FEATURE CARDS ===== */
+  .feature-card::before {
+    background: linear-gradient(90deg, var(--mobile-orange) 0%, var(--mobile-navy) 100%);
+  }
+
+  .feature-icon {
+    background: linear-gradient(135deg, var(--mobile-navy) 0%, var(--mobile-orange) 100%);
+    box-shadow: 0 8px 25px rgba(255, 122, 0, 0.25);
+  }
+
+  /* ===== MOBILE BUTTONS ===== */
+  .btn-primary {
+    background: var(--mobile-orange);
+    box-shadow: 0 4px 15px rgba(255, 122, 0, 0.35);
+  }
+
+  .btn-primary:active {
+    background: var(--mobile-orange-dark);
+  }
+
+  .btn-secondary {
+    border-color: var(--mobile-orange);
+    color: var(--mobile-orange);
+  }
+
+  .btn-secondary:active {
+    background: var(--mobile-orange);
+    color: var(--white);
+  }
+
+  /* ===== MOBILE PRICING CARDS ===== */
+  .pricing-card.featured {
+    border-color: var(--mobile-orange);
+    box-shadow: 0 8px 30px rgba(255, 122, 0, 0.2);
+  }
+
+  .pricing-card.featured .pricing-badge {
+    background: var(--mobile-orange);
+  }
+
+  .pricing-price {
+    color: var(--mobile-navy);
+  }
+
+  .pricing-feature i {
+    color: var(--mobile-orange);
+  }
+
+  .pricing-card .btn-primary {
+    background: linear-gradient(135deg, var(--mobile-navy) 0%, var(--mobile-orange) 100%);
+  }
+
+  /* ===== MOBILE GALLERY ===== */
+  .gallery-item::after {
+    background: linear-gradient(180deg, transparent 0%, rgba(10, 37, 64, 0.8) 100%);
+  }
+
+  /* ===== MOBILE SUPPORT SECTION ===== */
+  .support-icon {
+    background: linear-gradient(135deg, var(--mobile-navy) 0%, var(--mobile-orange) 100%);
+  }
+
+  .faq-question i {
+    color: var(--mobile-orange);
+  }
+
+  .live-chat-cta {
+    background: linear-gradient(135deg, var(--mobile-navy) 0%, var(--mobile-orange) 100%);
+  }
+
+  /* ===== MOBILE FOOTER ===== */
+  .footer {
+    background: var(--mobile-navy);
+  }
+
+  .footer-social a:hover {
+    background: var(--mobile-orange);
+  }
+
+  .footer-bottom {
+    border-top-color: rgba(255, 122, 0, 0.2);
+  }
+
+  /* ===== MOBILE CONTACT CARDS ===== */
+  .contact-card-icon {
+    background: linear-gradient(135deg, var(--mobile-navy) 0%, var(--mobile-orange) 100%);
+  }
+
+  .contact-highlight {
+    color: var(--mobile-orange) !important;
+  }
+
+  .social-btn.zalo {
+    background: var(--mobile-orange);
+  }
+
+  .social-btn.facebook {
+    background: var(--mobile-navy);
+  }
+
+  /* ===== MOBILE BOTTOM NAVIGATION ===== */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    box-shadow: 0 -4px 20px rgba(10, 37, 64, 0.1);
+    z-index: 1000;
+    padding: var(--space-2) 0;
+    padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  }
+
+  .mobile-bottom-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2);
+    color: var(--gray-500);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-bottom-nav a i {
+    font-size: 1.25rem;
+    margin-bottom: 2px;
+  }
+
+  .mobile-bottom-nav a.active,
+  .mobile-bottom-nav a:active {
+    color: var(--mobile-orange);
+  }
+
+  .mobile-bottom-nav a.active i {
+    transform: scale(1.1);
+  }
+
+  /* Add padding to footer for bottom nav */
+  .footer {
+    padding-bottom: calc(70px + var(--space-8));
+  }
+
+  /* ===== MOBILE QUICK ACTIONS FAB ===== */
+  .mobile-fab {
+    position: fixed;
+    bottom: 80px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    background: var(--mobile-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.5rem;
+    box-shadow: 0 4px 20px rgba(255, 122, 0, 0.4);
+    z-index: 999;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .mobile-fab:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 10px rgba(255, 122, 0, 0.3);
+  }
+
+  /* ===== MOBILE SCROLL INDICATOR ===== */
+  .mobile-scroll-progress {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    height: 3px;
+    background: var(--mobile-orange);
+    z-index: 1001;
+    transition: width 0.1s linear;
+  }
+
+  /* ===== MOBILE ANIMATIONS ===== */
+  @keyframes mobile-pulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 122, 0, 0.4);
+    }
+
+    50% {
+      box-shadow: 0 0 0 10px rgba(255, 122, 0, 0);
+    }
+  }
+
+  .mobile-fab {
+    animation: mobile-pulse 2s infinite;
+  }
+
+  /* Smooth slide animations */
+  @keyframes mobile-slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .feature-card,
+  .pricing-card,
+  .contact-card {
+    animation: mobile-slide-up 0.4s ease-out;
+  }
+
+  /* ===== MOBILE ABOUT SECTION ===== */
+  .about-badge {
+    background: var(--mobile-orange);
+    color: var(--white);
+  }
+
+  .about-image-badge {
+    background: var(--mobile-orange);
+  }
+
+  .stat-item {
+    border-left-color: var(--mobile-orange);
+  }
+
+  .stat-number {
+    color: var(--mobile-navy);
+  }
+
+  /* ===== MOBILE WHY JOIN SECTION ===== */
+  .why-join {
+    background: linear-gradient(180deg, var(--off-white) 0%, var(--white) 100%);
+  }
+
+  /* ===== MOBILE SCHEDULE SECTION ===== */
+  .schedule-badge {
+    background: rgba(255, 122, 0, 0.1);
+    color: var(--mobile-orange);
+    border-color: var(--mobile-orange);
+  }
+
+  /* ===== MOBILE PROGRAMS/PRICING ===== */
+  .programs {
+    background: linear-gradient(180deg, var(--white) 0%, var(--off-white) 100%);
+  }
+}
+
+/* ===== MOBILE DARK OVERLAY FOR MENUS ===== */
+@media (max-width: 768px) {
+  .mobile-menu-overlay.active {
+    background: rgba(10, 37, 64, 0.6);
+    backdrop-filter: blur(4px);
+  }
+}

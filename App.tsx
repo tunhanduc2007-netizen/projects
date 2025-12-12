@@ -11,8 +11,16 @@ import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
     // Check if user is at bottom of page (for footer/contact)
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -69,8 +77,17 @@ const App: React.FC = () => {
     return () => {
       observer.disconnect();
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', checkMobile);
     };
   }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId);
+    }
+  };
 
   return (
     <>
@@ -85,8 +102,62 @@ const App: React.FC = () => {
         <Gallery />
       </main>
       <Footer />
+
+      {/* Mobile Bottom Navigation - Chỉ hiển thị trên mobile */}
+      {isMobile && (
+        <>
+          <nav className="mobile-bottom-nav">
+            <a
+              href="#home"
+              className={activeSection === 'home' ? 'active' : ''}
+              onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}
+            >
+              <i className="fas fa-home"></i>
+              <span>Trang chủ</span>
+            </a>
+            <a
+              href="#programs"
+              className={activeSection === 'programs' ? 'active' : ''}
+              onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}
+            >
+              <i className="fas fa-tags"></i>
+              <span>Bảng giá</span>
+            </a>
+            <a
+              href="#about"
+              className={activeSection === 'about' ? 'active' : ''}
+              onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}
+            >
+              <i className="fas fa-info-circle"></i>
+              <span>Giới thiệu</span>
+            </a>
+            <a
+              href="#gallery"
+              className={activeSection === 'gallery' ? 'active' : ''}
+              onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}
+            >
+              <i className="fas fa-images"></i>
+              <span>Hình ảnh</span>
+            </a>
+            <a
+              href="#contact"
+              className={activeSection === 'contact' ? 'active' : ''}
+              onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}
+            >
+              <i className="fas fa-phone-alt"></i>
+              <span>Liên hệ</span>
+            </a>
+          </nav>
+
+          {/* FAB Call Button */}
+          <a href="tel:0977991490" className="mobile-fab" aria-label="Gọi ngay">
+            <i className="fas fa-phone-alt"></i>
+          </a>
+        </>
+      )}
     </>
   );
 };
 
 export default App;
+
