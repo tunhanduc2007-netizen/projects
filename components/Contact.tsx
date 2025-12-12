@@ -22,9 +22,8 @@ const Contact: React.FC = () => {
                         </div>
                         <h3>Địa Chỉ</h3>
                         <p className="contact-highlight">3B Lê Quý Đôn</p>
-                        <p>Phường 11, Quận Phú Nhuận</p>
+                        <p>Phường Phú Nhuận</p>
                         <p>TP. Hồ Chí Minh</p>
-                        <p><small>(Gần THCS Đào Duy Anh)</small></p>
                     </div>
 
                     <div className="contact-card fade-in stagger-2">

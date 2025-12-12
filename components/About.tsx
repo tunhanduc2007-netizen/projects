@@ -19,7 +19,7 @@ const About: React.FC = () => {
               className="about-image"
             />
             <div className="about-image-badge">
-              <strong>5+</strong>
+              <strong>3+</strong>
               <span>Năm Kinh Nghiệm</span>
             </div>
           </div>
@@ -32,14 +32,13 @@ const About: React.FC = () => {
 
             <p className="about-text">
               CLB Bóng Bàn Lê Quý Đôn được thành lập với sứ mệnh phát triển phong trào bóng bàn
-              trong cộng đồng học sinh, sinh viên và người yêu thể thao. Chúng tôi tin rằng bóng bàn
-              không chỉ là môn thể thao rèn luyện thể chất mà còn giúp phát triển tư duy chiến thuật,
-              khả năng tập trung và tinh thần đồng đội.
+              trong cộng đồng học sinh, sinh viên và người yêu thể thao. Bóng bàn không chỉ rèn luyện
+              thể chất mà còn phát triển tư duy chiến thuật, khả năng tập trung và tinh thần đồng đội.
             </p>
 
             <p className="about-text">
-              <strong>Tầm nhìn:</strong> Trở thành CLB bóng bàn hàng đầu trong khu vực, đào tạo ra
-              những vận động viên xuất sắc và lan tỏa niềm đam mê bóng bàn đến với mọi người.
+              <strong>Tầm nhìn:</strong> Trở thành CLB bóng bàn hàng đầu trong thành phố Hồ Chí Minh,
+              đào tạo vận động viên xuất sắc và lan tỏa niềm đam mê bóng bàn đến mọi người.
             </p>
 
             <div className="about-values">

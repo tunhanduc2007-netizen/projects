@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
           <div className="footer-contact">
             <div className="footer-contact-item">
               <i className="fas fa-map-marker-alt"></i>
-              <span>3B Lê Quý Đôn, Phú Nhuận, TP.HCM</span>
+              <span>3B Lê Quý Đôn, Phường Phú Nhuận, TP. Hồ Chí Minh</span>
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-phone"></i>

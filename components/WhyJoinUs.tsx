@@ -4,7 +4,7 @@ const features = [
     {
         icon: 'fas fa-trophy',
         title: 'Huấn Luyện Chuyên Nghiệp',
-        description: 'Đội ngũ HLV có chứng chỉ quốc tế với kinh nghiệm thi đấu và huấn luyện nhiều năm.'
+        description: 'Đội ngũ huấn luyện viên có nhiều năm kinh nghiệm.'
     },
     {
         icon: 'fas fa-users',
