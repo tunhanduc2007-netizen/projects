@@ -8,7 +8,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [clickedSection, setClickedSection] = useState<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,28 +18,9 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
       }
     };
 
-    // Check saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [clickedSection]);
-
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    if (newTheme) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   const navLinks = [
     { id: 'home', label: 'Trang Chủ' },
@@ -91,14 +71,6 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
             >
               Liên Hệ
             </a>
-            <button
-              className="theme-toggle"
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              title={isDarkMode ? 'Chuyển sang sáng' : 'Chuyển sang tối'}
-            >
-              <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`}></i>
-            </button>
           </div>
 
           <button
