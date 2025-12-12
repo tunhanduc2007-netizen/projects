@@ -101,6 +101,35 @@
   --z-modal: 500;
   --z-popover: 600;
   --z-tooltip: 700;
+
+  /* Theme colors (light mode default) */
+  --bg-primary: var(--white);
+  --bg-secondary: var(--off-white);
+  --bg-card: var(--white);
+  --text-primary: var(--gray-800);
+  --text-secondary: var(--gray-600);
+  --text-muted: var(--gray-500);
+  --border-color: var(--gray-200);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-card: #1e1e1e;
+  --text-primary: #f5f5f5;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+  --border-color: #333333;
+  --off-white: #1a1a1a;
+  --white: #1e1e1e;
+  --gray-100: #252525;
+  --gray-200: #333333;
+  --gray-700: #d0d0d0;
+  --gray-800: #e5e5e5;
+  --gray-900: #f5f5f5;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* Reset & Base Styles */
@@ -121,11 +150,12 @@ body {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.6;
-  color: var(--gray-800);
-  background-color: var(--white);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 img {
@@ -415,6 +445,47 @@ h6 {
 .navbar.scrolled .navbar-cta {
   background: var(--gradient-primary);
   color: var(--white) !important;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-lg);
+  color: var(--white);
+  transition: all var(--transition-base);
+  margin-left: var(--space-2);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.navbar.scrolled .theme-toggle {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.navbar.scrolled .theme-toggle:hover {
+  background: var(--gray-200);
+}
+
+[data-theme="dark"] .theme-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffd700;
+}
+
+[data-theme="dark"] .navbar.scrolled .theme-toggle {
+  background: var(--gray-200);
+  color: #ffd700;
 }
 
 /* Mobile Menu */

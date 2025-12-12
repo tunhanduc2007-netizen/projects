@@ -45,21 +45,15 @@ const Hero: React.FC = () => {
         </p>
 
         <div className="hero-buttons">
-          <button className="btn btn-primary btn-large" onClick={() => scrollToSection('contact')}>
-            <i className="fas fa-user-plus"></i>
-            Đăng Ký Ngay
+          <button className="btn btn-primary btn-large" onClick={() => scrollToSection('programs')}>
+            <i className="fas fa-table-tennis-paddle-ball"></i>
+            Xem Bảng Giá
           </button>
           <button className="btn btn-outline btn-large" onClick={() => scrollToSection('about')}>
             <i className="fas fa-info-circle"></i>
             Tìm Hiểu Thêm
           </button>
         </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="hero-scroll" onClick={() => scrollToSection('why-join')}>
-        <span>Cuộn Xuống</span>
-        <i className="fas fa-chevron-down"></i>
       </div>
     </section>
   );
