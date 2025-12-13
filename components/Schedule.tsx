@@ -1,15 +1,15 @@
 import React from 'react';
 
 const Schedule: React.FC = () => {
-    // Dữ liệu lịch tập - để trống cho người dùng tự điền
+    // Dữ liệu lịch tập - HLV Võ Hoàng Nhựt Sơn
     const scheduleData = [
-        { day: 'Thứ 2', morning: '', afternoon: '', evening: '' },
-        { day: 'Thứ 3', morning: '', afternoon: '', evening: '' },
-        { day: 'Thứ 4', morning: '', afternoon: '', evening: '' },
-        { day: 'Thứ 5', morning: '', afternoon: '', evening: '' },
-        { day: 'Thứ 6', morning: '', afternoon: '', evening: '' },
-        { day: 'Thứ 7', morning: '', afternoon: '', evening: '' },
-        { day: 'Chủ Nhật', morning: '', afternoon: '', evening: '' },
+        { day: 'Thứ 2', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
+        { day: 'Thứ 3', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
+        { day: 'Thứ 4', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
+        { day: 'Thứ 5', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
+        { day: 'Thứ 6', morning: '', afternoon: 'HLV Sơn: 5:30 PM – 6:30 PM', evening: '' },
+        { day: 'Thứ 7', morning: 'HLV Sơn: 9:00 AM – 11:00 AM', afternoon: 'HLV Sơn: 4:00 PM – 6:00 PM', evening: '' },
+        { day: 'Chủ Nhật', morning: 'HLV Sơn: 9:00 AM – 11:00 AM', afternoon: 'HLV Sơn: 4:00 PM – 6:00 PM', evening: '' },
     ];
 
     return (

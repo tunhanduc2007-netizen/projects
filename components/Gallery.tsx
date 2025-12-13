@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 
 const galleryItems = [
-    { id: 1, src: 'https://images.unsplash.com/photo-1534158914592-062992fbe900?w=600&q=80', category: 'training', title: 'Buổi tập luyện' },
-    { id: 2, src: 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=600&q=80', category: 'tournament', title: 'Giải đấu nội bộ' },
-    { id: 3, src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80', category: 'training', title: 'Kỹ thuật giao bóng' },
-    { id: 4, src: 'https://images.unsplash.com/photo-1511067007398-7e4b90cfa4bc?w=600&q=80', category: 'friendly', title: 'Giao hữu CLB' },
-    { id: 5, src: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=600&q=80', category: 'awards', title: 'Trao giải thưởng' },
-    { id: 6, src: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=600&q=80', category: 'training', title: 'Tập đánh đôi' },
-    { id: 7, src: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=600&q=80', category: 'tournament', title: 'Chung kết 2024' },
-    { id: 8, src: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600&q=80', category: 'friendly', title: 'Team building' },
-    { id: 9, src: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80', category: 'training', title: 'Lớp cơ bản' },
-    { id: 10, src: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=600&q=80', category: 'tournament', title: 'Bảng đấu' },
-    { id: 11, src: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80', category: 'friendly', title: 'Picnic thường niên' },
-    { id: 12, src: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&q=80', category: 'awards', title: 'Vinh danh VĐV' }
+    { id: 1, src: '/images/gallery-1.jpg', category: 'tournament', title: 'Sân thi đấu CLB' },
+    { id: 2, src: '/images/gallery-2.jpg', category: 'tournament', title: 'Giải đấu TP.HCM' },
+    { id: 3, src: '/images/gallery-3.jpg', category: 'friendly', title: 'Khán giả cổ vũ' },
+    { id: 4, src: '/images/gallery-4.jpg', category: 'training', title: 'Không gian tập luyện' },
+    { id: 5, src: '/images/gallery-5.jpg', category: 'tournament', title: 'Trận đấu hấp dẫn' },
+    { id: 6, src: '/images/gallery-6.png', category: 'tournament', title: 'Bảng điểm Double Fish' },
+    { id: 7, src: '/images/gallery-7.png', category: 'training', title: 'Sân tập rộng rãi' },
+    { id: 8, src: '/images/gallery-8.png', category: 'tournament', title: 'Lễ khai mạc giải' },
+    { id: 9, src: '/images/gallery-9.jpg', category: 'awards', title: 'Trao giải đồng đội' },
+    { id: 10, src: '/images/gallery-10.jpg', category: 'friendly', title: 'Ảnh tập thể CLB' },
+    { id: 11, src: '/images/gallery-11.jpg', category: 'tournament', title: 'Phát biểu khai mạc' },
+    { id: 12, src: '/images/gallery-12.jpg', category: 'training', title: 'Các VĐV xếp hàng' },
+    { id: 13, src: '/images/gallery-13.jpg', category: 'awards', title: 'Trao giải Quỹ Xã Hội' },
+    { id: 14, src: '/images/gallery-14.jpg', category: 'awards', title: 'Quyên góp từ thiện' },
+    { id: 15, src: '/images/gallery-15.jpg', category: 'tournament', title: 'Trận đấu đôi' },
+    { id: 16, src: '/images/gallery-16.jpg', category: 'tournament', title: 'Không khí thi đấu' },
+    { id: 17, src: '/images/gallery-17.jpg', category: 'awards', title: 'Lễ trao giải' }
 ];
 
 const categories = [

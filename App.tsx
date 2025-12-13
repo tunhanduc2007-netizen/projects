@@ -7,6 +7,7 @@ import Programs from './components/Programs';
 import Schedule from './components/Schedule';
 import Support from './components/Support';
 import Gallery from './components/Gallery';
+import CoachTrial from './components/CoachTrial';
 import Footer from './components/Footer';
 
 const App: React.FC = () => {
@@ -99,6 +100,7 @@ const App: React.FC = () => {
         <Programs />
         <Schedule />
         <Support />
+        <CoachTrial />
         <Gallery />
       </main>
       <Footer />

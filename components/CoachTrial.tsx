@@ -1,0 +1,203 @@
+import React, { useState } from 'react';
+
+interface Coach {
+    id: number;
+    name: string;
+    role: string;
+    fee: string;
+    feeNote: string;
+    experience: string;
+    students: string;
+    rating: string;
+    schedule: { day: string; time: string }[];
+    badges: string[];
+    isOnline?: boolean;
+}
+
+const coaches: Coach[] = [
+    {
+        id: 1,
+        name: 'Võ Hoàng Nhựt Sơn',
+        role: 'Huấn Luyện Viên',
+        fee: '250,000',
+        feeNote: '/ giờ',
+        experience: '5 năm',
+        students: '50+',
+        rating: '4.9',
+        schedule: [
+            { day: 'T2-T5', time: '4:30 PM – 8:00 PM' },
+            { day: 'T6', time: '5:30 PM – 6:30 PM' },
+            { day: 'T7-CN', time: '9:00 AM – 11:00 AM, 4:00 PM – 6:00 PM' }
+        ],
+        badges: ['Chuyên nghiệp', 'Có chứng chỉ'],
+        isOnline: true
+    }
+    // Thêm HLV khác ở đây
+];
+
+const CoachTrial: React.FC = () => {
+    const [selectedCoach, setSelectedCoach] = useState<Coach | null>(null);
+
+    const closeModal = () => setSelectedCoach(null);
+
+    return (
+        <section id="coach-trial" className="section coaches-section">
+            <div className="container">
+                <div className="section-header">
+                    <span className="section-subtitle">
+                        <i className="fas fa-chalkboard-teacher"></i> Đội Ngũ
+                    </span>
+                    <h2 className="section-title">
+                        Huấn Luyện Viên <span>Riêng</span>
+                    </h2>
+                    <p className="section-description">
+                        Đăng ký học với huấn luyện viên để được hướng dẫn 1 kèm 1
+                    </p>
+                </div>
+
+                <div className="coaches-grid">
+                    {coaches.map((coach) => (
+                        <div key={coach.id} className="coach-card-compact">
+                            {/* Avatar & Status */}
+                            <div className="coach-card-header">
+                                <div className="coach-avatar-sm">
+                                    <i className="fas fa-user"></i>
+                                </div>
+                                {coach.isOnline && (
+                                    <span className="online-badge">
+                                        <span className="pulse-dot"></span>
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Info */}
+                            <div className="coach-card-body">
+                                <h4 className="coach-card-name">{coach.name}</h4>
+                                <p className="coach-card-role">{coach.role}</p>
+
+                                {/* Quick Stats */}
+                                <div className="coach-mini-stats">
+                                    <div className="mini-stat">
+                                        <i className="fas fa-star"></i>
+                                        <span>{coach.rating}</span>
+                                    </div>
+                                    <div className="mini-stat">
+                                        <i className="fas fa-users"></i>
+                                        <span>{coach.students}</span>
+                                    </div>
+                                    <div className="mini-stat">
+                                        <i className="fas fa-briefcase"></i>
+                                        <span>{coach.experience}</span>
+                                    </div>
+                                </div>
+
+                                {/* Price */}
+                                <div className="coach-card-price">
+                                    <span className="price-amount">₫{coach.fee}</span>
+                                    <span className="price-unit">{coach.feeNote}</span>
+                                </div>
+
+                                {/* Schedule Preview */}
+                                <div className="coach-schedule-preview">
+                                    {coach.schedule.slice(0, 2).map((s, i) => (
+                                        <div key={i} className="schedule-mini">
+                                            <span className="day">{s.day}:</span>
+                                            <span className="time">{s.time}</span>
+                                        </div>
+                                    ))}
+                                    {coach.schedule.length > 2 && (
+                                        <span className="more-schedule">+{coach.schedule.length - 2} lịch khác</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="coach-card-actions">
+                                <button
+                                    className="btn-view-detail"
+                                    onClick={() => setSelectedCoach(coach)}
+                                >
+                                    <i className="fas fa-calendar-alt"></i>
+                                    Xem lịch
+                                </button>
+                                <a href="#contact" className="btn-contact-coach">
+                                    <i className="fas fa-phone-alt"></i>
+                                    Liên hệ
+                                </a>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* Add Coach Placeholder */}
+                    <div className="coach-card-placeholder">
+                        <div className="placeholder-content">
+                            <i className="fas fa-user-plus"></i>
+                            <span>Thêm HLV</span>
+                            <p>Sắp ra mắt</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Modal for Schedule Detail */}
+            {selectedCoach && (
+                <div className="coach-modal-overlay" onClick={closeModal}>
+                    <div className="coach-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="modal-close" onClick={closeModal}>
+                            <i className="fas fa-times"></i>
+                        </button>
+
+                        <div className="modal-header">
+                            <div className="modal-avatar">
+                                <i className="fas fa-user"></i>
+                            </div>
+                            <div className="modal-info">
+                                <h3>{selectedCoach.name}</h3>
+                                <p>{selectedCoach.role}</p>
+                            </div>
+                        </div>
+
+                        <div className="modal-body">
+                            <div className="modal-section">
+                                <h4><i className="fas fa-calendar-alt"></i> Lịch Tập Luyện</h4>
+                                <div className="schedule-full-list">
+                                    {selectedCoach.schedule.map((s, i) => (
+                                        <div key={i} className="schedule-row">
+                                            <span className="schedule-day-label">{s.day}</span>
+                                            <span className="schedule-time-label">{s.time}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="modal-section">
+                                <h4><i className="fas fa-tag"></i> Chi Phí</h4>
+                                <div className="modal-price">
+                                    <span className="price-big">₫{selectedCoach.fee}</span>
+                                    <span className="price-note">{selectedCoach.feeNote}</span>
+                                </div>
+                            </div>
+
+                            <div className="modal-badges">
+                                {selectedCoach.badges.map((badge, i) => (
+                                    <span key={i} className="modal-badge">
+                                        <i className="fas fa-check"></i> {badge}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="modal-footer">
+                            <a href="#contact" className="btn btn-primary btn-full" onClick={closeModal}>
+                                <i className="fas fa-phone-alt"></i>
+                                Đăng Ký Ngay
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+};
+
+export default CoachTrial;
