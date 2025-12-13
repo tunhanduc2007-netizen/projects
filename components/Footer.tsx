@@ -25,20 +25,32 @@ const Footer: React.FC = () => {
               Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau.
             </p>
             <div className="footer-social">
-              <a href="mailto:tunhanluan1971@gmail.com" aria-label="Email">
+              <a
+                href="https://www.facebook.com/clbbongbanlequydon"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="social-btn social-facebook"
+              >
+                <i className="fab fa-facebook-f"></i>
+              </a>
+              <a
+                href="https://zalo.me/0913909012"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Zalo"
+                className="social-btn social-zalo"
+              >
+                <span className="zalo-icon">Z</span>
+              </a>
+              <a
+                href="https://mail.google.com/mail/?view=cm&to=tunhanluan1971@gmail.com&su=Liên%20hệ%20CLB%20Bóng%20Bàn%20LQD"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Gmail"
+                className="social-btn social-gmail"
+              >
                 <i className="fas fa-envelope"></i>
-              </a>
-              <a href="https://zalo.me" target="_blank" rel="noopener noreferrer" aria-label="Zalo">
-                <i className="fas fa-comment-dots"></i>
-              </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <i className="fab fa-instagram"></i>
-              </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                <i className="fab fa-youtube"></i>
-              </a>
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-                <i className="fab fa-tiktok"></i>
               </a>
             </div>
           </div>

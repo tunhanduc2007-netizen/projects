@@ -5970,3 +5970,82 @@ h6 {
     display: none !important;
   }
 }
+
+/* =====================================================
+   FOOTER SOCIAL BUTTONS - NEW DESIGN
+   ===================================================== */
+.footer-social {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.social-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.social-btn:hover {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.social-btn:active {
+  transform: translateY(-2px) scale(1.05);
+}
+
+/* Facebook - Xanh dương đậm */
+.social-facebook {
+  background: linear-gradient(135deg, #1877f2 0%, #0d5fc4 100%);
+}
+
+.social-facebook:hover {
+  background: linear-gradient(135deg, #2b88ff 0%, #1877f2 100%);
+}
+
+/* Zalo - Xanh dương nhạt */
+.social-zalo {
+  background: linear-gradient(135deg, #0068ff 0%, #0054cc 100%);
+}
+
+.social-zalo:hover {
+  background: linear-gradient(135deg, #1a7aff 0%, #0068ff 100%);
+}
+
+.zalo-icon {
+  font-weight: 800;
+  font-size: 1.6rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Gmail - Đỏ/trắng */
+.social-gmail {
+  background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%);
+}
+
+.social-gmail:hover {
+  background: linear-gradient(135deg, #ff5a4d 0%, #ea4335 100%);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .social-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.3rem;
+  }
+
+  .zalo-icon {
+    font-size: 1.4rem;
+  }
+}
