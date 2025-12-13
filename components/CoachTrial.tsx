@@ -32,8 +32,8 @@ const coaches: Coach[] = [
         students: '10+',
         rating: '5.0',
         schedule: [
-            { day: 'T2-T5', time: '4:30 PM – 8:00 PM' },
-            { day: 'T6', time: '5:30 PM – 6:30 PM' },
+            { day: 'T2-T5', time: '16:30 – 20:00' },
+            { day: 'T6', time: '17:30 – 18:30' },
             { day: 'T7-CN', time: '9:00 – 11:00, 16:00 – 18:00' }
         ],
         badges: ['Chuyên nghiệp', 'Có chứng chỉ'],
