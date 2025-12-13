@@ -36,6 +36,7 @@ const Gallery: React.FC = () => {
     const [currentImage, setCurrentImage] = useState(0);
     const [touchStart, setTouchStart] = useState(0);
     const [touchEnd, setTouchEnd] = useState(0);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     const filteredItems = activeCategory === 'all'
         ? galleryItems
@@ -53,11 +54,17 @@ const Gallery: React.FC = () => {
     };
 
     const nextImage = () => {
+        if (isAnimating) return; // Block if animating
+        setIsAnimating(true);
         setCurrentImage((prev) => (prev + 1) % filteredItems.length);
+        setTimeout(() => setIsAnimating(false), 300); // Unlock after animation
     };
 
     const prevImage = () => {
+        if (isAnimating) return; // Block if animating
+        setIsAnimating(true);
         setCurrentImage((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
+        setTimeout(() => setIsAnimating(false), 300); // Unlock after animation
     };
 
     // Touch handlers for swipe

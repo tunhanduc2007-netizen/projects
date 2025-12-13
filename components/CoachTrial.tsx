@@ -28,9 +28,9 @@ const coaches: Coach[] = [
         feeNote: '/ giờ',
         tableFee: '50,000',
         phone: '0937298709',
-        experience: '7 năm',
+        experience: '7 năm +',
         students: '10+',
-        rating: '4.9',
+        rating: '5.0',
         schedule: [
             { day: 'T2-T5', time: '4:30 PM – 8:00 PM' },
             { day: 'T6', time: '5:30 PM – 6:30 PM' },
@@ -52,19 +52,20 @@ const coaches: Coach[] = [
         name: 'Văn Huỳnh Phương Huy',
         role: 'Huấn Luyện Viên',
         avatar: '/images/coach-huy.jpg',
-        fee: '280,000',
-        feeNote: '/ giờ (gồm sân)',
+        fee: '230,000',
+        feeNote: '/ giờ',
+        tableFee: '50,000',
         phone: '0937009075',
-        experience: '8 năm',
+        experience: '8 năm +',
         students: '10+',
-        rating: '4.8',
+        rating: '5.0',
         schedule: [
             { day: 'T3', time: '18:00 – 20:00' },
             { day: 'T5', time: '18:00 – 20:00' },
             { day: 'T7', time: '8:00 – 9:00' },
             { day: 'CN', time: '8:00 – 10:30' }
         ],
-        badges: ['Gồm tiền sân', 'Chuyên nghiệp'],
+        badges: ['Chuyên nghiệp', 'Kinh nghiệm'],
         isOnline: true
     }
 ];
