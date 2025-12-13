@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 
 const galleryItems = [
-    { id: 1, src: '/images/gallery-1.jpg', category: 'tournament', title: 'Sân thi đấu CLB' },
-    { id: 2, src: '/images/gallery-2.jpg', category: 'tournament', title: 'Giải đấu TP.HCM' },
-    { id: 3, src: '/images/gallery-3.jpg', category: 'friendly', title: 'Khán giả cổ vũ' },
-    { id: 4, src: '/images/gallery-4.jpg', category: 'training', title: 'Không gian tập luyện' },
-    { id: 5, src: '/images/gallery-5.jpg', category: 'tournament', title: 'Trận đấu hấp dẫn' },
-    { id: 6, src: '/images/gallery-6.png', category: 'tournament', title: 'Bảng điểm Double Fish' },
-    { id: 7, src: '/images/gallery-7.png', category: 'training', title: 'Sân tập rộng rãi' },
-    { id: 8, src: '/images/gallery-8.png', category: 'tournament', title: 'Lễ khai mạc giải' },
-    { id: 9, src: '/images/gallery-9.jpg', category: 'awards', title: 'Trao giải đồng đội' },
-    { id: 10, src: '/images/gallery-10.jpg', category: 'friendly', title: 'Ảnh tập thể CLB' },
-    { id: 11, src: '/images/gallery-11.jpg', category: 'tournament', title: 'Phát biểu khai mạc' },
-    { id: 12, src: '/images/gallery-12.jpg', category: 'training', title: 'Các VĐV xếp hàng' },
-    { id: 13, src: '/images/gallery-13.jpg', category: 'awards', title: 'Trao giải Quỹ Xã Hội' },
-    { id: 14, src: '/images/gallery-14.jpg', category: 'awards', title: 'Quyên góp từ thiện' },
-    { id: 15, src: '/images/gallery-15.jpg', category: 'tournament', title: 'Trận đấu đôi' },
-    { id: 16, src: '/images/gallery-16.jpg', category: 'tournament', title: 'Không khí thi đấu' },
-    { id: 17, src: '/images/gallery-17.jpg', category: 'awards', title: 'Lễ trao giải' }
+    // Phát biểu khai mạc, trao giải và thiện nguyện lên đầu
+    { id: 1, src: '/images/gallery-11.jpg', category: 'tournament', title: 'Phát biểu khai mạc' },
+    { id: 2, src: '/images/gallery-9.jpg', category: 'awards', title: 'Trao giải đồng đội' },
+    { id: 3, src: '/images/gallery-13.jpg', category: 'awards', title: 'Trao giải Quỹ Xã Hội' },
+    { id: 4, src: '/images/gallery-14.jpg', category: 'awards', title: 'Quyên góp từ thiện' },
+    { id: 5, src: '/images/gallery-17.jpg', category: 'awards', title: 'Lễ trao giải' },
+    // Các hình khác
+    { id: 6, src: '/images/gallery-1.jpg', category: 'tournament', title: 'Sân thi đấu CLB' },
+    { id: 7, src: '/images/gallery-2.jpg', category: 'tournament', title: 'Giải đấu TP.HCM' },
+    { id: 8, src: '/images/gallery-3.jpg', category: 'friendly', title: 'Khán giả cổ vũ' },
+    { id: 9, src: '/images/gallery-4.jpg', category: 'training', title: 'Không gian tập luyện' },
+    { id: 10, src: '/images/gallery-5.jpg', category: 'tournament', title: 'Trận đấu hấp dẫn' },
+    { id: 11, src: '/images/gallery-6.png', category: 'tournament', title: 'Bảng điểm Double Fish' },
+    { id: 12, src: '/images/gallery-7.png', category: 'training', title: 'Sân tập rộng rãi' },
+    { id: 13, src: '/images/gallery-8.png', category: 'tournament', title: 'Lễ khai mạc giải' },
+    { id: 14, src: '/images/gallery-10.jpg', category: 'friendly', title: 'Ảnh tập thể CLB' },
+    { id: 15, src: '/images/gallery-12.jpg', category: 'training', title: 'Các VĐV xếp hàng' },
+    { id: 16, src: '/images/gallery-15.jpg', category: 'tournament', title: 'Trận đấu đôi' },
+    { id: 17, src: '/images/gallery-16.jpg', category: 'tournament', title: 'Không khí thi đấu' }
 ];
 
 const categories = [
