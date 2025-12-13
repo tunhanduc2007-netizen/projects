@@ -8,7 +8,6 @@ interface Coach {
     fee: string;
     feeNote: string;
     tableFee?: string;
-    phone?: string;
     experience: string;
     students: string;
     rating: string;
@@ -27,7 +26,6 @@ const coaches: Coach[] = [
         fee: '250,000',
         feeNote: '/ giờ',
         tableFee: '50,000',
-        phone: '0937298709',
         experience: '7 năm +',
         students: '10+',
         rating: '5.0',
@@ -55,7 +53,6 @@ const coaches: Coach[] = [
         fee: '230,000',
         feeNote: '/ giờ',
         tableFee: '50,000',
-        phone: '0937009075',
         experience: '8 năm +',
         students: '10+',
         rating: '5.0',
@@ -66,6 +63,23 @@ const coaches: Coach[] = [
             { day: 'CN', time: '8:00 – 10:30' }
         ],
         badges: ['Chuyên nghiệp', 'Kinh nghiệm'],
+        isOnline: true
+    },
+    {
+        id: 3,
+        name: 'Trần Thị Ngọc Thơ',
+        role: 'Huấn Luyện Viên',
+        fee: '200,000',
+        feeNote: '/ giờ',
+        tableFee: '50,000',
+        experience: '5 năm +',
+        students: '10+',
+        rating: '5.0',
+        schedule: [
+            { day: 'T2, T4, T6', time: '7:00 – 8:00, 8:30 – 9:30' },
+            { day: 'T5, T7', time: '6:15 – 7:15' }
+        ],
+        badges: ['Chuyên nghiệp', 'Tận tâm'],
         isOnline: true
     }
 ];
@@ -167,9 +181,9 @@ const CoachTrial: React.FC = () => {
                                     <i className="fas fa-info-circle"></i>
                                     Chi tiết
                                 </button>
-                                <a href={`tel:${coach.phone || '0913909012'}`} className="btn-contact-coach">
+                                <a href="tel:0913909012" className="btn-contact-coach">
                                     <i className="fas fa-phone-alt"></i>
-                                    Gọi ngay
+                                    Liên hệ
                                 </a>
                             </div>
                         </div>
@@ -270,9 +284,9 @@ const CoachTrial: React.FC = () => {
                         </div>
 
                         <div className="modal-footer">
-                            <a href={`tel:${selectedCoach.phone || '0913909012'}`} className="btn btn-primary btn-full" onClick={closeModal}>
+                            <a href="tel:0913909012" className="btn btn-primary btn-full" onClick={closeModal}>
                                 <i className="fas fa-phone-alt"></i>
-                                Gọi: {selectedCoach.phone || '0913909012'}
+                                Gọi: 0913 909 012
                             </a>
                         </div>
                     </div>
