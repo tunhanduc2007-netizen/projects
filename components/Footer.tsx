@@ -25,8 +25,8 @@ const Footer: React.FC = () => {
               Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau.
             </p>
             <div className="footer-social">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                <i className="fab fa-facebook-f"></i>
+              <a href="mailto:tunhanluan1971@gmail.com" aria-label="Email">
+                <i className="fas fa-envelope"></i>
               </a>
               <a href="https://zalo.me" target="_blank" rel="noopener noreferrer" aria-label="Zalo">
                 <i className="fas fa-comment-dots"></i>
@@ -76,7 +76,7 @@ const Footer: React.FC = () => {
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-envelope"></i>
-              <span>clbbongbanlqd@gmail.com</span>
+              <span>tunhanluan1971@gmail.com</span>
             </div>
             <div className="footer-contact-item">
               <i className="fas fa-clock"></i>

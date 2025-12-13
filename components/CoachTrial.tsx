@@ -6,6 +6,7 @@ interface Coach {
     role: string;
     fee: string;
     feeNote: string;
+    tableFee?: string;
     experience: string;
     students: string;
     rating: string;
@@ -21,6 +22,7 @@ const coaches: Coach[] = [
         role: 'Huấn Luyện Viên',
         fee: '250,000',
         feeNote: '/ giờ',
+        tableFee: '50,000',
         experience: '5 năm',
         students: '50+',
         rating: '4.9',
@@ -93,8 +95,16 @@ const CoachTrial: React.FC = () => {
 
                                 {/* Price */}
                                 <div className="coach-card-price">
-                                    <span className="price-amount">₫{coach.fee}</span>
-                                    <span className="price-unit">{coach.feeNote}</span>
+                                    <div className="price-row">
+                                        <span className="price-label">Học phí:</span>
+                                        <span className="price-amount">₫{coach.fee}<span className="price-unit">{coach.feeNote}</span></span>
+                                    </div>
+                                    {coach.tableFee && (
+                                        <div className="price-row table-fee">
+                                            <span className="price-label">Thuê bàn:</span>
+                                            <span className="price-amount-sm">₫{coach.tableFee}<span className="price-unit">/ giờ</span></span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Schedule Preview */}
@@ -172,9 +182,23 @@ const CoachTrial: React.FC = () => {
 
                             <div className="modal-section">
                                 <h4><i className="fas fa-tag"></i> Chi Phí</h4>
-                                <div className="modal-price">
-                                    <span className="price-big">₫{selectedCoach.fee}</span>
-                                    <span className="price-note">{selectedCoach.feeNote}</span>
+                                <div className="modal-price-list">
+                                    <div className="modal-price-row">
+                                        <span className="modal-price-label">Học phí HLV:</span>
+                                        <div className="modal-price">
+                                            <span className="price-big">₫{selectedCoach.fee}</span>
+                                            <span className="price-note">{selectedCoach.feeNote}</span>
+                                        </div>
+                                    </div>
+                                    {selectedCoach.tableFee && (
+                                        <div className="modal-price-row">
+                                            <span className="modal-price-label">Thuê bàn:</span>
+                                            <div className="modal-price">
+                                                <span className="price-medium">₫{selectedCoach.tableFee}</span>
+                                                <span className="price-note">/ giờ</span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

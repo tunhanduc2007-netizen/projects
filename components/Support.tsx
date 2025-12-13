@@ -16,7 +16,7 @@ const contactChannels = [
         title: 'Chat Facebook',
         content: 'Nhắn tin trực tiếp',
         subtext: 'Phản hồi trong 5 phút',
-        action: 'https://m.me/clbbongbanlqd',
+        action: 'https://www.facebook.com/clbbongbanlequydon',
         actionText: 'Chat ngay',
         btnClass: 'btn-blue',
         iconClass: 'icon-blue'
@@ -34,9 +34,9 @@ const contactChannels = [
     {
         icon: 'fas fa-envelope',
         title: 'Email',
-        content: 'clbbongbanlqd@gmail.com',
+        content: 'tunhanluan1971@gmail.com',
         subtext: 'Phản hồi trong 24h',
-        action: 'mailto:clbbongbanlqd@gmail.com',
+        action: 'mailto:tunhanluan1971@gmail.com',
         actionText: 'Gửi email',
         btnClass: 'btn-gradient',
         iconClass: 'icon-gradient'
