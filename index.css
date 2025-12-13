@@ -997,80 +997,171 @@ h6 {
   padding: var(--space-2);
 }
 
+/* Navigation Buttons - Inside Image Frame */
 .lightbox-nav {
-  position: fixed;
+  position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--white);
-  font-size: var(--text-2xl);
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-full);
+  font-size: 1.25rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
   cursor: pointer;
-  transition: all var(--transition-base);
-  z-index: 10001;
+  opacity: 0.6;
+  transition: all 0.25s ease;
+  z-index: 10;
 }
 
-.lightbox-nav:hover {
-  background: var(--gradient-primary);
-  border-color: var(--white);
+.lightbox-nav:hover,
+.lightbox-nav:active {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.7);
   transform: translateY(-50%) scale(1.1);
 }
 
+.lightbox-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
 .lightbox-prev {
-  left: 20px;
+  left: 12px;
 }
 
 .lightbox-next {
-  right: 20px;
+  right: 12px;
 }
 
+/* Counter */
 .lightbox-counter {
   position: absolute;
-  bottom: -40px;
+  bottom: -45px;
   left: 50%;
   transform: translateX(-50%);
   color: var(--white);
   font-size: var(--text-sm);
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 4px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 16px;
   border-radius: var(--radius-full);
 }
 
-/* Lightbox Mobile */
+/* Close Button */
+.lightbox-close {
+  position: absolute;
+  top: -50px;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(211, 47, 47, 0.8);
+  transform: scale(1.1);
+}
+
+/* ===== MOBILE LIGHTBOX ===== */
 @media (max-width: 768px) {
-  .lightbox-content {
-    max-width: 95vw;
-    max-height: 70vh;
+  .lightbox {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
+  .lightbox-content {
+    position: relative;
+    width: calc(100vw - 120px);
+    max-width: calc(100vw - 120px);
+    max-height: 60vh;
+    margin: 0 60px;
+  }
+
+  .lightbox-content img {
+    width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  /* Mobile Nav - Fixed at screen edges */
   .lightbox-nav {
-    width: 44px;
-    height: 44px;
-    font-size: var(--text-xl);
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    color: white;
+    opacity: 1;
+    z-index: 10010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox-nav:active {
+    background: var(--primary-blue);
+    transform: translateY(-50%) scale(0.9);
   }
 
   .lightbox-prev {
-    left: 10px;
+    left: 5px;
   }
 
   .lightbox-next {
-    right: 10px;
+    right: 5px;
   }
 
+  /* Mobile Close */
   .lightbox-close {
-    top: -40px;
-    right: 0;
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    z-index: 10011;
   }
 
+  /* Mobile Counter */
   .lightbox-counter {
-    bottom: -35px;
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1rem;
+    padding: 10px 24px;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10010;
   }
 }
 

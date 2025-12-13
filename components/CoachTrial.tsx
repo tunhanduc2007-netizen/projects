@@ -54,6 +54,7 @@ const coaches: Coach[] = [
         avatar: '/images/coach-huy.jpg',
         fee: '280,000',
         feeNote: '/ giờ (gồm sân)',
+        phone: '0937009075',
         experience: '8 năm',
         students: '10+',
         rating: '4.8',
