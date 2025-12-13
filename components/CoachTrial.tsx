@@ -46,8 +46,26 @@ const coaches: Coach[] = [
             { title: 'Cúp VLOOP 2024', rank: 'Hạng 3' }
         ],
         isOnline: true
+    },
+    {
+        id: 2,
+        name: 'Văn Huỳnh Phương Huy',
+        role: 'Huấn Luyện Viên',
+        avatar: '/images/coach-huy.jpg',
+        fee: '280,000',
+        feeNote: '/ giờ (gồm sân)',
+        experience: '8 năm',
+        students: '10+',
+        rating: '4.8',
+        schedule: [
+            { day: 'T3', time: '18:00 – 20:00' },
+            { day: 'T5', time: '18:00 – 20:00' },
+            { day: 'T7', time: '8:00 – 9:00' },
+            { day: 'CN', time: '8:00 – 10:30' }
+        ],
+        badges: ['Gồm tiền sân', 'Chuyên nghiệp'],
+        isOnline: true
     }
-    // Thêm HLV khác ở đây
 ];
 
 const CoachTrial: React.FC = () => {

@@ -38,9 +38,9 @@
   --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.95) 100%);
   --gradient-dark: linear-gradient(180deg, var(--gray-900) 0%, var(--gray-800) 100%);
 
-  /* Typography */
-  --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Poppins', sans-serif;
+  /* Typography - Be Vietnam Pro for Vietnamese */
+  --font-heading: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Font Sizes */
   --text-xs: 0.75rem;
@@ -998,28 +998,36 @@ h6 {
 }
 
 .lightbox-nav {
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--white);
-  font-size: var(--text-3xl);
-  background: none;
-  border: none;
+  font-size: var(--text-2xl);
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
   cursor: pointer;
-  padding: var(--space-3);
-  transition: color var(--transition-base);
+  transition: all var(--transition-base);
+  z-index: 10001;
 }
 
 .lightbox-nav:hover {
-  color: var(--primary-red);
+  background: var(--gradient-primary);
+  border-color: var(--white);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .lightbox-prev {
-  left: -60px;
+  left: 20px;
 }
 
 .lightbox-next {
-  right: -60px;
+  right: 20px;
 }
 
 .lightbox-counter {
@@ -1033,6 +1041,37 @@ h6 {
   background: rgba(0, 0, 0, 0.5);
   padding: 4px 12px;
   border-radius: var(--radius-full);
+}
+
+/* Lightbox Mobile */
+@media (max-width: 768px) {
+  .lightbox-content {
+    max-width: 95vw;
+    max-height: 70vh;
+  }
+
+  .lightbox-nav {
+    width: 44px;
+    height: 44px;
+    font-size: var(--text-xl);
+  }
+
+  .lightbox-prev {
+    left: 10px;
+  }
+
+  .lightbox-next {
+    right: 10px;
+  }
+
+  .lightbox-close {
+    top: -40px;
+    right: 0;
+  }
+
+  .lightbox-counter {
+    bottom: -35px;
+  }
 }
 
 /* Buttons */

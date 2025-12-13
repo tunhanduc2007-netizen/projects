@@ -1,15 +1,15 @@
 import React from 'react';
 
 const Schedule: React.FC = () => {
-    // Dữ liệu lịch tập - HLV Võ Hoàng Nhựt Sơn
+    // Dữ liệu lịch tập - HLV Sơn & HLV Huy
     const scheduleData = [
         { day: 'Thứ 2', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
-        { day: 'Thứ 3', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
+        { day: 'Thứ 3', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM | HLV Huy: 6:00 PM – 8:00 PM' },
         { day: 'Thứ 4', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
-        { day: 'Thứ 5', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM' },
+        { day: 'Thứ 5', morning: '', afternoon: '', evening: 'HLV Sơn: 4:30 PM – 8:00 PM | HLV Huy: 6:00 PM – 8:00 PM' },
         { day: 'Thứ 6', morning: '', afternoon: 'HLV Sơn: 5:30 PM – 6:30 PM', evening: '' },
-        { day: 'Thứ 7', morning: 'HLV Sơn: 9:00 AM – 11:00 AM', afternoon: 'HLV Sơn: 4:00 PM – 6:00 PM', evening: '' },
-        { day: 'Chủ Nhật', morning: 'HLV Sơn: 9:00 AM – 11:00 AM', afternoon: 'HLV Sơn: 4:00 PM – 6:00 PM', evening: '' },
+        { day: 'Thứ 7', morning: 'HLV Sơn: 9:00 – 11:00 | HLV Huy: 8:00 – 9:00', afternoon: 'HLV Sơn: 4:00 PM – 6:00 PM', evening: '' },
+        { day: 'Chủ Nhật', morning: 'HLV Sơn: 9:00 – 11:00 | HLV Huy: 8:00 – 10:30', afternoon: 'HLV Sơn: 4:00 PM – 6:00 PM', evening: '' },
     ];
 
     return (
