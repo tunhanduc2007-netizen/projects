@@ -4,14 +4,17 @@ interface Coach {
     id: number;
     name: string;
     role: string;
+    avatar?: string;
     fee: string;
     feeNote: string;
     tableFee?: string;
+    phone?: string;
     experience: string;
     students: string;
     rating: string;
     schedule: { day: string; time: string }[];
     badges: string[];
+    achievements?: { title: string; rank: string }[];
     isOnline?: boolean;
 }
 
@@ -20,18 +23,27 @@ const coaches: Coach[] = [
         id: 1,
         name: 'Võ Hoàng Nhựt Sơn',
         role: 'Huấn Luyện Viên',
+        avatar: '/images/coach-son.png',
         fee: '250,000',
         feeNote: '/ giờ',
         tableFee: '50,000',
-        experience: '5 năm',
-        students: '50+',
+        phone: '0937298709',
+        experience: '7 năm',
+        students: '10+',
         rating: '4.9',
         schedule: [
             { day: 'T2-T5', time: '4:30 PM – 8:00 PM' },
             { day: 'T6', time: '5:30 PM – 6:30 PM' },
-            { day: 'T7-CN', time: '9:00 AM – 11:00 AM, 4:00 PM – 6:00 PM' }
+            { day: 'T7-CN', time: '9:00 – 11:00, 16:00 – 18:00' }
         ],
         badges: ['Chuyên nghiệp', 'Có chứng chỉ'],
+        achievements: [
+            { title: 'Cúp VTV8 VII - 2024', rank: 'Hạng 1' },
+            { title: 'Cúp Lucky Sport 2023', rank: 'Hạng 2' },
+            { title: 'Cúp VTV8 VI - 2023', rank: 'Hạng 3' },
+            { title: 'CLB TP.HCM MR 2025', rank: 'Hạng 2' },
+            { title: 'Cúp VLOOP 2024', rank: 'Hạng 3' }
+        ],
         isOnline: true
     }
     // Thêm HLV khác ở đây
@@ -63,7 +75,11 @@ const CoachTrial: React.FC = () => {
                             {/* Avatar & Status */}
                             <div className="coach-card-header">
                                 <div className="coach-avatar-sm">
-                                    <i className="fas fa-user"></i>
+                                    {coach.avatar ? (
+                                        <img src={coach.avatar} alt={coach.name} />
+                                    ) : (
+                                        <i className="fas fa-user"></i>
+                                    )}
                                 </div>
                                 {coach.isOnline && (
                                     <span className="online-badge">
@@ -127,12 +143,12 @@ const CoachTrial: React.FC = () => {
                                     className="btn-view-detail"
                                     onClick={() => setSelectedCoach(coach)}
                                 >
-                                    <i className="fas fa-calendar-alt"></i>
-                                    Xem lịch
+                                    <i className="fas fa-info-circle"></i>
+                                    Chi tiết
                                 </button>
-                                <a href="#contact" className="btn-contact-coach">
+                                <a href={`tel:${coach.phone || '0913909012'}`} className="btn-contact-coach">
                                     <i className="fas fa-phone-alt"></i>
-                                    Liên hệ
+                                    Gọi ngay
                                 </a>
                             </div>
                         </div>
@@ -159,7 +175,11 @@ const CoachTrial: React.FC = () => {
 
                         <div className="modal-header">
                             <div className="modal-avatar">
-                                <i className="fas fa-user"></i>
+                                {selectedCoach.avatar ? (
+                                    <img src={selectedCoach.avatar} alt={selectedCoach.name} />
+                                ) : (
+                                    <i className="fas fa-user"></i>
+                                )}
                             </div>
                             <div className="modal-info">
                                 <h3>{selectedCoach.name}</h3>
@@ -168,8 +188,25 @@ const CoachTrial: React.FC = () => {
                         </div>
 
                         <div className="modal-body">
+                            {/* Thành tích */}
+                            {selectedCoach.achievements && selectedCoach.achievements.length > 0 && (
+                                <div className="modal-section">
+                                    <h4><i className="fas fa-trophy"></i> Thành Tích</h4>
+                                    <div className="achievements-list">
+                                        {selectedCoach.achievements.map((a, i) => (
+                                            <div key={i} className="achievement-item">
+                                                <span className={`achievement-rank rank-${a.rank.toLowerCase().replace(' ', '')}`}>
+                                                    {a.rank}
+                                                </span>
+                                                <span className="achievement-title">{a.title}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="modal-section">
-                                <h4><i className="fas fa-calendar-alt"></i> Lịch Tập Luyện</h4>
+                                <h4><i className="fas fa-calendar-alt"></i> Lịch Tập</h4>
                                 <div className="schedule-full-list">
                                     {selectedCoach.schedule.map((s, i) => (
                                         <div key={i} className="schedule-row">
@@ -184,7 +221,7 @@ const CoachTrial: React.FC = () => {
                                 <h4><i className="fas fa-tag"></i> Chi Phí</h4>
                                 <div className="modal-price-list">
                                     <div className="modal-price-row">
-                                        <span className="modal-price-label">Học phí HLV:</span>
+                                        <span className="modal-price-label">Học phí:</span>
                                         <div className="modal-price">
                                             <span className="price-big">₫{selectedCoach.fee}</span>
                                             <span className="price-note">{selectedCoach.feeNote}</span>
@@ -212,9 +249,9 @@ const CoachTrial: React.FC = () => {
                         </div>
 
                         <div className="modal-footer">
-                            <a href="#contact" className="btn btn-primary btn-full" onClick={closeModal}>
+                            <a href={`tel:${selectedCoach.phone || '0913909012'}`} className="btn btn-primary btn-full" onClick={closeModal}>
                                 <i className="fas fa-phone-alt"></i>
-                                Đăng Ký Ngay
+                                Gọi: {selectedCoach.phone || '0913909012'}
                             </a>
                         </div>
                     </div>
