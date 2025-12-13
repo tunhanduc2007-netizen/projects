@@ -38,7 +38,8 @@ const coaches: Coach[] = [
         ],
         badges: ['Chuyên nghiệp', 'Có chứng chỉ'],
         achievements: [
-            { title: 'Cúp VTV8 VII - 2024', rank: 'Hạng 1' },
+            { title: 'CLB TP.HCM', rank: 'Hạng 1' },
+            { title: 'Cúp VTV8 VII - 2024', rank: 'Hạng 2' },
             { title: 'Cúp Lucky Sport 2023', rank: 'Hạng 2' },
             { title: 'Cúp VTV8 VI - 2023', rank: 'Hạng 3' },
             { title: 'CLB TP.HCM MR 2025', rank: 'Hạng 2' },
