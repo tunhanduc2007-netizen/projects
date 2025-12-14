@@ -40,7 +40,7 @@ const ShopCTA: React.FC = () => {
                         <div className="category-list">
                             <div className="category-card">
                                 <div className="category-img">
-                                    <img src="https://images.unsplash.com/photo-1534158914592-0796504b2752?q=80&w=160&auto=format&fit=crop" alt="Vợt bóng bàn" />
+                                    <img src="/images/shop/banner-vot.png" alt="Vợt bóng bàn" />
                                 </div>
                                 <div className="category-info">
                                     <h4>Vợt Bóng Bàn</h4>
@@ -51,7 +51,7 @@ const ShopCTA: React.FC = () => {
 
                             <div className="category-card">
                                 <div className="category-img">
-                                    <img src="https://images.unsplash.com/photo-1549646875-f725a32e737e?q=80&w=160&auto=format&fit=crop" alt="Mặt vợt" />
+                                    <img src="/images/shop/banner-matvot.png" alt="Mặt vợt" />
                                 </div>
                                 <div className="category-info">
                                     <h4>Mặt Vợt</h4>
@@ -62,7 +62,7 @@ const ShopCTA: React.FC = () => {
 
                             <div className="category-card">
                                 <div className="category-img">
-                                    <img src="https://images.unsplash.com/photo-1519861531473-92002639313a?q=80&w=160&auto=format&fit=crop" alt="Bóng bàn" />
+                                    <img src="/images/shop/banner-phukien.png" alt="Bóng bàn" />
                                 </div>
                                 <div className="category-info">
                                     <h4>Phụ Kiện</h4>

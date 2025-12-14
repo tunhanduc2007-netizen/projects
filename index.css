@@ -8490,17 +8490,17 @@ h6 {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  background: rgba(245, 158, 11, 0.15);
-  /* Gold Alpha */
-  color: #F59E0B;
-  /* Gold */
+  background: rgba(220, 38, 38, 0.15);
+  /* Red Alpha */
+  color: var(--primary-red);
+  /* Brand Red */
   padding: var(--space-2) var(--space-4);
   border-radius: 50px;
   font-size: var(--text-sm);
   font-weight: 700;
   margin-bottom: var(--space-6);
   width: fit-content;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(220, 38, 38, 0.3);
 }
 
 .shop-cta-title {
@@ -8513,9 +8513,9 @@ h6 {
 }
 
 .shop-cta-title .highlight-text {
-  color: #F59E0B;
-  /* Accent Gold */
-  background: linear-gradient(90deg, #F59E0B, #FBBF24);
+  color: var(--primary-red);
+  /* Accent Red */
+  background: linear-gradient(90deg, #EF4444, #F87171);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -8536,7 +8536,7 @@ h6 {
 
 /* NEW BUTTON STYLES */
 .btn-shop-primary {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
   color: #fff;
   padding: 14px 28px;
   border-radius: 12px;
@@ -8545,12 +8545,12 @@ h6 {
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
 }
 
 .btn-shop-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.5);
   color: #fff;
 }
 
@@ -8608,7 +8608,7 @@ h6 {
 
 .category-card:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(245, 158, 11, 0.5);
+  border-color: rgba(220, 38, 38, 0.5);
   transform: translateX(5px);
 }
 
@@ -8619,6 +8619,7 @@ h6 {
   overflow: hidden;
   margin-right: var(--space-4);
   border: 2px solid rgba(255, 255, 255, 0.1);
+  background: #fff;
 }
 
 .category-img img {
@@ -8651,7 +8652,7 @@ h6 {
 }
 
 .category-card:hover .arrow-icon {
-  color: #F59E0B;
+  color: var(--primary-red);
   transform: translateX(3px);
 }
 
