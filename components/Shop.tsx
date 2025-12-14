@@ -909,6 +909,7 @@ const Shop: React.FC = () => {
     const [orderItem, setOrderItem] = useState<{ type: 'product' | 'combo'; item: Product | Combo } | null>(null);
 
     const [selectedBrand, setSelectedBrand] = useState('all');
+    const [sortOption, setSortOption] = useState<'default' | 'price-asc' | 'price-desc'>('default');
 
     // Get unique brands from products
     const brands = ['all', ...Array.from(new Set(products.map(p => p.brand)))];
@@ -917,6 +918,10 @@ const Shop: React.FC = () => {
         const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
         const matchBrand = selectedBrand === 'all' || p.brand === selectedBrand;
         return matchCategory && matchBrand;
+    }).sort((a, b) => {
+        if (sortOption === 'price-asc') return a.price - b.price;
+        if (sortOption === 'price-desc') return b.price - a.price;
+        return 0;
     });
 
     // Pagination Logic
@@ -925,7 +930,7 @@ const Shop: React.FC = () => {
 
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [selectedCategory, selectedBrand]);
+    }, [selectedCategory, selectedBrand, sortOption]);
 
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -1049,6 +1054,25 @@ const Shop: React.FC = () => {
                                     {brand === 'all' ? 'Tất cả thương hiệu' : brand}
                                 </button>
                             ))}
+                        </div>
+
+                        {/* Sort Filter */}
+                        <div className="shop-sort-container">
+                            <div className="sort-wrapper">
+                                <label htmlFor="sort-price">
+                                    <i className="fas fa-sort"></i> Sắp xếp:
+                                </label>
+                                <select
+                                    id="sort-price"
+                                    value={sortOption}
+                                    onChange={(e) => setSortOption(e.target.value as any)}
+                                    className="sort-select"
+                                >
+                                    <option value="default">Mặc định (Mới nhất)</option>
+                                    <option value="price-asc">Giá tăng dần</option>
+                                    <option value="price-desc">Giá giảm dần</option>
+                                </select>
+                            </div>
                         </div>
 
                         {/* Products Grid */}
