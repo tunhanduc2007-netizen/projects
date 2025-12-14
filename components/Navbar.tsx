@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface NavbarProps {
   activeSection: string;
@@ -8,6 +9,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [clickedSection, setClickedSection] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,12 +25,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
   }, [clickedSection]);
 
   const navLinks = [
-    { id: 'home', label: 'Trang Chủ' },
-    { id: 'about', label: 'Giới Thiệu' },
-    { id: 'programs', label: 'Bảng Giá' },
-    { id: 'support', label: 'Hỗ Trợ' },
-    { id: 'gallery', label: 'Hình Ảnh' },
-    { id: 'contact', label: 'Liên Hệ' },
+    { id: 'home', label: 'Trang Chủ', isSection: true },
+    { id: 'about', label: 'Giới Thiệu', isSection: true },
+    { id: 'programs', label: 'Bảng Giá', isSection: true },
+    { id: 'support', label: 'Hỗ Trợ', isSection: true },
+    { id: 'gallery', label: 'Hình Ảnh', isSection: true },
   ];
 
   const scrollToSection = (sectionId: string) => {
@@ -43,30 +44,59 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
   // Use clicked section if available, otherwise use active section from scroll
   const currentActive = clickedSection || activeSection;
 
+  // Check if we're on shop page
+  const isShopPage = location.pathname === '/shop';
+
   return (
     <>
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container">
-          <a href="#home" className="navbar-brand" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
+          <Link to="/" className="navbar-brand" onClick={() => setIsMobileMenuOpen(false)}>
             <img src="/images/logo.png" alt="CLB Bóng Bàn LQD" className="navbar-logo" />
             <span className="navbar-title">BÓNG BÀN LQD</span>
-          </a>
+          </Link>
 
           <div className={`navbar-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-            {navLinks.slice(0, -1).map((link) => (
+            {navLinks.map((link) => (
               <a
                 key={link.id}
                 href={`#${link.id}`}
-                className={`navbar-link ${currentActive === link.id ? 'active' : ''}`}
-                onClick={(e) => { e.preventDefault(); scrollToSection(link.id); }}
+                className={`navbar-link ${currentActive === link.id && !isShopPage ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (isShopPage) {
+                    // If on shop page, navigate to home first
+                    window.location.href = `/#${link.id}`;
+                  } else {
+                    scrollToSection(link.id);
+                  }
+                }}
               >
                 {link.label}
               </a>
             ))}
+
+            {/* Shop Link - Separate */}
+            <Link
+              to="/shop"
+              className={`navbar-link navbar-shop-link ${isShopPage ? 'active' : ''}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <i className="fas fa-store"></i>
+              Shop
+            </Link>
+
             <a
               href="#contact"
               className="navbar-link navbar-cta"
-              onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}
+              onClick={(e) => {
+                e.preventDefault();
+                if (isShopPage) {
+                  window.location.href = '/#contact';
+                } else {
+                  scrollToSection('contact');
+                }
+              }}
             >
               Liên Hệ
             </a>

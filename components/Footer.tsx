@@ -71,6 +71,7 @@ const Footer: React.FC = () => {
             <ul className="footer-links">
               <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Bảng Giá</a></li>
               <li><a href="#support" onClick={(e) => { e.preventDefault(); scrollToSection('support'); }}>Hỗ Trợ</a></li>
+              <li><a href="#shop" onClick={(e) => { e.preventDefault(); scrollToSection('shop'); }}>Shop Dụng Cụ</a></li>
               <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Hình Ảnh</a></li>
               <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Liên Hệ</a></li>
             </ul>
