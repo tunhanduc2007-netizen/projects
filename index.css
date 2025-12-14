@@ -4,13 +4,17 @@
 
 /* CSS Variables - Design Tokens */
 :root {
-  /* Primary Colors from Logo */
-  --primary-red: #d32f2f;
-  --primary-red-dark: #b71c1c;
-  --primary-red-light: #ef5350;
-  --primary-blue: #0d47a1;
-  --primary-blue-dark: #002171;
-  --primary-blue-light: #1976d2;
+  /* Primary Colors - Blue & Red Theme */
+  --primary-red: #e63946;
+  --primary-red-dark: #c1121f;
+  --primary-red-light: #ff6b6b;
+  --primary-blue: #0a2463;
+  --primary-blue-dark: #051937;
+  --primary-blue-light: #1e3a8a;
+
+  /* Accent Colors */
+  --accent-blue: #3b82f6;
+  --accent-red: #ef4444;
 
   /* Neutral Colors */
   --white: #ffffff;
