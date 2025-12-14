@@ -9018,7 +9018,10 @@ h6 {
 /* Consultation Banner (Bottom of Shop) */
 .shop-cta {
   margin-top: var(--space-16);
-  background: url('/images/shop/consult-banner.png') center/cover no-repeat;
+  background: url('/images/shop/consult-banner.png');
+  background-repeat: no-repeat;
+  background-size: 105% auto;
+  background-position: center 30%;
   border-radius: var(--radius-2xl);
   overflow: hidden;
   padding: var(--space-12) var(--space-10);
