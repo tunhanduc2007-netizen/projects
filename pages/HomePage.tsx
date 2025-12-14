@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import WhyJoinUs from '../components/WhyJoinUs';
@@ -127,13 +128,13 @@ const HomePage: React.FC = () => {
                             <i className="fas fa-tags"></i>
                             <span>Bảng giá</span>
                         </a>
-                        <a
-                            href="/shop"
+                        <Link
+                            to="/shop"
                             className="nav-shop-link"
                         >
                             <i className="fas fa-store"></i>
                             <span>Shop</span>
-                        </a>
+                        </Link>
                         <a
                             href="#contact"
                             className={activeSection === 'contact' ? 'active' : ''}
