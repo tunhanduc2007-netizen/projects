@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // ===== INTERFACES =====
 interface Product {
@@ -911,6 +912,35 @@ const Shop: React.FC = () => {
     const [selectedBrand, setSelectedBrand] = useState('all');
     const [sortOption, setSortOption] = useState<'default' | 'price-asc' | 'price-desc'>('default');
 
+    // Routing & History Management
+    const [searchParams, setSearchParams] = useSearchParams();
+    const lastScrollPos = useRef(0);
+
+    // Sync URL with Selected Product & Handle Scroll Restoration
+    useEffect(() => {
+        const productId = searchParams.get('product');
+        if (productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                // If entering detail view from list, save scroll position
+                if (!selectedProduct) {
+                    lastScrollPos.current = window.scrollY;
+                }
+                setSelectedProduct(product);
+                window.scrollTo(0, 0);
+            }
+        } else {
+            // Returning to list view
+            if (selectedProduct) {
+                setSelectedProduct(null);
+                // Restore scroll position after render
+                setTimeout(() => {
+                    window.scrollTo(0, lastScrollPos.current);
+                }, 0);
+            }
+        }
+    }, [searchParams]);
+
     // Get unique brands from products
     const brands = ['all', ...Array.from(new Set(products.map(p => p.brand)))];
 
@@ -993,10 +1023,7 @@ const Shop: React.FC = () => {
 
                     {/* Trust Badges */}
                     <div className="shop-trust-badges">
-                        <div className="trust-badge">
-                            <i className="fas fa-shield-check"></i>
-                            <span>100% Chính hãng</span>
-                        </div>
+
                         <div className="trust-badge">
                             <i className="fas fa-user-check"></i>
                             <span>HLV kiểm chứng</span>
@@ -1090,7 +1117,7 @@ const Shop: React.FC = () => {
                                         </div>
                                     )}
 
-                                    <div className="product-image" onClick={() => setSelectedProduct(product)}>
+                                    <div className="product-image" onClick={() => setSearchParams({ product: product.id })}>
                                         <img
                                             src={product.image}
                                             alt={product.name}
@@ -1105,7 +1132,7 @@ const Shop: React.FC = () => {
 
                                     <div className="product-info">
                                         <span className="product-brand">{product.brand}</span>
-                                        <h4 className="product-name" onClick={() => setSelectedProduct(product)}>
+                                        <h4 className="product-name" onClick={() => setSearchParams({ product: product.id })}>
                                             {product.name}
                                         </h4>
                                         <p className="product-desc-short">{product.description.slice(0, 80)}...</p>
@@ -1127,7 +1154,7 @@ const Shop: React.FC = () => {
                                         <div className="product-actions">
                                             <button
                                                 className="btn-product-detail"
-                                                onClick={() => setSelectedProduct(product)}
+                                                onClick={() => setSearchParams({ product: product.id })}
                                             >
                                                 <i className="fas fa-info-circle"></i>
                                                 Chi tiết
@@ -1183,7 +1210,7 @@ const Shop: React.FC = () => {
                 {/* Product Detail View */}
                 {currentView === 'products' && selectedProduct && (
                     <div className="product-detail-view">
-                        <button className="btn-back" onClick={() => setSelectedProduct(null)}>
+                        <button className="btn-back" onClick={() => setSearchParams({})}>
                             <i className="fas fa-arrow-left"></i>
                             Quay lại
                         </button>
