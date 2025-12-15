@@ -99,6 +99,26 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="footer-bottom">
+          {/* Security Trust Badges */}
+          <div className="footer-trust-badges">
+            <div className="trust-badge-item">
+              <i className="fas fa-shield-alt"></i>
+              <span>SSL Secure</span>
+            </div>
+            <div className="trust-badge-item">
+              <i className="fas fa-lock"></i>
+              <span>HTTPS Protected</span>
+            </div>
+            <div className="trust-badge-item">
+              <i className="fas fa-check-circle"></i>
+              <span>Google Safe</span>
+            </div>
+            <div className="trust-badge-item">
+              <i className="fas fa-user-shield"></i>
+              <span>Privacy Protected</span>
+            </div>
+          </div>
+
           <p className="footer-copyright">
             © 2022-{currentYear} CLB bóng bàn Lê Quý Đôn. Bảo lưu mọi quyền.
           </p>
