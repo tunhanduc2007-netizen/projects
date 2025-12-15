@@ -18,21 +18,7 @@ interface Product {
     specs?: { label: string; value: string }[];
 }
 
-interface Combo {
-    id: string;
-    name: string;
-    level: 'beginner' | 'intermediate' | 'advanced';
-    description: string;
-    image: string;
-    price: number;
-    originalPrice: number;
-    products: string[];
-    coachNote: string;
-    isHot?: boolean;
-}
-
 type CategoryKey = 'all' | 'vot-hoan-chinh' | 'cot-vot' | 'mat-vot' | 'bong' | 'phu-kien';
-type ViewType = 'products' | 'combos' | 'detail';
 
 // ===== DATA =====
 const categories: { key: CategoryKey; label: string; icon: string }[] = [
@@ -864,50 +850,14 @@ const products: Product[] = [
     },
 ];
 
-const combos: Combo[] = [
-    {
-        id: 'combo-nguoi-moi',
-        name: 'Combo Người Mới - HLV Khuyên Dùng',
-        level: 'beginner',
-        description: 'Bộ combo đầu tiên hoàn hảo cho người mới bắt đầu. Đã được HLV CLB chọn lọc và kiểm chứng.',
-        image: 'https://images.unsplash.com/photo-1558657795-61c7ec6a5b00?w=400',
-        price: 750000,
-        originalPrice: 880000,
-        products: ['Vợt Butterfly Timo Boll 1000', 'Bao vợt đơn', 'Bóng tập 3 quả'],
-        coachNote: 'Đây là combo HLV hay recommend cho người mới vào CLB. Đủ dùng để tập 6 tháng đầu.',
-        isHot: true,
-    },
-    {
-        id: 'combo-trung-cap',
-        name: 'Combo Trung Cấp - Nâng Tầm Kỹ Thuật',
-        level: 'intermediate',
-        description: 'Dành cho người đã tập được 6 tháng - 1 năm, muốn có bộ vợt riêng để phát triển.',
-        image: 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=400',
-        price: 2800000,
-        originalPrice: 3200000,
-        products: ['Cốt Koki Niwa Wood', 'Mặt Sriver x2', 'Bao vợt đôi', 'Keo dán'],
-        coachNote: 'Combo này giúp bạn có bộ vợt riêng chuẩn. Cốt gỗ rèn kỹ thuật, mặt Sriver cân bằng.',
-    },
-    {
-        id: 'combo-thi-dau',
-        name: 'Combo Thi Đấu Phong Trào',
-        level: 'advanced',
-        description: 'Cho người chơi nghiêm túc, tham gia các giải phong trào và muốn nâng cao thành tích.',
-        image: 'https://images.unsplash.com/photo-1534158914592-062992fbe900?w=400',
-        price: 4200000,
-        originalPrice: 4800000,
-        products: ['Cốt Primorac Carbon', 'Mặt Rozena x2', 'Bao vợt đôi cao cấp', 'Keo dán', 'Miếng bảo vệ'],
-        coachNote: 'Bộ combo cho ai muốn đấu giải. Cốt carbon nhanh, mặt Rozena xoáy tốt. Đủ sức đấu cấp CLB.',
-    },
-];
+
 
 // ===== COMPONENT =====
 const Shop: React.FC = () => {
-    const [currentView, setCurrentView] = useState<ViewType>('products');
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [showOrderModal, setShowOrderModal] = useState(false);
-    const [orderItem, setOrderItem] = useState<{ type: 'product' | 'combo'; item: Product | Combo } | null>(null);
+    const [orderItem, setOrderItem] = useState<{ type: 'product'; item: Product } | null>(null);
 
     const [selectedBrand, setSelectedBrand] = useState('all');
     const [sortOption, setSortOption] = useState<'default' | 'price-asc' | 'price-desc'>('default');
@@ -979,27 +929,9 @@ const Shop: React.FC = () => {
         return new Intl.NumberFormat('vi-VN').format(price);
     };
 
-    const handleOrder = (type: 'product' | 'combo', item: Product | Combo) => {
-        setOrderItem({ type, item });
+    const handleOrder = (item: Product) => {
+        setOrderItem({ type: 'product', item });
         setShowOrderModal(true);
-    };
-
-    const getLevelLabel = (level: string) => {
-        switch (level) {
-            case 'beginner': return 'Người mới';
-            case 'intermediate': return 'Trung cấp';
-            case 'advanced': return 'Cao cấp';
-            default: return level;
-        }
-    };
-
-    const getLevelColor = (level: string) => {
-        switch (level) {
-            case 'beginner': return '#4caf50';
-            case 'intermediate': return '#2196f3';
-            case 'advanced': return '#ff9800';
-            default: return '#666';
-        }
     };
 
     return (
@@ -1034,27 +966,11 @@ const Shop: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* View Toggle */}
-                    <div className="shop-view-toggle">
-                        <button
-                            className={`view-toggle-btn ${currentView === 'products' ? 'active' : ''}`}
-                            onClick={() => setCurrentView('products')}
-                        >
-                            <i className="fas fa-th-large"></i>
-                            Sản phẩm
-                        </button>
-                        <button
-                            className={`view-toggle-btn ${currentView === 'combos' ? 'active' : ''}`}
-                            onClick={() => setCurrentView('combos')}
-                        >
-                            <i className="fas fa-gift"></i>
-                            Combo theo trình độ
-                        </button>
-                    </div>
+
                 </div>
 
                 {/* Products View */}
-                {currentView === 'products' && !selectedProduct && (
+                {!selectedProduct && (
                     <>
                         {/* Category Filter */}
                         <div className="shop-categories">
@@ -1161,7 +1077,7 @@ const Shop: React.FC = () => {
                                             </button>
                                             <button
                                                 className="btn-product-order"
-                                                onClick={() => handleOrder('product', product)}
+                                                onClick={() => handleOrder(product)}
                                             >
                                                 <i className="fas fa-shopping-bag"></i>
                                                 Đặt hàng
@@ -1208,7 +1124,7 @@ const Shop: React.FC = () => {
                 )}
 
                 {/* Product Detail View */}
-                {currentView === 'products' && selectedProduct && (
+                {selectedProduct && (
                     <div className="product-detail-view">
                         <button className="btn-back" onClick={() => setSearchParams({})}>
                             <i className="fas fa-arrow-left"></i>
@@ -1283,7 +1199,7 @@ const Shop: React.FC = () => {
                                 <div className="detail-actions">
                                     <button
                                         className="btn btn-primary btn-large"
-                                        onClick={() => handleOrder('product', selectedProduct)}
+                                        onClick={() => handleOrder(selectedProduct!)}
                                     >
                                         <i className="fas fa-shopping-bag"></i>
                                         Đặt trước – Nhận tại CLB
@@ -1298,80 +1214,6 @@ const Shop: React.FC = () => {
                     </div>
                 )}
 
-                {/* Combos View */}
-                {currentView === 'combos' && (
-                    <div className="shop-combos">
-                        <div className="combos-intro">
-                            <h3><i className="fas fa-gift"></i> Combo Theo Trình Độ</h3>
-                            <p>Tiết kiệm hơn khi mua combo! Mỗi combo được HLV CLB chọn lọc phù hợp với từng giai đoạn tập luyện.</p>
-                        </div>
-
-                        <div className="combos-grid">
-                            {combos.map(combo => (
-                                <div key={combo.id} className={`combo-card ${combo.isHot ? 'hot' : ''}`}>
-                                    {combo.isHot && (
-                                        <div className="combo-hot-badge">
-                                            <i className="fas fa-fire"></i> Bán chạy
-                                        </div>
-                                    )}
-
-                                    <div className="combo-header">
-                                        <img
-                                            src={combo.image}
-                                            alt={combo.name}
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x200?text=Combo';
-                                            }}
-                                        />
-                                        <div
-                                            className="combo-level-badge"
-                                            style={{ backgroundColor: getLevelColor(combo.level) }}
-                                        >
-                                            {getLevelLabel(combo.level)}
-                                        </div>
-                                    </div>
-
-                                    <div className="combo-body">
-                                        <h4 className="combo-name">{combo.name}</h4>
-                                        <p className="combo-description">{combo.description}</p>
-
-                                        <div className="combo-products">
-                                            <h5>Bao gồm:</h5>
-                                            <ul>
-                                                {combo.products.map((p, i) => (
-                                                    <li key={i}><i className="fas fa-check"></i> {p}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-
-                                        <div className="combo-coach-note">
-                                            <i className="fas fa-user-tie"></i>
-                                            <p>"{combo.coachNote}"</p>
-                                        </div>
-
-                                        <div className="combo-pricing">
-                                            <div className="combo-price-main">
-                                                <span className="combo-price-current">₫{formatPrice(combo.price)}</span>
-                                                <span className="combo-price-original">₫{formatPrice(combo.originalPrice)}</span>
-                                            </div>
-                                            <span className="combo-savings">
-                                                Tiết kiệm ₫{formatPrice(combo.originalPrice - combo.price)}
-                                            </span>
-                                        </div>
-
-                                        <button
-                                            className="btn btn-primary btn-full"
-                                            onClick={() => handleOrder('combo', combo)}
-                                        >
-                                            <i className="fas fa-shopping-bag"></i>
-                                            Đặt Combo
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
 
                 {/* CTA Section */}
                 <div className="shop-cta">
@@ -1407,9 +1249,9 @@ const Shop: React.FC = () => {
 
                         <div className="order-modal-body">
                             <div className="order-item-summary">
-                                <h4>{orderItem.type === 'product' ? (orderItem.item as Product).name : (orderItem.item as Combo).name}</h4>
+                                <h4>{orderItem.item.name}</h4>
                                 <p className="order-price">
-                                    Giá: ₫{formatPrice(orderItem.type === 'product' ? (orderItem.item as Product).price : (orderItem.item as Combo).price)}
+                                    Giá: ₫{formatPrice(orderItem.item.price)}
                                 </p>
                             </div>
 
