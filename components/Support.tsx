@@ -64,16 +64,33 @@ const Support: React.FC = () => {
         setIsSubmitting(true);
 
         try {
-            const form = e.target as HTMLFormElement;
-            const formDataToSend = new FormData(form);
+            // Validate required fields
+            if (!formData.name || !formData.phone || !formData.message) {
+                setSubmitStatus('error');
+                return;
+            }
 
-            const response = await fetch('/', {
+            // Use FormSubmit.co - Free email form service
+            // Email will be sent directly to tunhanluan1971@gmail.com
+            const response = await fetch('https://formsubmit.co/ajax/tunhanluan1971@gmail.com', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formDataToSend as any).toString()
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email || 'Không cung cấp',
+                    _subject: `[CLB Bóng Bàn] ${formData.subject}`,
+                    message: formData.message,
+                    _template: 'table'
+                })
             });
 
-            if (response.ok) {
+            const result = await response.json();
+
+            if (result.success) {
                 setSubmitStatus('success');
                 setFormData({ name: '', phone: '', email: '', subject: 'Đăng ký tập thử', message: '' });
             } else {
