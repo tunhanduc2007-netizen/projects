@@ -146,13 +146,13 @@ const Schedule: React.FC = () => {
                     <div className="schedule-title-group">
                         <span className="schedule-subtitle">
                             <i className="fas fa-calendar-alt"></i>
-                            Lịch tập
+                            LỊCH TẬP
                         </span>
-                        <h2 className="schedule-title">Lịch Dạy Của HLV</h2>
+                        <h2 className="schedule-title">LỊCH DẠY CỦA HLV</h2>
                     </div>
                     <button className="btn-today" onClick={scrollToToday}>
                         <i className="fas fa-calendar-day"></i>
-                        Hôm nay
+                        HÔM NAY
                     </button>
                 </div>
             </div>

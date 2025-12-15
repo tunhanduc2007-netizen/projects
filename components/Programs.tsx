@@ -3,7 +3,7 @@ import React from 'react';
 const pricingOptions = [
     {
         icon: 'fas fa-table-tennis-paddle-ball',
-        title: 'Chơi Theo Lượt',
+        title: 'CHƠI THEO LƯỢT',
         price: '35K',
         period: '/lượt',
         description: 'Phù hợp cho người chơi thỉnh thoảng, đến khi nào chơi khi đó.',
@@ -13,11 +13,11 @@ const pricingOptions = [
             'Tự do chọn giờ tập'
         ],
         highlighted: false,
-        ctaText: 'Đến Là Chơi!'
+        ctaText: 'ĐẾN LÀ CHƠI!'
     },
     {
         icon: 'fas fa-calendar-check',
-        title: 'Gói Tháng',
+        title: 'GÓI THÁNG',
         price: '500K',
         period: '/tháng',
         description: 'Tiết kiệm hơn cho ai chơi thường xuyên. Chơi thoải mái cả tháng!',
@@ -29,11 +29,11 @@ const pricingOptions = [
             'Tự do chọn giờ tập'
         ],
         highlighted: true,
-        ctaText: 'Đăng Ký Ngay!'
+        ctaText: 'ĐĂNG KÝ NGAY!'
     },
     {
         icon: 'fas fa-user-shield',
-        title: 'Thuê Bàn Riêng',
+        title: 'THUÊ BÀN RIÊNG',
         price: '50K',
         period: '/người',
         description: 'Dành cho nhóm bạn hoặc cá nhân muốn không gian tập luyện riêng tư.',
@@ -44,7 +44,7 @@ const pricingOptions = [
             'Đặt bàn trước qua hotline'
         ],
         highlighted: false,
-        ctaText: 'Đặt Bàn Ngay'
+        ctaText: 'ĐẶT BÀN NGAY'
     }
 ];
 
@@ -53,12 +53,12 @@ const Programs: React.FC = () => {
         <section id="programs" className="section programs">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Bảng Giá</span>
+                    <span className="section-subtitle">BẢNG GIÁ</span>
                     <h2 className="section-title">
-                        Giá <span>Tập Luyện</span>
+                        GIÁ <span>TẬP LUYỆN</span>
                     </h2>
                     <p className="section-description">
-                        Đến là chơi - Không cần đăng ký hội viên. Chọn hình thức phù hợp với bạn!
+                        Đến là chơi - không cần đăng ký hội viên. Chọn hình thức phù hợp với bạn!
                     </p>
                 </div>
 
@@ -68,7 +68,7 @@ const Programs: React.FC = () => {
                             key={index}
                             className={`pricing-card fade-in stagger-${index + 1} ${option.highlighted ? 'highlighted' : ''}`}
                         >
-                            {option.highlighted && <span className="pricing-badge">Tiết Kiệm</span>}
+                            {option.highlighted && <span className="pricing-badge">TIẾT KIỆM</span>}
                             <div className="pricing-icon">
                                 <i className={option.icon}></i>
                             </div>

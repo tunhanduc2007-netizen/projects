@@ -23,11 +23,11 @@ const galleryItems = [
 ];
 
 const categories = [
-    { id: 'all', label: 'Tất Cả' },
-    { id: 'training', label: 'Tập Luyện' },
-    { id: 'tournament', label: 'Giải Đấu' },
-    { id: 'friendly', label: 'Giao Hữu' },
-    { id: 'awards', label: 'Giải Thưởng' }
+    { id: 'all', label: 'TẤT CẢ' },
+    { id: 'training', label: 'TẬP LUYỆN' },
+    { id: 'tournament', label: 'GIẢI ĐẤU' },
+    { id: 'friendly', label: 'GIAO HỮU' },
+    { id: 'awards', label: 'GIẢI THƯỞNG' }
 ];
 
 const Gallery: React.FC = () => {
@@ -101,12 +101,12 @@ const Gallery: React.FC = () => {
         <section id="gallery" className="section gallery">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Thư Viện Ảnh</span>
+                    <span className="section-subtitle">THƯ VIỆN ẢNH</span>
                     <h2 className="section-title">
-                        Hình Ảnh <span>Hoạt Động</span>
+                        HÌNH ẢNH <span>HOẠT ĐỘNG</span>
                     </h2>
                     <p className="section-description">
-                        Những khoảnh khắc đáng nhớ của CLB Bóng Bàn Lê Quý Đôn
+                        Những khoảnh khắc đáng nhớ của CLB bóng bàn Lê Quý Đôn
                     </p>
                 </div>
 

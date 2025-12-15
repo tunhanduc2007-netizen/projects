@@ -34,20 +34,19 @@ const Hero: React.FC = () => {
 
         <span className="hero-badge">
           <i className="fas fa-star" style={{ marginRight: '8px' }}></i>
-          Thành lập 2022 • Đào tạo Chuyên nghiệp
+          Thành lập 2022 • Đào tạo chuyên nghiệp
         </span>
 
         <h1 className="hero-title">
-          CÂU LẠC BỘ BÓNG BÀN
-          <span>LÊ QUÝ ĐÔN</span>
+          CLB BÓNG BÀN <span>LÊ QUÝ ĐÔN</span>
         </h1>
 
         <p className="hero-slogan">
-          "Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau"
+          "Tập chăm chỉ, chơi thông minh, chiến thắng cùng nhau"
         </p>
 
         <p className="hero-description">
-          Chào mừng bạn đến với CLB Bóng Bàn Lê Quý Đôn - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
+          Chào mừng bạn đến với CLB bóng bàn Lê Quý Đôn - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
           Với đội ngũ huấn luyện viên chuyên nghiệp và cơ sở vật chất hiện đại, chúng tôi cam kết đem đến
           trải nghiệm tập luyện tốt nhất cho mọi lứa tuổi.
         </p>
@@ -55,11 +54,11 @@ const Hero: React.FC = () => {
         <div className="hero-buttons">
           <button className="btn btn-primary btn-large" onClick={() => scrollToSection('programs')}>
             <i className="fas fa-table-tennis-paddle-ball"></i>
-            Xem Bảng Giá
+            XEM BẢNG GIÁ
           </button>
           <button className="btn btn-outline btn-large" onClick={() => scrollToSection('about')}>
             <i className="fas fa-info-circle"></i>
-            Tìm Hiểu Thêm
+            TÌM HIỂU THÊM
           </button>
         </div>
       </div>

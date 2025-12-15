@@ -25,11 +25,11 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
   }, [clickedSection]);
 
   const navLinks = [
-    { id: 'home', label: 'Trang Chủ', isSection: true },
-    { id: 'about', label: 'Giới Thiệu', isSection: true },
-    { id: 'programs', label: 'Bảng Giá', isSection: true },
-    { id: 'support', label: 'Hỗ Trợ', isSection: true },
-    { id: 'gallery', label: 'Hình Ảnh', isSection: true },
+    { id: 'home', label: 'TRANG CHỦ', isSection: true },
+    { id: 'about', label: 'GIỚI THIỆU', isSection: true },
+    { id: 'programs', label: 'BẢNG GIÁ', isSection: true },
+    { id: 'support', label: 'HỖ TRỢ', isSection: true },
+    { id: 'gallery', label: 'HÌNH ẢNH', isSection: true },
   ];
 
   const scrollToSection = (sectionId: string) => {
@@ -83,7 +83,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <i className="fas fa-store"></i>
-              Shop
+              SHOP
             </Link>
 
             <a
@@ -98,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
                 }
               }}
             >
-              Liên Hệ
+              LIÊN HỆ
             </a>
           </div>
 

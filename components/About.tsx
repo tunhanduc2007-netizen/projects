@@ -2,9 +2,9 @@ import React from 'react';
 
 const About: React.FC = () => {
   const values = [
-    { icon: 'fas fa-check-circle', text: 'Chuyên nghiệp & Tận tâm' },
-    { icon: 'fas fa-check-circle', text: 'Đổi mới & Sáng tạo' },
-    { icon: 'fas fa-check-circle', text: 'Đoàn kết & Hợp tác' },
+    { icon: 'fas fa-check-circle', text: 'Chuyên nghiệp & tận tâm' },
+    { icon: 'fas fa-check-circle', text: 'Đổi mới & sáng tạo' },
+    { icon: 'fas fa-check-circle', text: 'Đoàn kết & hợp tác' },
     { icon: 'fas fa-check-circle', text: 'Không ngừng phát triển' },
   ];
 
@@ -20,18 +20,18 @@ const About: React.FC = () => {
             />
             <div className="about-image-badge">
               <strong>3+</strong>
-              <span>Năm Kinh Nghiệm</span>
+              <span>Năm kinh nghiệm</span>
             </div>
           </div>
 
           <div className="about-content slide-in-right">
-            <span className="section-subtitle">Về Chúng Tôi</span>
+            <span className="section-subtitle">VỀ CHÚNG TÔI</span>
             <h2>
-              Câu Lạc Bộ Bóng Bàn <span className="text-gradient">Lê Quý Đôn</span>
+              CÂU LẠC BỘ BÓNG BÀN <span className="text-gradient">LÊ QUÝ ĐÔN</span>
             </h2>
 
             <p className="about-text">
-              CLB Bóng Bàn Lê Quý Đôn được thành lập với sứ mệnh phát triển phong trào bóng bàn
+              CLB bóng bàn Lê Quý Đôn được thành lập với sứ mệnh phát triển phong trào bóng bàn
               trong cộng đồng học sinh, sinh viên và người yêu thể thao. Bóng bàn không chỉ rèn luyện
               thể chất mà còn phát triển tư duy chiến thuật, khả năng tập trung và tinh thần đồng đội.
             </p>
@@ -52,7 +52,7 @@ const About: React.FC = () => {
 
             <button className="btn btn-primary" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
               <i className="fas fa-envelope"></i>
-              Liên Hệ Với Chúng Tôi
+              LIÊN HỆ VỚI CHÚNG TÔI
             </button>
           </div>
         </div>

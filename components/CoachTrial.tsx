@@ -21,7 +21,7 @@ const coaches: Coach[] = [
     {
         id: 1,
         name: 'Võ Hoàng Nhựt Sơn',
-        role: 'Huấn Luyện Viên',
+        role: 'Huấn luyện viên',
         avatar: '/images/coach-son.png',
         fee: '250,000',
         feeNote: '/ giờ',
@@ -48,7 +48,7 @@ const coaches: Coach[] = [
     {
         id: 2,
         name: 'Văn Huỳnh Phương Huy',
-        role: 'Huấn Luyện Viên',
+        role: 'Huấn luyện viên',
         avatar: '/images/coach-huy.jpg',
         fee: '230,000',
         feeNote: '/ giờ',
@@ -68,7 +68,7 @@ const coaches: Coach[] = [
     {
         id: 3,
         name: 'Trần Thị Ngọc Thơ',
-        role: 'Huấn Luyện Viên',
+        role: 'Huấn luyện viên',
         fee: '200,000',
         feeNote: '/ giờ',
         tableFee: '50,000',
@@ -94,10 +94,10 @@ const CoachTrial: React.FC = () => {
             <div className="container">
                 <div className="section-header">
                     <span className="section-subtitle">
-                        <i className="fas fa-chalkboard-teacher"></i> Đội Ngũ
+                        <i className="fas fa-chalkboard-teacher"></i> ĐỘI NGŨ
                     </span>
                     <h2 className="section-title">
-                        Huấn Luyện Viên <span>Riêng</span>
+                        HUẤN LUYỆN VIÊN <span>RIÊNG</span>
                     </h2>
                     <p className="section-description">
                         Đăng ký học với huấn luyện viên để được hướng dẫn 1 kèm 1
@@ -179,11 +179,11 @@ const CoachTrial: React.FC = () => {
                                     onClick={() => setSelectedCoach(coach)}
                                 >
                                     <i className="fas fa-info-circle"></i>
-                                    Chi tiết
+                                    CHI TIẾT
                                 </button>
                                 <a href="tel:0913909012" className="btn-contact-coach">
                                     <i className="fas fa-phone-alt"></i>
-                                    Liên hệ
+                                    LIÊN HỆ
                                 </a>
                             </div>
                         </div>
@@ -193,7 +193,7 @@ const CoachTrial: React.FC = () => {
                     <div className="coach-card-placeholder">
                         <div className="placeholder-content">
                             <i className="fas fa-user-plus"></i>
-                            <span>Thêm HLV</span>
+                            <span>THÊM HLV</span>
                             <p>Sắp ra mắt</p>
                         </div>
                     </div>
@@ -226,7 +226,7 @@ const CoachTrial: React.FC = () => {
                             {/* Thành tích */}
                             {selectedCoach.achievements && selectedCoach.achievements.length > 0 && (
                                 <div className="modal-section">
-                                    <h4><i className="fas fa-trophy"></i> Thành Tích</h4>
+                                    <h4><i className="fas fa-trophy"></i> THÀNH TÍCH</h4>
                                     <div className="achievements-list">
                                         {selectedCoach.achievements.map((a, i) => (
                                             <div key={i} className="achievement-item">
@@ -241,7 +241,7 @@ const CoachTrial: React.FC = () => {
                             )}
 
                             <div className="modal-section">
-                                <h4><i className="fas fa-calendar-alt"></i> Lịch Tập</h4>
+                                <h4><i className="fas fa-calendar-alt"></i> LỊCH TẬP</h4>
                                 <div className="schedule-full-list">
                                     {selectedCoach.schedule.map((s, i) => (
                                         <div key={i} className="schedule-row">
@@ -253,7 +253,7 @@ const CoachTrial: React.FC = () => {
                             </div>
 
                             <div className="modal-section">
-                                <h4><i className="fas fa-tag"></i> Chi Phí</h4>
+                                <h4><i className="fas fa-tag"></i> CHI PHÍ</h4>
                                 <div className="modal-price-list">
                                     <div className="modal-price-row">
                                         <span className="modal-price-label">Học phí:</span>

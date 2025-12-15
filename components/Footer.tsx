@@ -21,8 +21,8 @@ const Footer: React.FC = () => {
               <span className="footer-title">BÓNG BÀN LQD</span>
             </div>
             <p className="footer-description">
-              CLB Bóng Bàn Lê Quý Đôn - Nơi đam mê được nuôi dưỡng và tài năng được phát triển.
-              Tập Chăm Chỉ, Chơi Thông Minh, Chiến Thắng Cùng Nhau.
+              CLB bóng bàn Lê Quý Đôn - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
+              Tập chăm chỉ, chơi thông minh, chiến thắng cùng nhau.
             </p>
             <div className="footer-social">
               <a
@@ -58,22 +58,22 @@ const Footer: React.FC = () => {
           {/* Quick Links */}
           <div className="footer-links-section">
             <ul className="footer-links">
-              <li><a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>Trang Chủ</a></li>
-              <li><a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>Giới Thiệu</a></li>
-              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Khóa Học</a></li>
-              <li><a href="#schedule" onClick={(e) => { e.preventDefault(); scrollToSection('schedule'); }}>Lịch Tập</a></li>
-              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Hình Ảnh</a></li>
+              <li><a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>TRANG CHỦ</a></li>
+              <li><a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>GIỚI THIỆU</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>KHÓA HỌC</a></li>
+              <li><a href="#schedule" onClick={(e) => { e.preventDefault(); scrollToSection('schedule'); }}>LỊCH TẬP</a></li>
+              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>HÌNH ẢNH</a></li>
             </ul>
           </div>
 
           {/* Services */}
           <div className="footer-links-section">
             <ul className="footer-links">
-              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>Bảng Giá</a></li>
-              <li><a href="#support" onClick={(e) => { e.preventDefault(); scrollToSection('support'); }}>Hỗ Trợ</a></li>
-              <li><a href="#shop" onClick={(e) => { e.preventDefault(); scrollToSection('shop'); }}>Shop Dụng Cụ</a></li>
-              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>Hình Ảnh</a></li>
-              <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>Liên Hệ</a></li>
+              <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>BẢNG GIÁ</a></li>
+              <li><a href="#support" onClick={(e) => { e.preventDefault(); scrollToSection('support'); }}>HỖ TRỢ</a></li>
+              <li><a href="#shop" onClick={(e) => { e.preventDefault(); scrollToSection('shop'); }}>SHOP DỤNG CỤ</a></li>
+              <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>HÌNH ẢNH</a></li>
+              <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>LIÊN HỆ</a></li>
             </ul>
           </div>
 
@@ -100,7 +100,7 @@ const Footer: React.FC = () => {
 
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © 2022-{currentYear} CLB Bóng Bàn Lê Quý Đôn. Bảo lưu mọi quyền.
+            © 2022-{currentYear} CLB bóng bàn Lê Quý Đôn. Bảo lưu mọi quyền.
           </p>
         </div>
       </div>

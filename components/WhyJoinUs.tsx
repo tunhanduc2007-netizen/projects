@@ -3,32 +3,32 @@ import React from 'react';
 const features = [
     {
         icon: 'fas fa-trophy',
-        title: 'Huấn Luyện Chuyên Nghiệp',
+        title: 'HUẤN LUYỆN CHUYÊN NGHIỆP',
         description: 'Đội ngũ huấn luyện viên có nhiều năm kinh nghiệm.'
     },
     {
         icon: 'fas fa-users',
-        title: 'Cộng Đồng Năng Động',
+        title: 'CỘNG ĐỒNG NĂNG ĐỘNG',
         description: 'Giao lưu, kết bạn với những người có cùng đam mê bóng bàn từ mọi lứa tuổi.'
     },
     {
         icon: 'fas fa-table-tennis-paddle-ball',
-        title: 'Trang Thiết Bị Hiện Đại',
+        title: 'TRANG THIẾT BỊ HIỆN ĐẠI',
         description: 'Bàn tập chuẩn quốc tế, vợt chất lượng cao và khu vực tập luyện thoáng mát.'
     },
     {
         icon: 'fas fa-calendar-check',
-        title: 'Lịch Tập Linh Hoạt',
+        title: 'LỊCH TẬP LINH HOẠT',
         description: 'Đa dạng khung giờ tập luyện phù hợp với lịch học tập và công việc của bạn.'
     },
     {
         icon: 'fas fa-medal',
-        title: 'Cơ Hội Thi Đấu',
+        title: 'CƠ HỘI THI ĐẤU',
         description: 'Tham gia các giải đấu nội bộ và giao hữu để rèn luyện bản lĩnh thi đấu.'
     },
     {
         icon: 'fas fa-heart',
-        title: 'Rèn Luyện Sức Khỏe',
+        title: 'RÈN LUYỆN SỨC KHỎE',
         description: 'Bóng bàn giúp cải thiện phản xạ, tập trung và sức khỏe toàn diện.'
     }
 ];
@@ -38,9 +38,9 @@ const WhyJoinUs: React.FC = () => {
         <section id="why-join" className="section why-join">
             <div className="container">
                 <div className="section-header">
-                    <span className="section-subtitle">Tại Sao Chọn Chúng Tôi</span>
+                    <span className="section-subtitle">TẠI SAO CHỌN CHÚNG TÔI</span>
                     <h2 className="section-title">
-                        Lý Do Tham Gia <span>CLB Bóng Bàn LQD</span>
+                        LÝ DO THAM GIA <span>CLB BÓNG BÀN LQD</span>
                     </h2>
                     <p className="section-description">
                         Chúng tôi cung cấp môi trường tập luyện tốt nhất để bạn phát triển kỹ năng và đam mê bóng bàn
