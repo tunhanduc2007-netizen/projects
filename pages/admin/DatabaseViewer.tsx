@@ -9,7 +9,6 @@ import {
     Timestamp
 } from 'firebase/firestore';
 import { db, isFirebaseAvailable } from '../../firebase/config';
-import { seedDatabase } from '../../utils/seedData';
 
 
 // Type definitions
@@ -148,19 +147,7 @@ const DatabaseViewer: React.FC = () => {
         notify('✅ Đã export dữ liệu!', 'success');
     };
 
-    // Seed sample data
-    const handleSeedData = async () => {
-        if (!confirm('Bạn có chắc muốn thêm sample data vào database?')) return;
-        setLoading(true);
-        const success = await seedDatabase();
-        if (success) {
-            notify('✅ Đã seed sample data thành công!', 'success');
-            loadDocuments(selectedCollection);
-        } else {
-            notify('❌ Lỗi khi seed data!', 'error');
-        }
-        setLoading(false);
-    };
+
 
 
     // Filter documents
@@ -247,12 +234,6 @@ const DatabaseViewer: React.FC = () => {
                             </span>
                         </div>
                         <div style={styles.toolbarRight}>
-                            <button
-                                onClick={handleSeedData}
-                                style={{ ...styles.btnSecondary, backgroundColor: '#8b5cf6' }}
-                            >
-                                🌱 Seed Data
-                            </button>
                             <button
                                 onClick={() => loadDocuments(selectedCollection)}
                                 style={styles.btnSecondary}

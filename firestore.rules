@@ -2,278 +2,262 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // ============================================
-    // 🔧 HELPER FUNCTIONS
-    // ============================================
+    // ============================================================
+    // 🚫 FORBIDDEN: allow write: if true
+    // ============================================================
+    // All writes must be validated and authorized
     
-    // Check if user is authenticated
+    // ============================================================
+    // 🔧 HELPER FUNCTIONS
+    // ============================================================
+    
     function isAuthenticated() {
       return request.auth != null;
     }
     
-    // Get user document
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
-    
-    // Check if user has specific role
-    function hasRole(role) {
-      return isAuthenticated() && getUserData().role == role;
-    }
-    
-    // Check if user is admin
     function isAdmin() {
-      return hasRole('admin');
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Check if user is staff or admin
     function isStaff() {
-      return hasRole('staff') || isAdmin();
+      return isAuthenticated() && (
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin' ||
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'staff'
+      );
     }
     
-    // Check if user is the owner of the document
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+    // Validate required string
+    function isValidString(value, minLen, maxLen) {
+      return value is string && value.size() >= minLen && value.size() <= maxLen;
     }
     
-    // Check if user is active (not banned)
-    function isActive() {
-      return isAuthenticated() && getUserData().status == 'active';
-    }
-    
-    // Validate required string field
-    function isValidString(field, minLen, maxLen) {
-      return field is string && field.size() >= minLen && field.size() <= maxLen;
-    }
-    
-    // Validate email format
-    function isValidEmail(email) {
-      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
-    }
-    
-    // Validate Vietnamese phone number
+    // Validate Vietnamese phone
     function isValidPhone(phone) {
-      return phone.matches('^(0|\\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$');
+      return phone.matches('^(0|\\+84)[0-9]{9,10}$');
+    }
+    
+    // Validate email
+    function isValidEmail(email) {
+      return email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$');
     }
     
     // Validate positive number
-    function isPositiveNumber(num) {
+    function isPositive(num) {
+      return num is number && num > 0;
+    }
+    
+    // Validate non-negative number
+    function isNonNegative(num) {
       return num is number && num >= 0;
     }
     
-    // Check if document is not soft deleted
-    function isNotDeleted() {
-      return !('deleted_at' in resource.data) || resource.data.deleted_at == null;
+    // Check timestamp is server time
+    function isValidTimestamp(ts) {
+      return ts == request.time;
     }
     
-    // ============================================
-    // 🔐 USERS COLLECTION
-    // ============================================
-    match /users/{userId} {
-      // Anyone can read their own profile
-      // Staff can read all profiles
-      // Admin can read all profiles
-      allow read: if isOwner(userId) || isStaff();
+    // ============================================================
+    // 👤 ADMINS COLLECTION (for role checking)
+    // ============================================================
+    match /admins/{userId} {
+      // Only admin can read admin list
+      allow read: if isAdmin();
       
-      // Only admin can create users
-      allow create: if isAdmin() && 
-        isValidString(request.resource.data.full_name, 2, 100) &&
-        isValidEmail(request.resource.data.email) &&
-        isValidPhone(request.resource.data.phone) &&
-        request.resource.data.role in ['admin', 'staff', 'member', 'guest'] &&
-        request.resource.data.status in ['active', 'banned', 'pending'];
+      // Only existing admin can create new admin
+      allow create, update: if isAdmin();
       
-      // Users can update their own profile (except role and status)
-      // Admin can update any profile
-      allow update: if (isOwner(userId) && 
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status'])) ||
-        isAdmin();
-      
-      // Only admin can delete (soft delete)
-      allow delete: if isAdmin();
+      // No delete
+      allow delete: if false;
     }
     
-    // ============================================
-    // 🏓 VISITORS COLLECTION
-    // ============================================
-    match /visitors/{visitorId} {
-      // Staff and admin can read all visitors
-      // Members can only read their own visits
-      allow read: if isStaff() || 
-        (isAuthenticated() && resource.data.user_id == request.auth.uid);
-      
-      // Staff can create visitors
-      allow create: if isStaff() &&
-        isValidString(request.resource.data.visitor_name, 2, 100) &&
-        isPositiveNumber(request.resource.data.price) &&
-        request.resource.data.play_type in ['hourly', 'daily', 'monthly', 'yearly'] &&
-        request.resource.data.payment_method in ['cash', 'transfer', 'momo', 'zalopay', 'card'];
-      
-      // Staff can update visitors
-      allow update: if isStaff();
-      
-      // Only admin can delete (soft delete)
-      allow delete: if isAdmin();
-    }
-    
-    // ============================================
-    // 🧾 PAYMENTS COLLECTION
-    // ============================================
-    match /payments/{paymentId} {
-      // Staff and admin can read all payments
-      // Members can only read their own payments
-      allow read: if isStaff() || 
-        (isAuthenticated() && resource.data.user_id == request.auth.uid);
-      
-      // Staff can create payments
-      allow create: if isStaff() &&
-        isPositiveNumber(request.resource.data.amount) &&
-        request.resource.data.amount >= 1000 && // Minimum 1000 VND
-        request.resource.data.payment_method in ['cash', 'transfer', 'momo', 'zalopay', 'card'] &&
-        request.resource.data.payment_status in ['pending', 'paid', 'failed', 'refunded', 'cancelled'];
-      
-      // Staff can update payment status
-      allow update: if isStaff() &&
-        request.resource.data.payment_status in ['pending', 'paid', 'failed', 'refunded', 'cancelled'];
-      
-      // Only admin can delete (soft delete)
-      allow delete: if isAdmin();
-    }
-    
-    // ============================================
-    // 📅 SCHEDULES COLLECTION
-    // ============================================
-    match /schedules/{scheduleId} {
-      // Anyone can read active schedules
-      allow read: if resource.data.status == 'active' && isNotDeleted();
-      
-      // Only admin can create schedules
-      allow create: if isAdmin() &&
-        request.resource.data.day_of_week in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] &&
-        isValidString(request.resource.data.coach_name, 2, 100);
-      
-      // Only admin can update schedules
-      allow update: if isAdmin();
-      
-      // Only admin can delete (soft delete)
-      allow delete: if isAdmin();
-    }
-    
-    // ============================================
-    // 🛒 PRODUCTS COLLECTION
-    // ============================================
-    match /products/{productId} {
-      // Anyone can read active products
-      allow read: if resource.data.status == 'active' && isNotDeleted();
-      
-      // Admin can create products
-      allow create: if isAdmin() &&
-        isValidString(request.resource.data.name, 2, 200) &&
-        isPositiveNumber(request.resource.data.price) &&
-        isPositiveNumber(request.resource.data.stock) &&
-        request.resource.data.category in ['racket', 'rubber', 'blade', 'ball', 'table', 'accessory', 'clothing', 'other'];
-      
-      // Admin and staff can update products (stock, status)
-      allow update: if isStaff();
-      
-      // Only admin can delete (soft delete)
-      allow delete: if isAdmin();
-    }
-    
-    // ============================================
-    // 📦 ORDERS COLLECTION
-    // ============================================
-    match /orders/{orderId} {
-      // Staff can read all orders
-      // Members can only read their own orders
-      allow read: if isStaff() || 
-        (isAuthenticated() && resource.data.user_id == request.auth.uid);
-      
-      // Authenticated users can create orders
-      allow create: if isAuthenticated() && isActive() &&
-        isValidString(request.resource.data.customer_name, 2, 100) &&
-        isValidPhone(request.resource.data.customer_phone) &&
-        request.resource.data.items.size() >= 1 &&
-        isPositiveNumber(request.resource.data.total_price) &&
-        request.resource.data.payment_method in ['cash', 'transfer', 'momo', 'zalopay', 'card'];
-      
-      // Staff can update order status
-      // Members can only cancel their own pending orders
-      allow update: if isStaff() ||
-        (isOwner(resource.data.user_id) && 
-         resource.data.order_status == 'pending' &&
-         request.resource.data.order_status == 'cancelled');
-      
-      // Only admin can delete (soft delete)
-      allow delete: if isAdmin();
-    }
-    
-    // ============================================
-    // 📋 CONTACTS COLLECTION
-    // ============================================
-    match /contacts/{contactId} {
-      // Staff can read all contacts
+    // ============================================================
+    // 👥 MEMBERS COLLECTION
+    // Created by: Admin only
+    // ============================================================
+    match /members/{memberId} {
+      // Staff can read
       allow read: if isStaff();
       
-      // Anyone can create contacts (public form)
+      // Only admin can create
+      allow create: if isAdmin() &&
+        isValidString(request.resource.data.fullName, 2, 100) &&
+        isValidPhone(request.resource.data.phone) &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.createdBy == request.auth.uid;
+      
+      // Only admin can update
+      allow update: if isAdmin() &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // 📅 SCHEDULES COLLECTION
+    // Created by: Admin only
+    // ============================================================
+    match /schedules/{scheduleId} {
+      // Anyone can read active schedules
+      allow read: if resource.data.status == 'active' || isStaff();
+      
+      // Only admin can create
+      allow create: if isAdmin() &&
+        isValidString(request.resource.data.title, 3, 200) &&
+        request.resource.data.dayOfWeek >= 0 &&
+        request.resource.data.dayOfWeek <= 6 &&
+        isNonNegative(request.resource.data.price) &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.createdBy == request.auth.uid;
+      
+      // Only admin can update
+      allow update: if isAdmin() &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // 🛒 PRODUCTS COLLECTION
+    // Created by: Admin only
+    // ============================================================
+    match /products/{productId} {
+      // Anyone can read active products
+      allow read: if resource.data.status == 'active' || isStaff();
+      
+      // Only admin can create
+      allow create: if isAdmin() &&
+        isValidString(request.resource.data.name, 2, 200) &&
+        isPositive(request.resource.data.price) &&
+        isNonNegative(request.resource.data.stock) &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.createdBy == request.auth.uid;
+      
+      // Only admin can update
+      allow update: if isAdmin() &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // 📧 CONTACTS COLLECTION
+    // Created by: PUBLIC USERS (anyone via contact form)
+    // ============================================================
+    match /contacts/{contactId} {
+      // Only staff can read
+      allow read: if isStaff();
+      
+      // PUBLIC can create (contact form)
+      // But with STRICT validation
       allow create: if 
         isValidString(request.resource.data.name, 2, 100) &&
         isValidPhone(request.resource.data.phone) &&
-        isValidString(request.resource.data.message, 10, 2000);
+        isValidString(request.resource.data.message, 10, 2000) &&
+        request.resource.data.status == 'new' &&
+        request.resource.data.createdAt == request.time &&
+        // Prevent bulk insert: no createdBy field for public
+        !('createdBy' in request.resource.data);
       
-      // Staff can update contacts (mark as read, reply)
+      // Only staff can update (reply, mark as read)
       allow update: if isStaff();
       
-      // Only admin can delete (soft delete)
+      // Only admin can delete
       allow delete: if isAdmin();
     }
     
-    // ============================================
-    // 📝 AUDIT_LOGS COLLECTION
-    // ============================================
-    match /audit_logs/{logId} {
+    // ============================================================
+    // 🏓 VISITS COLLECTION
+    // Created by: Staff or Admin
+    // ============================================================
+    match /visits/{visitId} {
+      // Staff can read
+      allow read: if isStaff();
+      
+      // Staff can create
+      allow create: if isStaff() &&
+        isValidString(request.resource.data.visitorName, 2, 100) &&
+        isPositive(request.resource.data.price) &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.createdBy == request.auth.uid;
+      
+      // Staff can update
+      allow update: if isStaff() &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // 💰 PAYMENTS COLLECTION
+    // Created by: Staff or Admin
+    // ============================================================
+    match /payments/{paymentId} {
+      // Staff can read
+      allow read: if isStaff();
+      
+      // Staff can create
+      allow create: if isStaff() &&
+        isPositive(request.resource.data.amount) &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.createdBy == request.auth.uid;
+      
+      // Staff can update status
+      allow update: if isStaff() &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // 📦 ORDERS COLLECTION
+    // Created by: Staff or Admin
+    // ============================================================
+    match /orders/{orderId} {
+      // Staff can read all, users can read own
+      allow read: if isStaff();
+      
+      // Staff can create
+      allow create: if isStaff() &&
+        isValidString(request.resource.data.customerName, 2, 100) &&
+        isValidPhone(request.resource.data.customerPhone) &&
+        request.resource.data.items.size() >= 1 &&
+        isPositive(request.resource.data.totalPrice) &&
+        request.resource.data.createdAt == request.time;
+      
+      // Staff can update
+      allow update: if isStaff() &&
+        request.resource.data.updatedAt == request.time;
+      
+      // Only admin can delete
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // 📋 LOGS COLLECTION
+    // Created by: System (any authenticated user)
+    // ============================================================
+    match /logs/{logId} {
       // Only admin can read logs
       allow read: if isAdmin();
       
-      // System can create logs (from authenticated requests)
-      allow create: if true; // Allow all creates for logging purposes
+      // Any authenticated user can create (for logging)
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.createdAt == request.time;
       
-      // Logs cannot be updated or deleted
+      // Logs are IMMUTABLE - no update, no delete
       allow update, delete: if false;
     }
     
-    // ============================================
-    // 🔔 NOTIFICATIONS COLLECTION
-    // ============================================
-    match /notifications/{notificationId} {
-      // Users can read their own notifications
-      allow read: if isOwner(resource.data.user_id);
-      
-      // System can create notifications
-      allow create: if isStaff();
-      
-      // Users can update (mark as read) their own notifications
-      allow update: if isOwner(resource.data.user_id) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'read_at']);
-      
-      // Users can delete their own notifications
-      allow delete: if isOwner(resource.data.user_id) || isAdmin();
-    }
-    
-    // ============================================
-    // 📊 DAILY_STATS COLLECTION
-    // ============================================
-    match /daily_stats/{statId} {
-      // Staff can read stats
-      allow read: if isStaff();
-      
-      // Only system/admin can write stats
-      allow write: if isAdmin();
-    }
-    
-    // ============================================
+    // ============================================================
     // 🚫 DENY ALL OTHER ACCESS
-    // ============================================
+    // ============================================================
     match /{document=**} {
       allow read, write: if false;
     }
