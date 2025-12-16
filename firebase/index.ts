@@ -1,7 +1,18 @@
-// Firebase Services Export
-export * from './config';
-export * from './services/memberService';
-export * from './services/scheduleService';
-export * from './services/shopService';
-export * from './services/contactService';
-export * from './services/authService';
+/**
+ * 🔥 FIREBASE MODULE - MAIN EXPORT
+ * Production-ready exports
+ */
+
+// Config
+export { db, auth, storage, isFirebaseAvailable } from './config';
+
+// Types
+export * from './types/database';
+
+// Services
+export { API } from './services/api';
+export { AuthService } from './services/auth';
+export * from './services/validation';
+
+// Hooks
+export * from './firebase/hooks';

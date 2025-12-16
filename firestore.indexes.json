@@ -1,7 +1,7 @@
 {
     "indexes": [
         {
-            "collectionGroup": "members",
+            "collectionGroup": "users",
             "queryScope": "COLLECTION",
             "fields": [
                 {
@@ -9,13 +9,13 @@
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "createdAt",
+                    "fieldPath": "created_at",
                     "order": "DESCENDING"
                 }
             ]
         },
         {
-            "collectionGroup": "members",
+            "collectionGroup": "users",
             "queryScope": "COLLECTION",
             "fields": [
                 {
@@ -23,27 +23,143 @@
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "createdAt",
+                    "fieldPath": "created_at",
                     "order": "DESCENDING"
                 }
             ]
         },
         {
-            "collectionGroup": "orders",
+            "collectionGroup": "users",
             "queryScope": "COLLECTION",
             "fields": [
                 {
-                    "fieldPath": "userId",
+                    "fieldPath": "deleted_at",
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "createdAt",
+                    "fieldPath": "created_at",
                     "order": "DESCENDING"
                 }
             ]
         },
         {
-            "collectionGroup": "orders",
+            "collectionGroup": "visitors",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "visit_date",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "visitors",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "deleted_at",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "check_in_time",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "visitors",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "visit_date",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "visit_date",
+                    "order": "DESCENDING"
+                },
+                {
+                    "fieldPath": "deleted_at",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "visitors",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "user_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "visit_date",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "payments",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "payment_status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "payments",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "deleted_at",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "payments",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "reference_type",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "reference_id",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "payments",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "user_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "schedules",
             "queryScope": "COLLECTION",
             "fields": [
                 {
@@ -51,27 +167,13 @@
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "createdAt",
-                    "order": "DESCENDING"
-                }
-            ]
-        },
-        {
-            "collectionGroup": "payments",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "orderId",
+                    "fieldPath": "day_of_week",
                     "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "paidAt",
-                    "order": "DESCENDING"
                 }
             ]
         },
         {
-            "collectionGroup": "payments",
+            "collectionGroup": "schedules",
             "queryScope": "COLLECTION",
             "fields": [
                 {
@@ -79,36 +181,12 @@
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "paidAt",
-                    "order": "DESCENDING"
-                }
-            ]
-        },
-        {
-            "collectionGroup": "payments",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "method",
+                    "fieldPath": "deleted_at",
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "paidAt",
-                    "order": "DESCENDING"
-                }
-            ]
-        },
-        {
-            "collectionGroup": "contacts",
-            "queryScope": "COLLECTION",
-            "fields": [
-                {
-                    "fieldPath": "isRead",
+                    "fieldPath": "day_of_week",
                     "order": "ASCENDING"
-                },
-                {
-                    "fieldPath": "createdAt",
-                    "order": "DESCENDING"
                 }
             ]
         },
@@ -121,27 +199,169 @@
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "createdAt",
+                    "fieldPath": "status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
                     "order": "DESCENDING"
                 }
             ]
         },
         {
-            "collectionGroup": "schedules",
+            "collectionGroup": "products",
             "queryScope": "COLLECTION",
             "fields": [
                 {
-                    "fieldPath": "dayOfWeek",
+                    "fieldPath": "status",
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "startTime",
+                    "fieldPath": "deleted_at",
                     "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
                 }
             ]
         },
         {
-            "collectionGroup": "logs",
+            "collectionGroup": "products",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "featured",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "orders",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "order_status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "orders",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "user_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "orders",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "deleted_at",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "orders",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "user_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "deleted_at",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "contacts",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "status",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "contacts",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "deleted_at",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "audit_logs",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "collection",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "audit_logs",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "user_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "audit_logs",
             "queryScope": "COLLECTION",
             "fields": [
                 {
@@ -149,11 +369,80 @@
                     "order": "ASCENDING"
                 },
                 {
-                    "fieldPath": "createdAt",
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "notifications",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "user_id",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "read",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "created_at",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "daily_stats",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "date",
                     "order": "DESCENDING"
                 }
             ]
         }
     ],
-    "fieldOverrides": []
+    "fieldOverrides": [
+        {
+            "collectionGroup": "users",
+            "fieldPath": "email",
+            "indexes": [
+                {
+                    "queryScope": "COLLECTION",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "users",
+            "fieldPath": "phone",
+            "indexes": [
+                {
+                    "queryScope": "COLLECTION",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "products",
+            "fieldPath": "slug",
+            "indexes": [
+                {
+                    "queryScope": "COLLECTION",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "orders",
+            "fieldPath": "order_number",
+            "indexes": [
+                {
+                    "queryScope": "COLLECTION",
+                    "order": "ASCENDING"
+                }
+            ]
+        }
+    ]
 }

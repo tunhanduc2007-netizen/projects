@@ -1,231 +1,279 @@
-/**
- * ============================================
- * FIRESTORE SECURITY RULES
- * CLB Bóng Bàn Lê Quý Đôn - Production
- * ============================================
- * 
- * GIẢI THÍCH CHI TIẾT:
- * 
- * 1. request.auth != null 
- *    → Người dùng phải đăng nhập
- * 
- * 2. request.auth.token.role == "admin"
- *    → Chỉ admin mới có quyền
- * 
- * 3. request.auth.token.role in ["admin", "staff"]
- *    → Admin HOẶC Staff có quyền
- * 
- * 4. request.auth.uid == resource.data.userId
- *    → Chỉ owner của document
- * 
- * 5. request.resource.data.keys().hasAll([...])
- *    → Validate required fields
- * 
- * 6. request.resource.data.field is string
- *    → Validate data type
- */
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
+    
     // ============================================
-    // HELPER FUNCTIONS
+    // 🔧 HELPER FUNCTIONS
     // ============================================
     
-    // Kiểm tra đã đăng nhập
+    // Check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
     
-    // Kiểm tra role
+    // Get user document
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Check if user has specific role
     function hasRole(role) {
-      return isAuthenticated() && request.auth.token.role == role;
+      return isAuthenticated() && getUserData().role == role;
     }
     
-    // Kiểm tra là admin
+    // Check if user is admin
     function isAdmin() {
-      return hasRole("admin");
+      return hasRole('admin');
     }
     
-    // Kiểm tra là staff hoặc admin
-    function isStaffOrAdmin() {
-      return isAuthenticated() && request.auth.token.role in ["admin", "staff"];
+    // Check if user is staff or admin
+    function isStaff() {
+      return hasRole('staff') || isAdmin();
     }
     
-    // Kiểm tra owner
+    // Check if user is the owner of the document
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-
+    
+    // Check if user is active (not banned)
+    function isActive() {
+      return isAuthenticated() && getUserData().status == 'active';
+    }
+    
+    // Validate required string field
+    function isValidString(field, minLen, maxLen) {
+      return field is string && field.size() >= minLen && field.size() <= maxLen;
+    }
+    
+    // Validate email format
+    function isValidEmail(email) {
+      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+    
+    // Validate Vietnamese phone number
+    function isValidPhone(phone) {
+      return phone.matches('^(0|\\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-9]|9[0-9])[0-9]{7}$');
+    }
+    
+    // Validate positive number
+    function isPositiveNumber(num) {
+      return num is number && num >= 0;
+    }
+    
+    // Check if document is not soft deleted
+    function isNotDeleted() {
+      return !('deleted_at' in resource.data) || resource.data.deleted_at == null;
+    }
+    
     // ============================================
-    // 👤 MEMBERS COLLECTION
+    // 🔐 USERS COLLECTION
     // ============================================
-    // 
-    // READ: Phải đăng nhập
-    // CREATE: Chỉ Admin
-    // UPDATE: Chỉ Admin (hoặc member tự update profile)
-    // DELETE: Chỉ Admin
-    //
-    match /members/{memberId} {
-      allow read: if isAuthenticated();
+    match /users/{userId} {
+      // Anyone can read their own profile
+      // Staff can read all profiles
+      // Admin can read all profiles
+      allow read: if isOwner(userId) || isStaff();
       
-      allow create: if isAdmin()
-        && request.resource.data.keys().hasAll(['fullName', 'phone', 'email', 'role', 'status'])
-        && request.resource.data.fullName is string
-        && request.resource.data.phone is string
-        && request.resource.data.email is string
-        && request.resource.data.role in ['admin', 'staff', 'member']
-        && request.resource.data.status in ['active', 'inactive'];
+      // Only admin can create users
+      allow create: if isAdmin() && 
+        isValidString(request.resource.data.full_name, 2, 100) &&
+        isValidEmail(request.resource.data.email) &&
+        isValidPhone(request.resource.data.phone) &&
+        request.resource.data.role in ['admin', 'staff', 'member', 'guest'] &&
+        request.resource.data.status in ['active', 'banned', 'pending'];
       
-      allow update: if isAdmin() 
-        || (isOwner(memberId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
-        // Member có thể update profile nhưng KHÔNG được đổi role
+      // Users can update their own profile (except role and status)
+      // Admin can update any profile
+      allow update: if (isOwner(userId) && 
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'status'])) ||
+        isAdmin();
       
+      // Only admin can delete (soft delete)
       allow delete: if isAdmin();
     }
-
+    
+    // ============================================
+    // 🏓 VISITORS COLLECTION
+    // ============================================
+    match /visitors/{visitorId} {
+      // Staff and admin can read all visitors
+      // Members can only read their own visits
+      allow read: if isStaff() || 
+        (isAuthenticated() && resource.data.user_id == request.auth.uid);
+      
+      // Staff can create visitors
+      allow create: if isStaff() &&
+        isValidString(request.resource.data.visitor_name, 2, 100) &&
+        isPositiveNumber(request.resource.data.price) &&
+        request.resource.data.play_type in ['hourly', 'daily', 'monthly', 'yearly'] &&
+        request.resource.data.payment_method in ['cash', 'transfer', 'momo', 'zalopay', 'card'];
+      
+      // Staff can update visitors
+      allow update: if isStaff();
+      
+      // Only admin can delete (soft delete)
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // 🧾 PAYMENTS COLLECTION
+    // ============================================
+    match /payments/{paymentId} {
+      // Staff and admin can read all payments
+      // Members can only read their own payments
+      allow read: if isStaff() || 
+        (isAuthenticated() && resource.data.user_id == request.auth.uid);
+      
+      // Staff can create payments
+      allow create: if isStaff() &&
+        isPositiveNumber(request.resource.data.amount) &&
+        request.resource.data.amount >= 1000 && // Minimum 1000 VND
+        request.resource.data.payment_method in ['cash', 'transfer', 'momo', 'zalopay', 'card'] &&
+        request.resource.data.payment_status in ['pending', 'paid', 'failed', 'refunded', 'cancelled'];
+      
+      // Staff can update payment status
+      allow update: if isStaff() &&
+        request.resource.data.payment_status in ['pending', 'paid', 'failed', 'refunded', 'cancelled'];
+      
+      // Only admin can delete (soft delete)
+      allow delete: if isAdmin();
+    }
+    
     // ============================================
     // 📅 SCHEDULES COLLECTION
     // ============================================
-    //
-    // READ: Ai cũng xem được (public)
-    // WRITE: Chỉ Staff hoặc Admin
-    //
     match /schedules/{scheduleId} {
-      allow read: if true; // Public - hiển thị lịch tập trên website
+      // Anyone can read active schedules
+      allow read: if resource.data.status == 'active' && isNotDeleted();
       
-      allow create: if isStaffOrAdmin()
-        && request.resource.data.keys().hasAll(['dayOfWeek', 'startTime', 'endTime', 'coach'])
-        && request.resource.data.dayOfWeek in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-        && request.resource.data.startTime is string
-        && request.resource.data.endTime is string;
+      // Only admin can create schedules
+      allow create: if isAdmin() &&
+        request.resource.data.day_of_week in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] &&
+        isValidString(request.resource.data.coach_name, 2, 100);
       
-      allow update: if isStaffOrAdmin();
-      
-      allow delete: if isAdmin();
-    }
-
-    // ============================================
-    // 📞 CONTACTS COLLECTION
-    // ============================================
-    //
-    // CREATE: Public (form liên hệ)
-    // READ/UPDATE/DELETE: Chỉ Staff hoặc Admin
-    //
-    match /contacts/{contactId} {
-      allow create: if true // Public - form liên hệ
-        && request.resource.data.keys().hasAll(['name', 'phone', 'message'])
-        && request.resource.data.name is string
-        && request.resource.data.name.size() >= 2
-        && request.resource.data.phone is string
-        && request.resource.data.message is string
-        && request.resource.data.message.size() >= 10;
-      
-      allow read: if isStaffOrAdmin();
-      
-      allow update: if isStaffOrAdmin();
-      
-      allow delete: if isAdmin();
-    }
-
-    // ============================================
-    // 🏓 PRODUCTS COLLECTION
-    // ============================================
-    //
-    // READ: Public (hiển thị sản phẩm)
-    // WRITE: Chỉ Admin
-    //
-    match /products/{productId} {
-      allow read: if true; // Public - xem sản phẩm
-      
-      allow create: if isAdmin()
-        && request.resource.data.keys().hasAll(['name', 'price', 'stock', 'category'])
-        && request.resource.data.name is string
-        && request.resource.data.price is number
-        && request.resource.data.price >= 0
-        && request.resource.data.stock is int
-        && request.resource.data.stock >= 0;
-      
-      allow update: if isStaffOrAdmin();
-      
-      allow delete: if isAdmin();
-    }
-
-    // ============================================
-    // 🧾 ORDERS COLLECTION
-    // ============================================
-    //
-    // CREATE: Member đăng nhập có thể tạo order
-    // READ: Owner hoặc Staff/Admin
-    // UPDATE: Staff/Admin (đổi status)
-    // DELETE: Chỉ Admin
-    //
-    match /orders/{orderId} {
-      allow create: if isAuthenticated()
-        && request.resource.data.keys().hasAll(['userId', 'items', 'totalPrice', 'status'])
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.totalPrice is number
-        && request.resource.data.status == 'pending';
-      
-      allow read: if isStaffOrAdmin() 
-        || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      
-      allow update: if isStaffOrAdmin()
-        && request.resource.data.status in ['pending', 'paid', 'canceled'];
-      
-      allow delete: if isAdmin();
-    }
-
-    // ============================================
-    // 💳 PAYMENTS COLLECTION
-    // ============================================
-    //
-    // CREATE: Staff/Admin (sau khi xác nhận thanh toán)
-    // READ: Owner của order hoặc Staff/Admin
-    // UPDATE: Chỉ Admin
-    // DELETE: Không cho phép (audit trail)
-    //
-    match /payments/{paymentId} {
-      allow create: if isStaffOrAdmin()
-        && request.resource.data.keys().hasAll(['orderId', 'amount', 'method', 'status'])
-        && request.resource.data.amount is number
-        && request.resource.data.amount > 0
-        && request.resource.data.method in ['cash', 'transfer']
-        && request.resource.data.status in ['success', 'failed'];
-      
-      allow read: if isStaffOrAdmin()
-        || (isAuthenticated() && exists(/databases/$(database)/documents/orders/$(resource.data.orderId)) 
-            && get(/databases/$(database)/documents/orders/$(resource.data.orderId)).data.userId == request.auth.uid);
-      
+      // Only admin can update schedules
       allow update: if isAdmin();
       
-      allow delete: if false; // KHÔNG BAO GIỜ xóa payment records
+      // Only admin can delete (soft delete)
+      allow delete: if isAdmin();
     }
-
+    
     // ============================================
-    // 📝 LOGS COLLECTION
+    // 🛒 PRODUCTS COLLECTION
     // ============================================
-    //
-    // CREATE: Tự động từ Cloud Functions/App
-    // READ: Chỉ Admin
-    // UPDATE/DELETE: KHÔNG CHO PHÉP (immutable audit trail)
-    //
-    match /logs/{logId} {
-      allow create: if isAuthenticated();
+    match /products/{productId} {
+      // Anyone can read active products
+      allow read: if resource.data.status == 'active' && isNotDeleted();
       
+      // Admin can create products
+      allow create: if isAdmin() &&
+        isValidString(request.resource.data.name, 2, 200) &&
+        isPositiveNumber(request.resource.data.price) &&
+        isPositiveNumber(request.resource.data.stock) &&
+        request.resource.data.category in ['racket', 'rubber', 'blade', 'ball', 'table', 'accessory', 'clothing', 'other'];
+      
+      // Admin and staff can update products (stock, status)
+      allow update: if isStaff();
+      
+      // Only admin can delete (soft delete)
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // 📦 ORDERS COLLECTION
+    // ============================================
+    match /orders/{orderId} {
+      // Staff can read all orders
+      // Members can only read their own orders
+      allow read: if isStaff() || 
+        (isAuthenticated() && resource.data.user_id == request.auth.uid);
+      
+      // Authenticated users can create orders
+      allow create: if isAuthenticated() && isActive() &&
+        isValidString(request.resource.data.customer_name, 2, 100) &&
+        isValidPhone(request.resource.data.customer_phone) &&
+        request.resource.data.items.size() >= 1 &&
+        isPositiveNumber(request.resource.data.total_price) &&
+        request.resource.data.payment_method in ['cash', 'transfer', 'momo', 'zalopay', 'card'];
+      
+      // Staff can update order status
+      // Members can only cancel their own pending orders
+      allow update: if isStaff() ||
+        (isOwner(resource.data.user_id) && 
+         resource.data.order_status == 'pending' &&
+         request.resource.data.order_status == 'cancelled');
+      
+      // Only admin can delete (soft delete)
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // 📋 CONTACTS COLLECTION
+    // ============================================
+    match /contacts/{contactId} {
+      // Staff can read all contacts
+      allow read: if isStaff();
+      
+      // Anyone can create contacts (public form)
+      allow create: if 
+        isValidString(request.resource.data.name, 2, 100) &&
+        isValidPhone(request.resource.data.phone) &&
+        isValidString(request.resource.data.message, 10, 2000);
+      
+      // Staff can update contacts (mark as read, reply)
+      allow update: if isStaff();
+      
+      // Only admin can delete (soft delete)
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // 📝 AUDIT_LOGS COLLECTION
+    // ============================================
+    match /audit_logs/{logId} {
+      // Only admin can read logs
       allow read: if isAdmin();
       
-      allow update: if false; // Logs là immutable
+      // System can create logs (from authenticated requests)
+      allow create: if true; // Allow all creates for logging purposes
       
-      allow delete: if false; // KHÔNG BAO GIỜ xóa logs
+      // Logs cannot be updated or deleted
+      allow update, delete: if false;
     }
-
+    
     // ============================================
-    // DEFAULT DENY
+    // 🔔 NOTIFICATIONS COLLECTION
     // ============================================
-    // Tất cả collections khác - DENY ALL
-    //
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isOwner(resource.data.user_id);
+      
+      // System can create notifications
+      allow create: if isStaff();
+      
+      // Users can update (mark as read) their own notifications
+      allow update: if isOwner(resource.data.user_id) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'read_at']);
+      
+      // Users can delete their own notifications
+      allow delete: if isOwner(resource.data.user_id) || isAdmin();
+    }
+    
+    // ============================================
+    // 📊 DAILY_STATS COLLECTION
+    // ============================================
+    match /daily_stats/{statId} {
+      // Staff can read stats
+      allow read: if isStaff();
+      
+      // Only system/admin can write stats
+      allow write: if isAdmin();
+    }
+    
+    // ============================================
+    // 🚫 DENY ALL OTHER ACCESS
+    // ============================================
     match /{document=**} {
       allow read, write: if false;
     }
