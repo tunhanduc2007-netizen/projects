@@ -1,6 +1,5 @@
 // Firebase Configuration
-// QUAN TRỌNG: Chỉ kết nối Firebase khi chạy localhost với Emulator
-// Production sử dụng dữ liệu tĩnh
+// CLB Bóng Bàn Lê Quý Đôn - Production Ready
 
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore';
@@ -14,55 +13,52 @@ const isLocalhost = isClient && (
     window.location.hostname === '127.0.0.1'
 );
 
-// Config cho Firebase Emulator (chỉ dùng cho local development)
+// 🔥 Firebase Config THẬT - Production
 const firebaseConfig = {
-    apiKey: "demo-api-key",
-    authDomain: "demo-clb-lqd.firebaseapp.com",
-    projectId: "demo-clb-lqd",
-    storageBucket: "demo-clb-lqd.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "demo-app-id"
+    apiKey: "AIzaSyBFhh4DOg-kWyk_7yd-DnbD7up-vgaxIjI",
+    authDomain: "clbbongbanlequydon.firebaseapp.com",
+    projectId: "clbbongbanlequydon",
+    storageBucket: "clbbongbanlequydon.firebasestorage.app",
+    messagingSenderId: "779352302908",
+    appId: "1:779352302908:web:714323101265b3e6b42a39",
+    measurementId: "G-4PFEEMM5NB"
 };
 
-// Biến để theo dõi trạng thái kết nối
+// Khởi tạo Firebase
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
 let auth: Auth | null = null;
 let storage: FirebaseStorage | null = null;
 let isEmulatorConnected = false;
 
-// Chỉ khởi tạo Firebase khi chạy localhost
-if (isLocalhost) {
-    try {
-        console.log('🔥 Đang khởi tạo Firebase cho localhost...');
+try {
+    console.log('🔥 Đang khởi tạo Firebase...');
 
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        storage = getStorage(app);
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
 
-        // Kết nối Emulator
-        if (!isEmulatorConnected) {
-            connectFirestoreEmulator(db, 'localhost', 8080);
-            connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-            connectStorageEmulator(storage, 'localhost', 9199);
-            isEmulatorConnected = true;
-            console.log('✅ Đã kết nối với Firebase Emulator!');
-        }
-    } catch (error) {
-        console.warn('⚠️ Lỗi khởi tạo Firebase:', error);
-    }
-} else {
-    // Production - không kết nối Firebase, hiển thị thông báo
-    console.log('ℹ️ Production mode - Firebase disabled. Using static data.');
+    // Kết nối Emulator khi chạy localhost (tùy chọn - bỏ comment nếu muốn dùng)
+    // if (isLocalhost && !isEmulatorConnected) {
+    //     connectFirestoreEmulator(db, 'localhost', 8080);
+    //     connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+    //     connectStorageEmulator(storage, 'localhost', 9199);
+    //     isEmulatorConnected = true;
+    //     console.log('✅ Đã kết nối với Firebase Emulator!');
+    // }
+
+    console.log('✅ Firebase đã sẵn sàng! Project:', firebaseConfig.projectId);
+
+} catch (error) {
+    console.error('❌ Lỗi khởi tạo Firebase:', error);
 }
 
-// Export với null check
+// Export
 export { db, auth, storage };
 export default app;
 
 // Helper function để kiểm tra Firebase có sẵn không
 export const isFirebaseAvailable = (): boolean => {
-    return isLocalhost && db !== null;
+    return db !== null;
 };
-
