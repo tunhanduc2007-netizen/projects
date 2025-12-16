@@ -1,0 +1,233 @@
+/**
+ * ============================================
+ * FIRESTORE SECURITY RULES
+ * CLB Bóng Bàn Lê Quý Đôn - Production
+ * ============================================
+ * 
+ * GIẢI THÍCH CHI TIẾT:
+ * 
+ * 1. request.auth != null 
+ *    → Người dùng phải đăng nhập
+ * 
+ * 2. request.auth.token.role == "admin"
+ *    → Chỉ admin mới có quyền
+ * 
+ * 3. request.auth.token.role in ["admin", "staff"]
+ *    → Admin HOẶC Staff có quyền
+ * 
+ * 4. request.auth.uid == resource.data.userId
+ *    → Chỉ owner của document
+ * 
+ * 5. request.resource.data.keys().hasAll([...])
+ *    → Validate required fields
+ * 
+ * 6. request.resource.data.field is string
+ *    → Validate data type
+ */
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Kiểm tra đã đăng nhập
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Kiểm tra role
+    function hasRole(role) {
+      return isAuthenticated() && request.auth.token.role == role;
+    }
+    
+    // Kiểm tra là admin
+    function isAdmin() {
+      return hasRole("admin");
+    }
+    
+    // Kiểm tra là staff hoặc admin
+    function isStaffOrAdmin() {
+      return isAuthenticated() && request.auth.token.role in ["admin", "staff"];
+    }
+    
+    // Kiểm tra owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ============================================
+    // 👤 MEMBERS COLLECTION
+    // ============================================
+    // 
+    // READ: Phải đăng nhập
+    // CREATE: Chỉ Admin
+    // UPDATE: Chỉ Admin (hoặc member tự update profile)
+    // DELETE: Chỉ Admin
+    //
+    match /members/{memberId} {
+      allow read: if isAuthenticated();
+      
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll(['fullName', 'phone', 'email', 'role', 'status'])
+        && request.resource.data.fullName is string
+        && request.resource.data.phone is string
+        && request.resource.data.email is string
+        && request.resource.data.role in ['admin', 'staff', 'member']
+        && request.resource.data.status in ['active', 'inactive'];
+      
+      allow update: if isAdmin() 
+        || (isOwner(memberId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']));
+        // Member có thể update profile nhưng KHÔNG được đổi role
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // 📅 SCHEDULES COLLECTION
+    // ============================================
+    //
+    // READ: Ai cũng xem được (public)
+    // WRITE: Chỉ Staff hoặc Admin
+    //
+    match /schedules/{scheduleId} {
+      allow read: if true; // Public - hiển thị lịch tập trên website
+      
+      allow create: if isStaffOrAdmin()
+        && request.resource.data.keys().hasAll(['dayOfWeek', 'startTime', 'endTime', 'coach'])
+        && request.resource.data.dayOfWeek in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        && request.resource.data.startTime is string
+        && request.resource.data.endTime is string;
+      
+      allow update: if isStaffOrAdmin();
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // 📞 CONTACTS COLLECTION
+    // ============================================
+    //
+    // CREATE: Public (form liên hệ)
+    // READ/UPDATE/DELETE: Chỉ Staff hoặc Admin
+    //
+    match /contacts/{contactId} {
+      allow create: if true // Public - form liên hệ
+        && request.resource.data.keys().hasAll(['name', 'phone', 'message'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.phone is string
+        && request.resource.data.message is string
+        && request.resource.data.message.size() >= 10;
+      
+      allow read: if isStaffOrAdmin();
+      
+      allow update: if isStaffOrAdmin();
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // 🏓 PRODUCTS COLLECTION
+    // ============================================
+    //
+    // READ: Public (hiển thị sản phẩm)
+    // WRITE: Chỉ Admin
+    //
+    match /products/{productId} {
+      allow read: if true; // Public - xem sản phẩm
+      
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasAll(['name', 'price', 'stock', 'category'])
+        && request.resource.data.name is string
+        && request.resource.data.price is number
+        && request.resource.data.price >= 0
+        && request.resource.data.stock is int
+        && request.resource.data.stock >= 0;
+      
+      allow update: if isStaffOrAdmin();
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // 🧾 ORDERS COLLECTION
+    // ============================================
+    //
+    // CREATE: Member đăng nhập có thể tạo order
+    // READ: Owner hoặc Staff/Admin
+    // UPDATE: Staff/Admin (đổi status)
+    // DELETE: Chỉ Admin
+    //
+    match /orders/{orderId} {
+      allow create: if isAuthenticated()
+        && request.resource.data.keys().hasAll(['userId', 'items', 'totalPrice', 'status'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.totalPrice is number
+        && request.resource.data.status == 'pending';
+      
+      allow read: if isStaffOrAdmin() 
+        || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      
+      allow update: if isStaffOrAdmin()
+        && request.resource.data.status in ['pending', 'paid', 'canceled'];
+      
+      allow delete: if isAdmin();
+    }
+
+    // ============================================
+    // 💳 PAYMENTS COLLECTION
+    // ============================================
+    //
+    // CREATE: Staff/Admin (sau khi xác nhận thanh toán)
+    // READ: Owner của order hoặc Staff/Admin
+    // UPDATE: Chỉ Admin
+    // DELETE: Không cho phép (audit trail)
+    //
+    match /payments/{paymentId} {
+      allow create: if isStaffOrAdmin()
+        && request.resource.data.keys().hasAll(['orderId', 'amount', 'method', 'status'])
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.method in ['cash', 'transfer']
+        && request.resource.data.status in ['success', 'failed'];
+      
+      allow read: if isStaffOrAdmin()
+        || (isAuthenticated() && exists(/databases/$(database)/documents/orders/$(resource.data.orderId)) 
+            && get(/databases/$(database)/documents/orders/$(resource.data.orderId)).data.userId == request.auth.uid);
+      
+      allow update: if isAdmin();
+      
+      allow delete: if false; // KHÔNG BAO GIỜ xóa payment records
+    }
+
+    // ============================================
+    // 📝 LOGS COLLECTION
+    // ============================================
+    //
+    // CREATE: Tự động từ Cloud Functions/App
+    // READ: Chỉ Admin
+    // UPDATE/DELETE: KHÔNG CHO PHÉP (immutable audit trail)
+    //
+    match /logs/{logId} {
+      allow create: if isAuthenticated();
+      
+      allow read: if isAdmin();
+      
+      allow update: if false; // Logs là immutable
+      
+      allow delete: if false; // KHÔNG BAO GIỜ xóa logs
+    }
+
+    // ============================================
+    // DEFAULT DENY
+    // ============================================
+    // Tất cả collections khác - DENY ALL
+    //
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
