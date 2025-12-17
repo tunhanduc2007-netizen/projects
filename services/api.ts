@@ -3,9 +3,9 @@
  * CLB Bóng Bàn Lê Quý Đôn
  */
 
-const API_BASE_URL = typeof window !== 'undefined'
+const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined'
     ? `http://${window.location.hostname}:3001/api`
-    : 'http://localhost:3001/api';
+    : 'http://localhost:3001/api');
 
 /**
  * Fetch wrapper với error handling
