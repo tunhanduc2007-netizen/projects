@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { authAPI, membersAPI, coachesAPI, paymentsAPI, contactAPI, scheduleAPI, ordersAPI, logsAPI } from '../services/api';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { authAPI, paymentsAPI, ordersAPI, contactAPI } from '../services/api';
 import '../styles/admin-mobile.css';
+
+/**
+ * Admin Panel Mobile - Thiết kế cho người lớn tuổi (40-60)
+ * - Chữ to, rõ ràng
+ * - Không thuật ngữ tiếng Anh
+ * - Chỉ 3 thông tin chính: Doanh thu hôm nay, Doanh thu tháng, Số đơn hàng
+ * - Đơn hàng hiển thị dạng Card lớn, dễ đọc
+ */
 
 interface AdminUser {
     id: string;
@@ -13,31 +20,24 @@ interface AdminUser {
 const AdminPanelMobile: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [user, setUser] = useState<AdminUser | null>(null);
-    const [activeTab, setActiveTab] = useState('dashboard');
+    const [activeTab, setActiveTab] = useState('home');
     const [loading, setLoading] = useState(true);
-    const [dataLoading, setDataLoading] = useState(false);
 
-    // Login form
+    // Login
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loginError, setLoginError] = useState('');
 
-    // Data states
-    const [stats, setStats] = useState<any>(null);
-    const [members, setMembers] = useState<any[]>([]);
-    const [coaches, setCoaches] = useState<any[]>([]);
-    const [payments, setPayments] = useState<any[]>([]);
-    const [contacts, setContacts] = useState<any[]>([]);
-    const [schedule, setSchedule] = useState<any[]>([]);
+    // Data
+    const [todayRevenue, setTodayRevenue] = useState(0);
+    const [monthRevenue, setMonthRevenue] = useState(0);
+    const [orderCount, setOrderCount] = useState(0);
     const [orders, setOrders] = useState<any[]>([]);
-
-    // Chart period
-    const [chartPeriod, setChartPeriod] = useState<3 | 6 | 12>(3);
+    const [contacts, setContacts] = useState<any[]>([]);
 
     // Bottom Sheet
     const [showSheet, setShowSheet] = useState(false);
-    const [sheetContent, setSheetContent] = useState<React.ReactNode>(null);
-    const [sheetTitle, setSheetTitle] = useState('');
+    const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
     useEffect(() => {
         checkAuth();
@@ -48,7 +48,7 @@ const AdminPanelMobile: React.FC = () => {
             const savedUser = authAPI.getUser();
             setUser(savedUser);
             setIsLoggedIn(true);
-            loadDashboardData();
+            loadData();
         }
         setLoading(false);
     };
@@ -60,9 +60,9 @@ const AdminPanelMobile: React.FC = () => {
             const result = await authAPI.login(username, password);
             setUser(result.data.admin);
             setIsLoggedIn(true);
-            loadDashboardData();
+            loadData();
         } catch (err: any) {
-            setLoginError(err.message || 'Đăng nhập thất bại');
+            setLoginError(err.message || 'Sai tên đăng nhập hoặc mật khẩu');
         }
     };
 
@@ -72,73 +72,102 @@ const AdminPanelMobile: React.FC = () => {
         setUser(null);
     };
 
-    const loadDashboardData = async () => {
-        setDataLoading(true);
+    const loadData = async () => {
         try {
-            const [membersRes, paymentsRes, coachesRes, contactsRes, scheduleRes, ordersRes] = await Promise.all([
-                membersAPI.getAll().catch(() => ({ data: [] })),
+            const [paymentsRes, ordersRes, contactsRes] = await Promise.all([
                 paymentsAPI.getAll().catch(() => ({ data: [] })),
-                coachesAPI.getAll().catch(() => ({ data: [] })),
-                contactAPI.getAll().catch(() => ({ data: [] })),
-                scheduleAPI.getWeekly().catch(() => ({ data: [] })),
-                ordersAPI.getAll().catch(() => ({ data: [] }))
+                ordersAPI.getAll().catch(() => ({ data: [] })),
+                contactAPI.getAll().catch(() => ({ data: [] }))
             ]);
 
-            setMembers(membersRes.data || []);
-            setPayments(paymentsRes.data || []);
-            setCoaches(coachesRes.data || []);
-            setContacts(contactsRes.data || []);
-            setSchedule(scheduleRes.data || []);
-            setOrders(ordersRes.data || []);
+            const payments = paymentsRes.data || [];
+            const ordersList = ordersRes.data || [];
 
-            setStats({
-                totalMembers: membersRes.data?.length || 0,
-                activeMembers: membersRes.data?.filter((m: any) => m.status === 'active').length || 0,
-                totalCoaches: coachesRes.data?.length || 0,
-                totalRevenue: paymentsRes.data?.reduce((sum: number, p: any) => sum + Number(p.amount), 0) || 0,
-                newContacts: contactsRes.data?.filter((c: any) => c.status === 'new').length || 0,
-                newOrders: ordersRes.data?.filter((o: any) => o.status === 'new').length || 0
+            // Tính doanh thu hôm nay
+            const today = new Date().toDateString();
+            const todayPayments = payments.filter((p: any) =>
+                new Date(p.created_at).toDateString() === today
+            );
+            setTodayRevenue(todayPayments.reduce((sum: number, p: any) => sum + Number(p.amount || 0), 0));
+
+            // Tính doanh thu tháng này
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+            const monthPayments = payments.filter((p: any) => {
+                const d = new Date(p.created_at);
+                return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
             });
+            setMonthRevenue(monthPayments.reduce((sum: number, p: any) => sum + Number(p.amount || 0), 0));
+
+            // Số đơn hàng
+            setOrderCount(ordersList.length);
+            setOrders(ordersList);
+            setContacts(contactsRes.data || []);
+
         } catch (err) {
-            console.error('Error loading data:', err);
+            console.error('Lỗi tải dữ liệu:', err);
         }
-        setDataLoading(false);
     };
 
-    const formatCurrency = (value: number) => {
-        if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-        if (value >= 1000) return `${(value / 1000).toFixed(0)}K`;
-        return value.toString();
+    // Format tiền VNĐ - Không dùng số thập phân
+    const formatMoney = (value: number): string => {
+        return value.toLocaleString('vi-VN') + 'đ';
     };
 
-    const openBottomSheet = (title: string, content: React.ReactNode) => {
-        setSheetTitle(title);
-        setSheetContent(content);
+    // Format ngày giờ đơn giản
+    const formatDate = (dateStr: string): string => {
+        const d = new Date(dateStr);
+        return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    };
+
+    // Mở chi tiết đơn hàng
+    const openOrderDetail = (order: any) => {
+        setSelectedOrder(order);
         setShowSheet(true);
     };
 
-    // Generate chart data
-    const getChartData = () => {
-        const months = [];
-        const now = new Date();
-        for (let i = chartPeriod - 1; i >= 0; i--) {
-            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            months.push({
-                name: `T${date.getMonth() + 1}`,
-                revenue: 0
-            });
-        }
-        return months;
+    // Get payment method label
+    const getPaymentLabel = (method: string): string => {
+        const labels: Record<string, string> = {
+            'cash': 'Tiền mặt',
+            'bank_transfer': 'Chuyển khoản',
+            'momo': 'Ví MoMo',
+            'zalo_pay': 'ZaloPay',
+            'card': 'Thẻ ngân hàng'
+        };
+        return labels[method] || 'Chưa rõ';
     };
 
-    // Loading State
+    // Get source label
+    const getSourceLabel = (source: string): string => {
+        const labels: Record<string, string> = {
+            'website': 'Website',
+            'facebook': 'Facebook',
+            'zalo': 'Zalo',
+            'phone': 'Gọi điện',
+            'direct': 'Trực tiếp'
+        };
+        return labels[source] || 'Khác';
+    };
+
+    // Get status label
+    const getStatusLabel = (status: string): string => {
+        const labels: Record<string, string> = {
+            'new': 'Mới',
+            'pending': 'Đang xử lý',
+            'confirmed': 'Đã xác nhận',
+            'completed': 'Hoàn thành',
+            'cancelled': 'Đã hủy'
+        };
+        return labels[status] || status;
+    };
+
+    // Loading
     if (loading) {
         return (
-            <div className="admin-login-page mobile">
-                <div className="animate-fade-in" style={{ textAlign: 'center', color: '#fff' }}>
-                    <div className="skeleton" style={{ width: 60, height: 60, borderRadius: '50%', margin: '0 auto 16px' }}></div>
-                    <p>Đang tải...</p>
-                </div>
+            <div className="elder-loading">
+                <div className="elder-spinner"></div>
+                <p>Đang tải...</p>
             </div>
         );
     }
@@ -146,32 +175,32 @@ const AdminPanelMobile: React.FC = () => {
     // Login Page
     if (!isLoggedIn) {
         return (
-            <div className="admin-login-page mobile">
-                <div className="admin-login-card mobile animate-scale-in">
-                    <div className="login-header">
-                        <img src="/images/logo.png" alt="Logo" className="login-logo" />
-                        <h1>ADMIN</h1>
-                        <p>CLB Bóng Bàn Lê Quý Đôn</p>
+            <div className="elder-login">
+                <div className="elder-login-card elder-animate-fade">
+                    <div className="elder-login-header">
+                        <img src="/images/logo.png" alt="Logo" className="elder-login-logo" />
+                        <h1>ĐĂNG NHẬP</h1>
+                        <p>Quản lý CLB Bóng Bàn</p>
                     </div>
-                    <form onSubmit={handleLogin} className="login-form">
+                    <form onSubmit={handleLogin}>
                         {loginError && (
-                            <div className="login-error">
+                            <div className="elder-login-error">
                                 <i className="fas fa-exclamation-circle"></i>
                                 {loginError}
                             </div>
                         )}
-                        <div className="form-group">
+                        <div className="elder-form-group">
                             <label>Tên đăng nhập</label>
                             <input
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Nhập username"
+                                placeholder="Nhập tên đăng nhập"
                                 required
                                 autoComplete="username"
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="elder-form-group">
                             <label>Mật khẩu</label>
                             <input
                                 type="password"
@@ -182,7 +211,7 @@ const AdminPanelMobile: React.FC = () => {
                                 autoComplete="current-password"
                             />
                         </div>
-                        <button type="submit" className="btn-login">
+                        <button type="submit" className="elder-btn-login">
                             <i className="fas fa-sign-in-alt"></i>
                             ĐĂNG NHẬP
                         </button>
@@ -192,420 +221,274 @@ const AdminPanelMobile: React.FC = () => {
         );
     }
 
-    // Main Admin Panel
+    // Main Panel
     return (
-        <div className="admin-panel mobile">
+        <div className="admin-elder">
             {/* Header */}
-            <header className="admin-header mobile">
-                <div className="header-title">
-                    <img src="/images/logo.png" alt="Logo" className="header-logo" />
+            <header className="elder-header">
+                <div className="elder-header-left">
+                    <img src="/images/logo.png" alt="Logo" className="elder-header-logo" />
                     <h1>
-                        {activeTab === 'dashboard' && 'Tổng quan'}
-                        {activeTab === 'schedule' && 'Lịch tập'}
-                        {activeTab === 'revenue' && 'Doanh thu'}
-                        {activeTab === 'orders' && 'Shop'}
+                        {activeTab === 'home' && 'Tổng quan'}
+                        {activeTab === 'orders' && 'Đơn hàng'}
                         {activeTab === 'settings' && 'Cài đặt'}
                     </h1>
                 </div>
-                <div className="header-actions">
-                    <button className="btn-icon has-badge">
-                        <i className="fas fa-bell"></i>
-                        {(stats?.newContacts || 0) > 0 && <span className="badge">{stats.newContacts}</span>}
-                    </button>
+                <div className="elder-header-user">
+                    <i className="fas fa-user-circle"></i>
+                    <span>{user?.full_name || user?.username || 'Admin'}</span>
                 </div>
             </header>
 
             {/* Main Content */}
-            <main className="admin-main mobile">
-                {/* === DASHBOARD TAB === */}
-                {activeTab === 'dashboard' && (
-                    <div className="animate-fade-in">
-                        {/* KPI Cards */}
-                        <div className="kpi-scroll-container">
-                            <div className="kpi-cards">
-                                <div className="kpi-card" onClick={() => openBottomSheet('Chi tiết Doanh thu', <p>Thông tin doanh thu chi tiết...</p>)}>
-                                    <div className="kpi-icon revenue">
-                                        <i className="fas fa-wallet"></i>
-                                    </div>
-                                    <div className="kpi-value">{formatCurrency(stats?.totalRevenue || 0)}đ</div>
-                                    <div className="kpi-label">Doanh thu tháng</div>
-                                    <div className="kpi-trend up">
-                                        <i className="fas fa-arrow-up"></i> +12%
-                                    </div>
-                                </div>
-
-                                <div className="kpi-card">
-                                    <div className="kpi-icon members">
-                                        <i className="fas fa-users"></i>
-                                    </div>
-                                    <div className="kpi-value">{stats?.totalMembers || 0}</div>
-                                    <div className="kpi-label">Học viên</div>
-                                    <div className="kpi-trend up">
-                                        <i className="fas fa-arrow-up"></i> +3
-                                    </div>
-                                </div>
-
-                                <div className="kpi-card">
-                                    <div className="kpi-icon coaches">
-                                        <i className="fas fa-chalkboard-teacher"></i>
-                                    </div>
-                                    <div className="kpi-value">{stats?.totalCoaches || 0}</div>
-                                    <div className="kpi-label">Huấn luyện viên</div>
-                                </div>
-
-                                <div className="kpi-card">
-                                    <div className="kpi-icon orders">
-                                        <i className="fas fa-shopping-bag"></i>
-                                    </div>
-                                    <div className="kpi-value">{stats?.newOrders || 0}</div>
-                                    <div className="kpi-label">Đơn hàng mới</div>
-                                </div>
+            <main className="elder-main">
+                {/* === HOME TAB === */}
+                {activeTab === 'home' && (
+                    <div className="elder-dashboard elder-animate-fade">
+                        {/* Card 1: Doanh thu hôm nay */}
+                        <div className="elder-stat-card elder-animate-slide">
+                            <div className="stat-label revenue">
+                                <i className="fas fa-wallet"></i>
+                                Doanh thu hôm nay
                             </div>
+                            <div className="stat-value money">{formatMoney(todayRevenue)}</div>
+                            <div className="stat-hint">Tổng tiền nhận được trong ngày</div>
                         </div>
 
-                        {/* Revenue Chart */}
-                        <div className="mobile-section" style={{ marginTop: 20 }}>
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-chart-bar"></i>
-                                    Doanh thu
-                                </h3>
+                        {/* Card 2: Doanh thu tháng */}
+                        <div className="elder-stat-card elder-animate-slide" style={{ animationDelay: '0.1s' }}>
+                            <div className="stat-label month">
+                                <i className="fas fa-calendar-alt"></i>
+                                Doanh thu tháng này
                             </div>
-                            <div className="chart-period-tabs">
-                                <button className={chartPeriod === 3 ? 'active' : ''} onClick={() => setChartPeriod(3)}>3 tháng</button>
-                                <button className={chartPeriod === 6 ? 'active' : ''} onClick={() => setChartPeriod(6)}>6 tháng</button>
-                                <button className={chartPeriod === 12 ? 'active' : ''} onClick={() => setChartPeriod(12)}>12 tháng</button>
-                            </div>
-                            <div className="mobile-chart-container">
-                                <ResponsiveContainer>
-                                    <BarChart data={getChartData()}>
-                                        <XAxis dataKey="name" stroke="#6b7280" axisLine={false} tickLine={false} fontSize={12} />
-                                        <YAxis stroke="#6b7280" axisLine={false} tickLine={false} fontSize={11} tickFormatter={(v) => `${v / 1000000}M`} />
-                                        <Tooltip
-                                            contentStyle={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, fontSize: 13 }}
-                                            formatter={(value: number) => [`${value.toLocaleString('vi-VN')}₫`, 'Doanh thu']}
-                                        />
-                                        <Bar dataKey="revenue" fill="#e11d48" radius={[6, 6, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+                            <div className="stat-value money">{formatMoney(monthRevenue)}</div>
+                            <div className="stat-hint">Tháng {new Date().getMonth() + 1}/{new Date().getFullYear()}</div>
                         </div>
 
-                        {/* Recent Coaches */}
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-chalkboard-teacher"></i>
-                                    Huấn luyện viên
-                                </h3>
-                                <button className="section-action">
-                                    Tất cả <i className="fas fa-chevron-right"></i>
-                                </button>
+                        {/* Card 3: Số đơn hàng */}
+                        <div className="elder-stat-card elder-animate-slide" style={{ animationDelay: '0.2s' }}>
+                            <div className="stat-label orders">
+                                <i className="fas fa-shopping-bag"></i>
+                                Tổng đơn hàng
                             </div>
-                            {coaches.length > 0 ? (
-                                <div className="mobile-list">
-                                    {coaches.slice(0, 3).map((coach, index) => (
-                                        <div key={coach.id || index} className="mobile-list-item animate-slide-up">
-                                            <div className="item-avatar">
-                                                {coach.avatar_url ? (
-                                                    <img src={coach.avatar_url} alt={coach.full_name} />
-                                                ) : (
-                                                    <i className="fas fa-user"></i>
-                                                )}
-                                            </div>
-                                            <div className="item-content">
-                                                <div className="item-title">{coach.full_name}</div>
-                                                <div className="item-subtitle">
-                                                    {coach.phone || 'Chưa có SĐT'} • {coach.experience_years || 0} năm KN
-                                                </div>
-                                            </div>
-                                            <span className="item-badge active">Hoạt động</span>
-                                            <button className="item-action">
-                                                <i className="fas fa-ellipsis-v"></i>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="mobile-empty-state">
-                                    <div className="empty-icon"><i className="fas fa-user-tie"></i></div>
-                                    <div className="empty-title">Chưa có HLV</div>
-                                    <div className="empty-text">Thêm huấn luyện viên để bắt đầu quản lý.</div>
-                                    <button className="empty-cta">
-                                        <i className="fas fa-plus"></i> Thêm HLV
-                                    </button>
-                                </div>
-                            )}
+                            <div className="stat-value">{orderCount} đơn</div>
+                            <div className="stat-hint">Từ đầu đến nay</div>
                         </div>
 
-                        {/* Recent Contacts */}
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-envelope"></i>
-                                    Liên hệ mới
-                                </h3>
-                                {contacts.length > 0 && (
-                                    <button className="section-action">
-                                        Xem tất cả <i className="fas fa-chevron-right"></i>
-                                    </button>
-                                )}
-                            </div>
-                            {contacts.length > 0 ? (
-                                <div className="mobile-list">
-                                    {contacts.slice(0, 3).map((contact, index) => (
-                                        <div key={contact.id || index} className="mobile-list-item animate-slide-up">
-                                            <div className="item-avatar">
-                                                <i className="fas fa-envelope"></i>
-                                            </div>
-                                            <div className="item-content">
-                                                <div className="item-title">{contact.name || 'Ẩn danh'}</div>
-                                                <div className="item-subtitle">{contact.subject || contact.message?.substring(0, 30) || 'Không có nội dung'}</div>
-                                            </div>
-                                            {contact.status === 'new' && <span className="item-badge new">Mới</span>}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="mobile-empty-state">
-                                    <div className="empty-icon"><i className="fas fa-inbox"></i></div>
-                                    <div className="empty-title">Không có liên hệ mới</div>
-                                    <div className="empty-text">Các tin nhắn từ khách hàng sẽ hiển thị ở đây.</div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* === SCHEDULE TAB === */}
-                {activeTab === 'schedule' && (
-                    <div className="animate-fade-in">
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-calendar-alt"></i>
-                                    Lịch tập hôm nay
-                                </h3>
-                            </div>
-                            {schedule.length > 0 ? (
-                                <div className="mobile-list">
-                                    {schedule.slice(0, 5).map((session, index) => (
-                                        <div key={session.id || index} className="mobile-list-item animate-slide-up">
-                                            <div className="item-avatar" style={{ background: 'rgba(79, 70, 229, 0.12)' }}>
-                                                <i className="fas fa-clock" style={{ color: '#4f46e5' }}></i>
-                                            </div>
-                                            <div className="item-content">
-                                                <div className="item-title">{session.coach_name || 'HLV'}</div>
-                                                <div className="item-subtitle">{session.start_time} - {session.end_time}</div>
-                                            </div>
-                                            <span className="item-badge active">Đang dạy</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="mobile-empty-state">
-                                    <div className="empty-icon"><i className="fas fa-calendar-times"></i></div>
-                                    <div className="empty-title">Không có lịch</div>
-                                    <div className="empty-text">Hôm nay chưa có buổi tập nào được lên lịch.</div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* === REVENUE TAB === */}
-                {activeTab === 'revenue' && (
-                    <div className="animate-fade-in">
-                        <div className="kpi-scroll-container" style={{ marginBottom: 20 }}>
-                            <div className="kpi-cards">
-                                <div className="kpi-card" style={{ flex: '0 0 100%' }}>
-                                    <div className="kpi-icon revenue">
-                                        <i className="fas fa-chart-line"></i>
-                                    </div>
-                                    <div className="kpi-value">{formatCurrency(stats?.totalRevenue || 0)}đ</div>
-                                    <div className="kpi-label">Tổng doanh thu</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-receipt"></i>
-                                    Giao dịch gần đây
-                                </h3>
-                            </div>
-                            {payments.length > 0 ? (
-                                <div className="mobile-list">
-                                    {payments.slice(0, 10).map((payment, index) => (
-                                        <div key={payment.id || index} className="mobile-list-item animate-slide-up">
-                                            <div className="item-avatar" style={{ background: 'rgba(16, 185, 129, 0.12)' }}>
-                                                <i className="fas fa-money-bill-wave" style={{ color: '#10b981' }}></i>
-                                            </div>
-                                            <div className="item-content">
-                                                <div className="item-title">{Number(payment.amount).toLocaleString('vi-VN')}đ</div>
-                                                <div className="item-subtitle">{payment.payment_type || 'Thanh toán'}</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="mobile-empty-state">
-                                    <div className="empty-icon"><i className="fas fa-coins"></i></div>
-                                    <div className="empty-title">Chưa có giao dịch</div>
-                                    <div className="empty-text">Các khoản thanh toán sẽ hiển thị ở đây.</div>
-                                </div>
-                            )}
+                        {/* Quick Actions */}
+                        <div style={{ marginTop: 24 }}>
+                            <button
+                                onClick={() => setActiveTab('orders')}
+                                className="elder-btn-detail"
+                                style={{ background: 'var(--elder-primary)', color: '#fff', border: 'none' }}
+                            >
+                                <i className="fas fa-list"></i>
+                                Xem danh sách đơn hàng
+                            </button>
                         </div>
                     </div>
                 )}
 
                 {/* === ORDERS TAB === */}
                 {activeTab === 'orders' && (
-                    <div className="animate-fade-in">
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-shopping-bag"></i>
-                                    Đơn hàng
-                                </h3>
-                            </div>
-                            {orders.length > 0 ? (
-                                <div className="mobile-list">
-                                    {orders.map((order, index) => (
-                                        <div key={order.id || index} className="mobile-list-item animate-slide-up">
-                                            <div className="item-avatar" style={{ background: 'rgba(245, 158, 11, 0.12)' }}>
-                                                <i className="fas fa-box" style={{ color: '#f59e0b' }}></i>
-                                            </div>
-                                            <div className="item-content">
-                                                <div className="item-title">{order.customer_name || 'Khách hàng'}</div>
-                                                <div className="item-subtitle">{Number(order.total_amount || 0).toLocaleString('vi-VN')}đ</div>
-                                            </div>
-                                            <span className={`item-badge ${order.status === 'new' ? 'new' : order.status === 'pending' ? 'pending' : 'active'}`}>
-                                                {order.status === 'new' ? 'Mới' : order.status === 'pending' ? 'Chờ xử lý' : order.status}
+                    <div className="elder-animate-fade">
+                        <h2 className="elder-section-title">
+                            <i className="fas fa-receipt"></i>
+                            Lịch sử đặt hàng
+                        </h2>
+
+                        {orders.length > 0 ? (
+                            <div className="elder-order-list">
+                                {orders.map((order, index) => (
+                                    <div
+                                        key={order.id || index}
+                                        className={`elder-order-card elder-animate-slide ${order.status || 'new'}`}
+                                        style={{ animationDelay: `${index * 0.05}s` }}
+                                    >
+                                        <div className="elder-order-header">
+                                            <span className="elder-order-number">
+                                                <i className="fas fa-shopping-cart"></i> Đơn #{String(index + 1).padStart(5, '0')}
                                             </span>
-                                            <button className="item-action">
-                                                <i className="fas fa-ellipsis-v"></i>
+                                            <span className={`elder-order-status ${order.status || 'new'}`}>
+                                                {getStatusLabel(order.status || 'new')}
+                                            </span>
+                                        </div>
+
+                                        <div className="elder-order-info">
+                                            {/* Số tiền */}
+                                            <div className="elder-order-row">
+                                                <i className="fas fa-money-bill-wave money"></i>
+                                                <span className="amount">{formatMoney(Number(order.total_amount || 0))}</span>
+                                            </div>
+
+                                            {/* Nguồn đặt hàng */}
+                                            <div className="elder-order-row">
+                                                <i className="fas fa-globe source"></i>
+                                                <span>{getSourceLabel(order.source || 'website')}</span>
+                                            </div>
+
+                                            {/* Phương thức thanh toán */}
+                                            <div className="elder-order-row">
+                                                <i className="fas fa-credit-card payment"></i>
+                                                <span>{getPaymentLabel(order.payment_method || 'cash')}</span>
+                                            </div>
+
+                                            {/* Thời gian */}
+                                            <div className="elder-order-row">
+                                                <i className="fas fa-clock time"></i>
+                                                <span>{order.created_at ? formatDate(order.created_at) : 'Không rõ'}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="elder-order-action">
+                                            <button
+                                                className="elder-btn-detail"
+                                                onClick={() => openOrderDetail(order)}
+                                            >
+                                                <i className="fas fa-eye"></i>
+                                                Xem chi tiết
                                             </button>
                                         </div>
-                                    ))}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="elder-empty">
+                                <div className="elder-empty-icon">
+                                    <i className="fas fa-inbox"></i>
                                 </div>
-                            ) : (
-                                <div className="mobile-empty-state">
-                                    <div className="empty-icon"><i className="fas fa-shopping-cart"></i></div>
-                                    <div className="empty-title">Chưa có đơn hàng</div>
-                                    <div className="empty-text">Đơn hàng từ Shop sẽ hiển thị ở đây.</div>
-                                </div>
-                            )}
-                        </div>
+                                <h3>Chưa có đơn hàng</h3>
+                                <p>Khi có khách đặt hàng, đơn hàng sẽ hiện ở đây.</p>
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {/* === SETTINGS TAB === */}
                 {activeTab === 'settings' && (
-                    <div className="animate-fade-in">
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-user-circle"></i>
-                                    Tài khoản
-                                </h3>
-                            </div>
-                            <div className="mobile-list">
-                                <div className="mobile-list-item">
-                                    <div className="item-avatar">
-                                        <i className="fas fa-user"></i>
-                                    </div>
-                                    <div className="item-content">
-                                        <div className="item-title">{user?.full_name || user?.username}</div>
-                                        <div className="item-subtitle">{user?.role || 'Admin'}</div>
-                                    </div>
+                    <div className="elder-animate-fade">
+                        <div className="elder-settings-list">
+                            {/* User Info */}
+                            <div className="elder-settings-item">
+                                <div className="elder-settings-icon user">
+                                    <i className="fas fa-user"></i>
+                                </div>
+                                <div className="elder-settings-text">
+                                    <h4>{user?.full_name || user?.username || 'Admin'}</h4>
+                                    <p>Quản trị viên</p>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="mobile-section">
-                            <div className="section-header">
-                                <h3 className="section-title">
-                                    <i className="fas fa-cog"></i>
-                                    Cài đặt
-                                </h3>
-                            </div>
-                            <div className="mobile-list">
-                                <div className="mobile-list-item">
-                                    <div className="item-avatar" style={{ background: 'rgba(79, 70, 229, 0.12)' }}>
-                                        <i className="fas fa-bell" style={{ color: '#4f46e5' }}></i>
-                                    </div>
-                                    <div className="item-content">
-                                        <div className="item-title">Thông báo</div>
-                                        <div className="item-subtitle">Quản lý thông báo đẩy</div>
-                                    </div>
-                                    <i className="fas fa-chevron-right" style={{ color: '#9ca3af' }}></i>
+                            {/* Logout */}
+                            <button className="elder-settings-item" onClick={handleLogout}>
+                                <div className="elder-settings-icon logout">
+                                    <i className="fas fa-sign-out-alt"></i>
                                 </div>
-                                <div className="mobile-list-item">
-                                    <div className="item-avatar" style={{ background: 'rgba(16, 185, 129, 0.12)' }}>
-                                        <i className="fas fa-shield-alt" style={{ color: '#10b981' }}></i>
-                                    </div>
-                                    <div className="item-content">
-                                        <div className="item-title">Bảo mật</div>
-                                        <div className="item-subtitle">Đổi mật khẩu, xác thực 2 bước</div>
-                                    </div>
-                                    <i className="fas fa-chevron-right" style={{ color: '#9ca3af' }}></i>
+                                <div className="elder-settings-text">
+                                    <h4>Đăng xuất</h4>
+                                    <p>Thoát khỏi tài khoản</p>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="mobile-section" style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                            <button
-                                onClick={handleLogout}
-                                className="mobile-list-item"
-                                style={{ background: 'transparent', width: '100%', justifyContent: 'center', padding: '16px' }}
-                            >
-                                <i className="fas fa-sign-out-alt" style={{ color: '#ef4444', fontSize: 18, marginRight: 10 }}></i>
-                                <span style={{ color: '#ef4444', fontWeight: 600, fontSize: 15 }}>Đăng xuất</span>
+                                <i className="fas fa-chevron-right elder-settings-arrow"></i>
                             </button>
                         </div>
                     </div>
                 )}
             </main>
 
-            {/* Bottom Navigation */}
-            <nav className="admin-bottom-nav">
-                <button className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+            {/* Bottom Navigation - ONLY 3 TABS */}
+            <nav className="elder-bottom-nav">
+                <button
+                    className={`elder-nav-item ${activeTab === 'home' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('home')}
+                >
                     <i className="fas fa-home"></i>
                     <span>Tổng quan</span>
                 </button>
-                <button className={`nav-item ${activeTab === 'schedule' ? 'active' : ''}`} onClick={() => setActiveTab('schedule')}>
-                    <i className="fas fa-calendar-alt"></i>
-                    <span>Lịch tập</span>
+                <button
+                    className={`elder-nav-item ${activeTab === 'orders' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('orders')}
+                    style={{ position: 'relative' }}
+                >
+                    <i className="fas fa-receipt"></i>
+                    <span>Đơn hàng</span>
+                    {orderCount > 0 && <span className="elder-nav-badge">{orderCount}</span>}
                 </button>
-                <button className={`nav-item ${activeTab === 'revenue' ? 'active' : ''}`} onClick={() => setActiveTab('revenue')}>
-                    <i className="fas fa-wallet"></i>
-                    <span>Doanh thu</span>
-                </button>
-                <button className={`nav-item ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>
-                    <i className="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                    {(stats?.newOrders || 0) > 0 && <span className="nav-badge">{stats.newOrders}</span>}
-                </button>
-                <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+                <button
+                    className={`elder-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('settings')}
+                >
                     <i className="fas fa-cog"></i>
                     <span>Cài đặt</span>
                 </button>
             </nav>
 
-            {/* Bottom Sheet */}
-            <div className={`bottom-sheet-overlay ${showSheet ? 'active' : ''}`} onClick={() => setShowSheet(false)}></div>
-            <div className={`bottom-sheet ${showSheet ? 'active' : ''}`}>
-                <div className="sheet-handle"></div>
-                <div className="sheet-header">
-                    <h3 className="sheet-title">{sheetTitle}</h3>
-                    <button className="sheet-close" onClick={() => setShowSheet(false)}>
+            {/* Bottom Sheet - Order Detail */}
+            <div
+                className={`elder-sheet-overlay ${showSheet ? 'active' : ''}`}
+                onClick={() => setShowSheet(false)}
+            ></div>
+            <div className={`elder-sheet ${showSheet ? 'active' : ''}`}>
+                <div className="elder-sheet-handle"></div>
+                <div className="elder-sheet-header">
+                    <h3 className="elder-sheet-title">Chi tiết đơn hàng</h3>
+                    <button className="elder-sheet-close" onClick={() => setShowSheet(false)}>
                         <i className="fas fa-times"></i>
                     </button>
                 </div>
-                <div className="sheet-content">
-                    {sheetContent}
-                </div>
+                {selectedOrder && (
+                    <div className="elder-sheet-content">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                            <div>
+                                <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Khách hàng</div>
+                                <div style={{ fontSize: 18, fontWeight: 600 }}>{selectedOrder.customer_name || 'Không rõ tên'}</div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Số điện thoại</div>
+                                <div style={{ fontSize: 18, fontWeight: 600 }}>{selectedOrder.customer_phone || 'Không có'}</div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Tổng tiền</div>
+                                <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--elder-primary)' }}>
+                                    {formatMoney(Number(selectedOrder.total_amount || 0))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Thanh toán bằng</div>
+                                <div style={{ fontSize: 18, fontWeight: 600 }}>{getPaymentLabel(selectedOrder.payment_method || 'cash')}</div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Đặt qua</div>
+                                <div style={{ fontSize: 18, fontWeight: 600 }}>{getSourceLabel(selectedOrder.source || 'website')}</div>
+                            </div>
+
+                            <div>
+                                <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Trạng thái</div>
+                                <div style={{
+                                    display: 'inline-block',
+                                    padding: '10px 20px',
+                                    borderRadius: 12,
+                                    fontSize: 16,
+                                    fontWeight: 700,
+                                    background: selectedOrder.status === 'completed' ? 'rgba(22, 163, 74, 0.12)' : 'rgba(220, 38, 38, 0.12)',
+                                    color: selectedOrder.status === 'completed' ? '#16a34a' : '#dc2626'
+                                }}>
+                                    {getStatusLabel(selectedOrder.status || 'new')}
+                                </div>
+                            </div>
+
+                            {selectedOrder.notes && (
+                                <div>
+                                    <div style={{ fontSize: 15, color: 'var(--elder-text-light)', marginBottom: 6 }}>Ghi chú</div>
+                                    <div style={{ fontSize: 17, lineHeight: 1.5 }}>{selectedOrder.notes}</div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
