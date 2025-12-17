@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { ordersAPI } from '../services/api';
 
 // ===== INTERFACES =====
 interface Product {
@@ -859,6 +860,13 @@ const Shop: React.FC = () => {
     const [showOrderModal, setShowOrderModal] = useState(false);
     const [orderItem, setOrderItem] = useState<{ type: 'product'; item: Product } | null>(null);
 
+    // Order Form State
+    const [customerName, setCustomerName] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
+    const [orderNote, setOrderNote] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [orderSuccess, setOrderSuccess] = useState(false);
+
     const [selectedBrand, setSelectedBrand] = useState('all');
     const [sortOption, setSortOption] = useState<'default' | 'price-asc' | 'price-desc'>('default');
 
@@ -931,7 +939,33 @@ const Shop: React.FC = () => {
 
     const handleOrder = (item: Product) => {
         setOrderItem({ type: 'product', item });
+        setCustomerName('');
+        setCustomerPhone('');
+        setOrderNote('');
+        setOrderSuccess(false);
         setShowOrderModal(true);
+    };
+
+    const submitOrder = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!orderItem) return;
+
+        setIsSubmitting(true);
+        try {
+            await ordersAPI.create({
+                customer_name: customerName,
+                customer_phone: customerPhone,
+                product_name: orderItem.item.name,
+                product_price: orderItem.item.price,
+                notes: orderNote,
+                quantity: 1
+            });
+            setOrderSuccess(true);
+        } catch (error) {
+            alert('Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ trực tiếp.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

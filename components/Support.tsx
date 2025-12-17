@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { contactAPI } from '../services/api';
 
 const contactChannels = [
     {
@@ -59,6 +60,8 @@ const Support: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -70,7 +73,22 @@ const Support: React.FC = () => {
                 return;
             }
 
-            // Use FormSubmit.co - Free email form service
+            // 1. Submit to Backend (To show in Admin Panel)
+            try {
+                await contactAPI.submit({
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email,
+                    subject: formData.subject,
+                    message: formData.message,
+                    status: 'new'
+                });
+            } catch (err) {
+                console.error("Failed to save to database", err);
+                // Continue to email fallback
+            }
+
+            // 2. Use FormSubmit.co - Free email form service
             // Email will be sent directly to tunhanluan1971@gmail.com
             const response = await fetch('https://formsubmit.co/ajax/tunhanluan1971@gmail.com', {
                 method: 'POST',
