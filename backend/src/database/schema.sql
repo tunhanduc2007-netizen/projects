@@ -213,6 +213,25 @@ CREATE INDEX IF NOT EXISTS idx_attendance_member ON attendance(member_id);
 CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(check_in_time);
 
 -- =====================================================
+-- 10. SYSTEM_LOGS TABLE - Nhật ký hệ thống
+-- =====================================================
+CREATE TABLE IF NOT EXISTS system_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    admin_id UUID REFERENCES admins(id) ON DELETE SET NULL,
+    action VARCHAR(100) NOT NULL,
+    entity_type VARCHAR(50),
+    entity_id UUID,
+    details JSONB,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_logs_admin ON system_logs(admin_id);
+CREATE INDEX IF NOT EXISTS idx_logs_action ON system_logs(action);
+CREATE INDEX IF NOT EXISTS idx_logs_created ON system_logs(created_at);
+
+-- =====================================================
 -- UPDATE TIMESTAMP TRIGGER
 -- =====================================================
 CREATE OR REPLACE FUNCTION update_updated_at_column()
