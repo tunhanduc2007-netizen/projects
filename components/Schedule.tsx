@@ -28,7 +28,8 @@ const Schedule: React.FC = () => {
             slots: [
                 { time: '07:00 – 08:00', coach: 'HLV Thơ' },
                 { time: '08:30 – 09:30', coach: 'HLV Thơ' },
-                { time: '16:30 – 20:00', coach: 'HLV Sơn' }
+                { time: '16:30 – 20:00', coach: 'HLV Sơn' },
+                { time: '17:30 – 20:30', coach: 'HLV Long' }
             ]
         },
         {
@@ -45,7 +46,8 @@ const Schedule: React.FC = () => {
             slots: [
                 { time: '07:00 – 08:00', coach: 'HLV Thơ' },
                 { time: '08:30 – 09:30', coach: 'HLV Thơ' },
-                { time: '16:30 – 20:00', coach: 'HLV Sơn' }
+                { time: '16:30 – 20:00', coach: 'HLV Sơn' },
+                { time: '17:30 – 20:30', coach: 'HLV Long' }
             ]
         },
         {
@@ -63,7 +65,8 @@ const Schedule: React.FC = () => {
             slots: [
                 { time: '07:00 – 08:00', coach: 'HLV Thơ' },
                 { time: '08:30 – 09:30', coach: 'HLV Thơ' },
-                { time: '17:30 – 18:30', coach: 'HLV Sơn' }
+                { time: '17:30 – 18:30', coach: 'HLV Sơn' },
+                { time: '17:30 – 20:30', coach: 'HLV Long' }
             ]
         },
         {
@@ -73,6 +76,7 @@ const Schedule: React.FC = () => {
                 { time: '06:15 – 07:15', coach: 'HLV Thơ' },
                 { time: '08:00 – 09:00', coach: 'HLV Huy' },
                 { time: '09:00 – 11:00', coach: 'HLV Sơn' },
+                { time: '13:30 – 16:30', coach: 'HLV Long' },
                 { time: '16:00 – 18:00', coach: 'HLV Sơn' }
             ]
         },
@@ -82,6 +86,7 @@ const Schedule: React.FC = () => {
             slots: [
                 { time: '08:00 – 10:30', coach: 'HLV Huy' },
                 { time: '09:00 – 11:00', coach: 'HLV Sơn' },
+                { time: '14:00 – 15:00', coach: 'HLV Long' },
                 { time: '16:00 – 18:00', coach: 'HLV Sơn' }
             ]
         }

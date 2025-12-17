@@ -81,6 +81,25 @@ const coaches: Coach[] = [
         ],
         badges: ['Chuyên nghiệp', 'Tận tâm'],
         isOnline: true
+    },
+    {
+        id: 4,
+        name: 'Võ Kỳ Long',
+        role: 'Huấn luyện viên',
+        avatar: '/images/coach-long.png',
+        fee: '250,000',
+        feeNote: '/ giờ',
+        tableFee: '50,000',
+        experience: '20 năm +',
+        students: '15+',
+        rating: '5.0',
+        schedule: [
+            { day: 'T2, T4, T6', time: '17:30 – 20:30' },
+            { day: 'T7', time: '13:30 – 16:30' },
+            { day: 'CN', time: '14:00 – 15:00' }
+        ],
+        badges: ['Kiện tướng', 'Tận tâm', 'Chuyên nghiệp'],
+        isOnline: true
     }
 ];
 
