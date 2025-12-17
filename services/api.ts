@@ -3,9 +3,12 @@
  * CLB Bóng Bàn Lê Quý Đôn
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined'
-    ? `http://${window.location.hostname}:3001/api`
-    : 'http://localhost:3001/api');
+// Production: Render.com | Development: localhost
+const API_BASE_URL = import.meta.env.VITE_API_URL || (
+    typeof window !== 'undefined' && window.location.hostname === 'localhost'
+        ? 'http://localhost:3001/api'
+        : 'https://projects-0x2d.onrender.com/api'
+);
 
 /**
  * Fetch wrapper với error handling
