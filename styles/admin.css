@@ -900,8 +900,22 @@
 }
 
 @media (max-width: 768px) {
+
+    /* Sidebar - Collapsible on mobile */
     .admin-sidebar {
         width: 70px;
+        transition: width 0.3s ease;
+    }
+
+    .admin-sidebar:hover {
+        width: 220px;
+    }
+
+    .admin-sidebar:hover .sidebar-header span,
+    .admin-sidebar:hover .sidebar-nav button span,
+    .admin-sidebar:hover .user-info span,
+    .admin-sidebar:hover .btn-logout span {
+        display: inline;
     }
 
     .sidebar-header span,
@@ -916,12 +930,19 @@
         padding: 1rem;
     }
 
+    .admin-sidebar:hover .sidebar-nav button {
+        justify-content: flex-start;
+        padding: 1rem 1.5rem;
+    }
+
     .sidebar-nav button i {
         font-size: 1.25rem;
+        min-width: 24px;
     }
 
     .admin-main {
         margin-left: 70px;
+        transition: margin-left 0.3s ease;
     }
 
     .dashboard-grid {
@@ -934,5 +955,98 @@
 
     .admin-content {
         padding: 1rem;
+    }
+
+    .admin-header {
+        padding: 1rem;
+    }
+
+    .admin-header h1 {
+        font-size: 1.1rem;
+    }
+
+    /* Chart responsiveness */
+    .chart-container {
+        height: 250px !important;
+    }
+
+    .recharts-wrapper {
+        font-size: 0.75rem;
+    }
+
+    /* Table responsiveness */
+    .data-table {
+        font-size: 0.85rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    /* Card improvements */
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+
+    .stat-info h3 {
+        font-size: 1.25rem;
+    }
+
+    .stat-info p {
+        font-size: 0.8rem;
+    }
+
+    /* Coach cards */
+    .coach-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* Order items */
+    .order-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-sidebar {
+        width: 60px;
+    }
+
+    .admin-sidebar:hover {
+        width: 200px;
+    }
+
+    .admin-main {
+        margin-left: 60px;
+    }
+
+    .admin-header h1 {
+        font-size: 1rem;
+    }
+
+    .current-time {
+        display: none;
+    }
+
+    .admin-content {
+        padding: 0.75rem;
+    }
+
+    .dashboard-section {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .section-header h3 {
+        font-size: 1rem;
     }
 }
