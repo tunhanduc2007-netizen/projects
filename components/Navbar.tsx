@@ -28,7 +28,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeSection }) => {
     { id: 'home', label: 'TRANG CHỦ', isSection: true },
     { id: 'about', label: 'GIỚI THIỆU', isSection: true },
     { id: 'programs', label: 'BẢNG GIÁ', isSection: true },
-    { id: 'support', label: 'HỖ TRỢ', isSection: true },
+    { id: 'contact', label: 'HỖ TRỢ', isSection: true },
     { id: 'gallery', label: 'HÌNH ẢNH', isSection: true },
   ];
 

@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer id="contact" className="footer">
+    <footer id="footer" className="footer">
       <div className="container">
         <div className="footer-grid">
           {/* Brand */}
@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
           <div className="footer-links-section">
             <ul className="footer-links">
               <li><a href="#programs" onClick={(e) => { e.preventDefault(); scrollToSection('programs'); }}>BẢNG GIÁ</a></li>
-              <li><a href="#support" onClick={(e) => { e.preventDefault(); scrollToSection('support'); }}>HỖ TRỢ</a></li>
+              <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>HỖ TRỢ</a></li>
               <li><a href="#shop" onClick={(e) => { e.preventDefault(); scrollToSection('shop'); }}>SHOP DỤNG CỤ</a></li>
               <li><a href="#gallery" onClick={(e) => { e.preventDefault(); scrollToSection('gallery'); }}>HÌNH ẢNH</a></li>
               <li><a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>LIÊN HỆ</a></li>

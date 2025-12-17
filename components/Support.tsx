@@ -105,7 +105,7 @@ const Support: React.FC = () => {
     };
 
     return (
-        <section id="support" className="section support-contact">
+        <section id="contact" className="section support-contact">
             <div className="container">
                 <div className="section-header">
                     <span className="section-subtitle">LIÊN HỆ</span>
