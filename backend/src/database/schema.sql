@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS admins (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_admins_username ON admins(username);
-CREATE INDEX idx_admins_email ON admins(email);
+CREATE INDEX IF NOT EXISTS idx_admins_username ON admins(username);
+CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email);
 
 -- =====================================================
 -- 2. COACHES TABLE - Huấn luyện viên
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS coaches (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_coaches_status ON coaches(status);
-CREATE INDEX idx_coaches_full_name ON coaches(full_name);
+CREATE INDEX IF NOT EXISTS idx_coaches_status ON coaches(status);
+CREATE INDEX IF NOT EXISTS idx_coaches_full_name ON coaches(full_name);
 
 -- =====================================================
 -- 3. MEMBERS TABLE - Học viên
@@ -69,10 +69,10 @@ CREATE TABLE IF NOT EXISTS members (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_members_phone ON members(phone);
-CREATE INDEX idx_members_status ON members(status);
-CREATE INDEX idx_members_payment_type ON members(payment_type);
-CREATE INDEX idx_members_join_date ON members(join_date);
+CREATE INDEX IF NOT EXISTS idx_members_phone ON members(phone);
+CREATE INDEX IF NOT EXISTS idx_members_status ON members(status);
+CREATE INDEX IF NOT EXISTS idx_members_payment_type ON members(payment_type);
+CREATE INDEX IF NOT EXISTS idx_members_join_date ON members(join_date);
 
 -- =====================================================
 -- 4. TRAINING_SESSIONS TABLE - Buổi tập / Lịch dạy HLV
@@ -93,9 +93,9 @@ CREATE TABLE IF NOT EXISTS training_sessions (
     CONSTRAINT valid_time_range CHECK (end_time > start_time)
 );
 
-CREATE INDEX idx_sessions_coach ON training_sessions(coach_id);
-CREATE INDEX idx_sessions_day ON training_sessions(day_of_week);
-CREATE INDEX idx_sessions_status ON training_sessions(status);
+CREATE INDEX IF NOT EXISTS idx_sessions_coach ON training_sessions(coach_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_day ON training_sessions(day_of_week);
+CREATE INDEX IF NOT EXISTS idx_sessions_status ON training_sessions(status);
 
 -- =====================================================
 -- 5. PAYMENTS TABLE - Thu phí
@@ -114,9 +114,9 @@ CREATE TABLE IF NOT EXISTS payments (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_payments_member ON payments(member_id);
-CREATE INDEX idx_payments_type ON payments(payment_type);
-CREATE INDEX idx_payments_paid_at ON payments(paid_at);
+CREATE INDEX IF NOT EXISTS idx_payments_member ON payments(member_id);
+CREATE INDEX IF NOT EXISTS idx_payments_type ON payments(payment_type);
+CREATE INDEX IF NOT EXISTS idx_payments_paid_at ON payments(paid_at);
 
 -- =====================================================
 -- 6. EVENTS TABLE - Giải đấu / Sự kiện
@@ -137,8 +137,8 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_events_date ON events(event_date);
-CREATE INDEX idx_events_status ON events(status);
+CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date);
+CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);
 
 -- =====================================================
 -- 7. GALLERY TABLE - Hình ảnh CLB
@@ -154,8 +154,8 @@ CREATE TABLE IF NOT EXISTS gallery (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_gallery_category ON gallery(category);
-CREATE INDEX idx_gallery_sort ON gallery(sort_order);
+CREATE INDEX IF NOT EXISTS idx_gallery_category ON gallery(category);
+CREATE INDEX IF NOT EXISTS idx_gallery_sort ON gallery(sort_order);
 
 -- =====================================================
 -- 8. ORDERS TABLE - Đơn hàng Shop
@@ -173,8 +173,8 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_orders_status ON orders(status);
-CREATE INDEX idx_orders_created ON orders(created_at);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at);
 
 -- =====================================================
 -- 9. CONTACT_FORMS TABLE - Form liên hệ
@@ -193,8 +193,8 @@ CREATE TABLE IF NOT EXISTS contact_forms (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_contact_status ON contact_forms(status);
-CREATE INDEX idx_contact_created ON contact_forms(created_at);
+CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_forms(status);
+CREATE INDEX IF NOT EXISTS idx_contact_created ON contact_forms(created_at);
 
 -- =====================================================
 -- 9. ATTENDANCE TABLE - Điểm danh (optional)
@@ -209,8 +209,8 @@ CREATE TABLE IF NOT EXISTS attendance (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_attendance_member ON attendance(member_id);
-CREATE INDEX idx_attendance_date ON attendance(check_in_time);
+CREATE INDEX IF NOT EXISTS idx_attendance_member ON attendance(member_id);
+CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(check_in_time);
 
 -- =====================================================
 -- UPDATE TIMESTAMP TRIGGER
