@@ -166,6 +166,9 @@ const ShopOrderModel = {
      * Requires phone number for verification
      */
     async findByCodeAndPhone(orderCode, phone) {
+        // Strip prefix if present (user might paste transfer content)
+        const cleanCode = orderCode.replace(/^CLBLQD_/i, '').toUpperCase();
+
         const sql = `
             SELECT 
                 o.*,
@@ -188,7 +191,7 @@ const ShopOrderModel = {
             WHERE o.order_code = $1 AND o.customer_phone = $2
             GROUP BY o.id
         `;
-        const result = await query(sql, [orderCode, phone]);
+        const result = await query(sql, [cleanCode, phone]);
         return result.rows[0];
     },
 
