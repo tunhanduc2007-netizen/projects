@@ -332,7 +332,11 @@ const Shop: React.FC = () => {
                     ) : (
                         <div className="shop-no-products">
                             <i className="fas fa-box-open"></i>
-                            <p>Không có sản phẩm trong danh mục này</p>
+                            <h3>Chưa có sản phẩm</h3>
+                            <p>Admin chưa cập nhật sản phẩm. Vui lòng quay lại sau!</p>
+                            <a href="tel:0913909012" className="contact-link">
+                                <i className="fas fa-phone"></i> Liên hệ: 0913 909 012
+                            </a>
                         </div>
                     )}
                 </div>

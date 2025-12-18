@@ -119,13 +119,47 @@
     gap: 1rem;
     padding: 4rem 2rem;
     color: var(--text-secondary, #a1a1aa);
+    text-align: center;
 }
 
 .shop-loading i,
 .shop-error i,
 .shop-no-products i {
-    font-size: 3rem;
-    opacity: 0.5;
+    font-size: 4rem;
+    opacity: 0.3;
+    color: var(--text-muted, #71717a);
+}
+
+.shop-no-products h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary, #ffffff);
+    margin: 0;
+}
+
+.shop-no-products p {
+    font-size: 1rem;
+    color: var(--text-secondary, #a1a1aa);
+    margin: 0;
+    max-width: 300px;
+}
+
+.shop-no-products .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-radius: 2rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.shop-no-products .contact-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
 }
 
 .shop-error button {
