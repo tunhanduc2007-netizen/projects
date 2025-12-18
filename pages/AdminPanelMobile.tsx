@@ -126,6 +126,28 @@ const AdminPanelMobile: React.FC = () => {
         setShowSheet(true);
     };
 
+    // Xác nhận thanh toán
+    const handleConfirmPayment = async (orderId: string) => {
+        if (!confirm('Xác nhận đã nhận tiền cho đơn hàng này?')) return;
+        try {
+            await shopAdminAPI.confirmPayment(orderId);
+            alert('Đã xác nhận thanh toán!');
+            loadData();
+        } catch (err: any) {
+            alert('Lỗi: ' + (err.message || 'Không thể xác nhận'));
+        }
+    };
+
+    // Cập nhật trạng thái đơn
+    const handleUpdateStatus = async (orderId: string, status: string) => {
+        try {
+            await shopAdminAPI.updateOrderStatus(orderId, status);
+            loadData();
+        } catch (err: any) {
+            alert('Lỗi: ' + (err.message || 'Không thể cập nhật'));
+        }
+    };
+
     // Get payment method label
     const getPaymentLabel = (method: string): string => {
         const labels: Record<string, string> = {
@@ -356,15 +378,55 @@ const AdminPanelMobile: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <div className="elder-order-action">
+                                        <div className="elder-order-action" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                            {/* Nút Gọi khách */}
                                             <a
                                                 href={`tel:${order.customer_phone}`}
-                                                className="elder-btn-detail"
-                                                style={{ background: '#16a34a', color: '#fff', textDecoration: 'none' }}
+                                                style={{
+                                                    flex: 1, minWidth: '100px',
+                                                    background: '#3b82f6', color: '#fff', textDecoration: 'none',
+                                                    padding: '12px 16px', borderRadius: '10px', fontSize: '14px',
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                                    fontWeight: 600
+                                                }}
                                             >
                                                 <i className="fas fa-phone"></i>
-                                                Gọi khách
+                                                Gọi
                                             </a>
+
+                                            {/* Nút Xác nhận thanh toán - chỉ hiện khi chưa xác nhận */}
+                                            {order.payment_status !== 'confirmed' && (
+                                                <button
+                                                    onClick={() => handleConfirmPayment(order.id)}
+                                                    style={{
+                                                        flex: 1, minWidth: '120px',
+                                                        background: '#16a34a', color: '#fff', border: 'none',
+                                                        padding: '12px 16px', borderRadius: '10px', fontSize: '14px',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                                        fontWeight: 600, cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    <i className="fas fa-check-double"></i>
+                                                    Đã nhận tiền
+                                                </button>
+                                            )}
+
+                                            {/* Nút Hoàn tất đơn - chỉ hiện khi chưa done/cancelled */}
+                                            {order.order_status !== 'done' && order.order_status !== 'cancelled' && (
+                                                <button
+                                                    onClick={() => handleUpdateStatus(order.id, 'done')}
+                                                    style={{
+                                                        flex: 1, minWidth: '100px',
+                                                        background: '#8b5cf6', color: '#fff', border: 'none',
+                                                        padding: '12px 16px', borderRadius: '10px', fontSize: '14px',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
+                                                        fontWeight: 600, cursor: 'pointer'
+                                                    }}
+                                                >
+                                                    <i className="fas fa-check-circle"></i>
+                                                    Hoàn tất
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
