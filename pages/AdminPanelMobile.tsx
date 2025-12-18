@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authAPI, paymentsAPI, ordersAPI, contactAPI } from '../services/api';
+import { authAPI, paymentsAPI, contactAPI, shopAdminAPI } from '../services/api';
 import '../styles/admin-mobile.css';
 
 /**
@@ -76,7 +76,7 @@ const AdminPanelMobile: React.FC = () => {
         try {
             const [paymentsRes, ordersRes, contactsRes] = await Promise.all([
                 paymentsAPI.getAll().catch(() => ({ data: [] })),
-                ordersAPI.getAll().catch(() => ({ data: [] })),
+                shopAdminAPI.getOrders().catch(() => ({ data: [] })),
                 contactAPI.getAll().catch(() => ({ data: [] }))
             ]);
 
@@ -302,35 +302,51 @@ const AdminPanelMobile: React.FC = () => {
                                 {orders.map((order, index) => (
                                     <div
                                         key={order.id || index}
-                                        className={`elder-order-card elder-animate-slide ${order.status || 'new'}`}
+                                        className={`elder-order-card elder-animate-slide ${order.order_status || 'new'}`}
                                         style={{ animationDelay: `${index * 0.05}s` }}
                                     >
                                         <div className="elder-order-header">
                                             <span className="elder-order-number">
-                                                <i className="fas fa-shopping-cart"></i> Đơn #{String(index + 1).padStart(5, '0')}
+                                                <i className="fas fa-shopping-cart"></i> {order.order_code}
                                             </span>
-                                            <span className={`elder-order-status ${order.status || 'new'}`}>
-                                                {getStatusLabel(order.status || 'new')}
+                                            <span className={`elder-order-status ${order.order_status || 'new'}`}>
+                                                {order.order_status === 'new' && 'Mới'}
+                                                {order.order_status === 'processing' && 'Đang xử lý'}
+                                                {order.order_status === 'done' && 'Hoàn tất'}
+                                                {order.order_status === 'cancelled' && 'Đã hủy'}
                                             </span>
                                         </div>
 
                                         <div className="elder-order-info">
+                                            {/* Khách hàng */}
+                                            <div className="elder-order-row">
+                                                <i className="fas fa-user source"></i>
+                                                <span style={{ fontWeight: 600 }}>{order.customer_name}</span>
+                                            </div>
+
+                                            {/* Số điện thoại */}
+                                            <div className="elder-order-row">
+                                                <i className="fas fa-phone payment"></i>
+                                                <span>{order.customer_phone}</span>
+                                            </div>
+
                                             {/* Số tiền */}
                                             <div className="elder-order-row">
                                                 <i className="fas fa-money-bill-wave money"></i>
                                                 <span className="amount">{formatMoney(Number(order.total_amount || 0))}</span>
                                             </div>
 
-                                            {/* Nguồn đặt hàng */}
-                                            <div className="elder-order-row">
-                                                <i className="fas fa-globe source"></i>
-                                                <span>{getSourceLabel(order.source || 'website')}</span>
-                                            </div>
-
-                                            {/* Phương thức thanh toán */}
+                                            {/* Thanh toán */}
                                             <div className="elder-order-row">
                                                 <i className="fas fa-credit-card payment"></i>
-                                                <span>{getPaymentLabel(order.payment_method || 'cash')}</span>
+                                                <span style={{
+                                                    color: order.payment_status === 'confirmed' ? '#16a34a' :
+                                                        order.payment_status === 'paid' ? '#2563eb' : '#d97706'
+                                                }}>
+                                                    {order.payment_status === 'pending' && 'Chờ thanh toán'}
+                                                    {order.payment_status === 'paid' && 'Đã thanh toán'}
+                                                    {order.payment_status === 'confirmed' && 'Đã xác nhận'}
+                                                </span>
                                             </div>
 
                                             {/* Thời gian */}
@@ -341,13 +357,14 @@ const AdminPanelMobile: React.FC = () => {
                                         </div>
 
                                         <div className="elder-order-action">
-                                            <button
+                                            <a
+                                                href={`tel:${order.customer_phone}`}
                                                 className="elder-btn-detail"
-                                                onClick={() => openOrderDetail(order)}
+                                                style={{ background: '#16a34a', color: '#fff', textDecoration: 'none' }}
                                             >
-                                                <i className="fas fa-eye"></i>
-                                                Xem chi tiết
-                                            </button>
+                                                <i className="fas fa-phone"></i>
+                                                Gọi khách
+                                            </a>
                                         </div>
                                     </div>
                                 ))}
