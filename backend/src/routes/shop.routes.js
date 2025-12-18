@@ -112,4 +112,21 @@ router.get('/qr/:orderCode', [
     handleValidation
 ], ShopController.getQRCode);
 
+/**
+ * GET /api/shop/debug-orders
+ * TEMPORARY: Check orders in database (remove after debugging)
+ */
+router.get('/debug-orders', async (req, res) => {
+    try {
+        const { query: dbQuery } = require('../config/database');
+        const result = await dbQuery('SELECT order_code, customer_name, customer_phone, total_amount, created_at FROM shop_orders ORDER BY created_at DESC LIMIT 10');
+        res.json({
+            total: result.rows.length,
+            orders: result.rows
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
