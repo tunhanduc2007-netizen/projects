@@ -68,16 +68,16 @@ router.post('/orders', [
         .optional()
         .trim()
         .isLength({ max: 500 }).withMessage('Ghi chú tối đa 500 ký tự'),
-    // Address fields - REQUIRED
+    // Address fields - OPTIONAL for backward compatibility
     body('address_street')
-        .trim()
-        .notEmpty().withMessage('Vui lòng nhập số nhà và tên đường'),
+        .optional()
+        .trim(),
     body('address_ward')
-        .trim()
-        .notEmpty().withMessage('Vui lòng nhập Phường/Xã'),
+        .optional()
+        .trim(),
     body('address_district')
-        .trim()
-        .notEmpty().withMessage('Vui lòng nhập Quận/Huyện'),
+        .optional()
+        .trim(),
     body('address_city')
         .optional()
         .trim()
