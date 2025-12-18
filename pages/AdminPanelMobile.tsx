@@ -344,6 +344,19 @@ const AdminPanelMobile: React.FC = () => {
                                             <div className="elder-order-row">
                                                 <i className="fas fa-user source"></i>
                                                 <span style={{ fontWeight: 600 }}>{order.customer_name}</span>
+                                                {order.is_cod && (
+                                                    <span style={{
+                                                        marginLeft: '8px',
+                                                        background: '#fef3c7',
+                                                        color: '#92400e',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '4px',
+                                                        fontSize: '0.75rem',
+                                                        fontWeight: 600
+                                                    }}>
+                                                        COD
+                                                    </span>
+                                                )}
                                             </div>
 
                                             {/* Số điện thoại */}
@@ -352,10 +365,25 @@ const AdminPanelMobile: React.FC = () => {
                                                 <span>{order.customer_phone}</span>
                                             </div>
 
+                                            {/* Địa chỉ */}
+                                            {order.address_street && (
+                                                <div className="elder-order-row">
+                                                    <i className="fas fa-map-marker-alt time"></i>
+                                                    <span style={{ fontSize: '0.9rem', color: '#6b7280' }}>
+                                                        {order.address_street}, {order.address_ward}, {order.address_district}
+                                                    </span>
+                                                </div>
+                                            )}
+
                                             {/* Số tiền */}
                                             <div className="elder-order-row">
                                                 <i className="fas fa-money-bill-wave money"></i>
-                                                <span className="amount">{formatMoney(Number(order.total_amount || 0))}</span>
+                                                <span className="amount">{formatMoney(Number(order.final_amount || order.total_amount || 0))}</span>
+                                                {order.shipping_fee > 0 && (
+                                                    <span style={{ marginLeft: '8px', fontSize: '0.8rem', color: '#9ca3af' }}>
+                                                        (ship {formatMoney(order.shipping_fee)})
+                                                    </span>
+                                                )}
                                             </div>
 
                                             {/* Thanh toán */}
@@ -363,11 +391,13 @@ const AdminPanelMobile: React.FC = () => {
                                                 <i className="fas fa-credit-card payment"></i>
                                                 <span style={{
                                                     color: order.payment_status === 'confirmed' ? '#16a34a' :
-                                                        order.payment_status === 'paid' ? '#2563eb' : '#d97706'
+                                                        order.payment_status === 'paid' ? '#2563eb' :
+                                                            order.payment_status === 'unpaid' ? '#dc2626' : '#d97706'
                                                 }}>
                                                     {order.payment_status === 'pending' && 'Chờ thanh toán'}
                                                     {order.payment_status === 'paid' && 'Đã thanh toán'}
                                                     {order.payment_status === 'confirmed' && 'Đã xác nhận'}
+                                                    {order.payment_status === 'unpaid' && 'COD - Chưa thu tiền'}
                                                 </span>
                                             </div>
 

@@ -144,7 +144,7 @@ const AdminPanel: React.FC = () => {
                 totalCoaches: coachesRes.data?.length || 0,
                 totalRevenue: paymentsRes.data?.reduce((sum: number, p: any) => sum + Number(p.amount), 0) || 0,
                 newContacts: contactsRes.data?.filter((c: any) => c.status === 'new').length || 0,
-                newOrders: ordersRes.data?.filter((o: any) => o.status === 'new').length || 0
+                newOrders: ordersRes.data?.filter((o: any) => o.order_status === 'new').length || 0
             });
         } catch (err) {
             console.error('Error loading data:', err);
@@ -501,7 +501,7 @@ const AdminPanel: React.FC = () => {
                                 <thead>
                                     <tr>
                                         <th>Mã đơn</th>
-                                        <th>Khách hàng</th>
+                                        <th>Khách hàng / Địa chỉ</th>
                                         <th>Tổng tiền</th>
                                         <th>Thanh toán</th>
                                         <th>Trạng thái</th>
@@ -516,6 +516,19 @@ const AdminPanel: React.FC = () => {
                                                 <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#e11d48', fontWeight: 600 }}>
                                                     {order.order_code}
                                                 </span>
+                                                {order.is_cod && (
+                                                    <div style={{
+                                                        fontSize: '0.7rem',
+                                                        background: '#fef3c7',
+                                                        color: '#92400e',
+                                                        padding: '2px 6px',
+                                                        borderRadius: '4px',
+                                                        marginTop: '4px',
+                                                        display: 'inline-block'
+                                                    }}>
+                                                        <i className="fas fa-money-bill-wave" style={{ marginRight: '4px' }}></i>COD
+                                                    </div>
+                                                )}
                                             </td>
                                             <td>
                                                 <div style={{ fontWeight: 600, color: '#111827' }}>{order.customer_name}</div>
@@ -523,27 +536,43 @@ const AdminPanel: React.FC = () => {
                                                     <i className="fas fa-phone-alt" style={{ fontSize: '0.75rem', marginRight: '0.25rem' }}></i>
                                                     {order.customer_phone}
                                                 </div>
+                                                {order.address_street && (
+                                                    <div style={{ fontSize: '0.8rem', color: '#9ca3af', marginTop: '4px' }}>
+                                                        <i className="fas fa-map-marker-alt" style={{ fontSize: '0.7rem', marginRight: '4px' }}></i>
+                                                        {order.address_street}, {order.address_ward}, {order.address_district}
+                                                    </div>
+                                                )}
                                             </td>
                                             <td>
                                                 <div style={{ fontWeight: 600, color: '#e11d48' }}>
-                                                    {Number(order.total_amount).toLocaleString('vi-VN')}₫
+                                                    {Number(order.final_amount || order.total_amount).toLocaleString('vi-VN')}₫
                                                 </div>
-                                                <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                                                    {order.item_count || 1} sản phẩm
-                                                </div>
+                                                {order.shipping_fee > 0 && (
+                                                    <div style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                                                        (SP: {Number(order.total_amount).toLocaleString()} + Ship: {Number(order.shipping_fee).toLocaleString()})
+                                                    </div>
+                                                )}
+                                                {order.shipping_fee === 0 && order.final_amount > 0 && (
+                                                    <div style={{ fontSize: '0.75rem', color: '#10b981' }}>
+                                                        Miễn phí ship
+                                                    </div>
+                                                )}
                                             </td>
                                             <td>
                                                 <span className={`badge`} style={{
                                                     background: order.payment_status === 'pending' ? '#fef3c7' :
                                                         order.payment_status === 'paid' ? '#dbeafe' :
-                                                            order.payment_status === 'confirmed' ? '#dcfce7' : '#f3f4f6',
+                                                            order.payment_status === 'confirmed' ? '#dcfce7' :
+                                                                order.payment_status === 'unpaid' ? '#fee2e2' : '#f3f4f6',
                                                     color: order.payment_status === 'pending' ? '#92400e' :
                                                         order.payment_status === 'paid' ? '#1d4ed8' :
-                                                            order.payment_status === 'confirmed' ? '#166534' : '#374151'
+                                                            order.payment_status === 'confirmed' ? '#166534' :
+                                                                order.payment_status === 'unpaid' ? '#991b1b' : '#374151'
                                                 }}>
                                                     {order.payment_status === 'pending' && 'Chờ TT'}
                                                     {order.payment_status === 'paid' && 'Đã TT'}
                                                     {order.payment_status === 'confirmed' && 'Đã xác nhận'}
+                                                    {order.payment_status === 'unpaid' && 'Chưa TT (COD)'}
                                                 </span>
                                             </td>
                                             <td>
