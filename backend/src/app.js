@@ -26,6 +26,10 @@ const shopAdminRoutes = require('./routes/shopAdmin.routes');
 
 const app = express();
 
+// Trust proxy - required for Render.com and other proxies
+// This allows express-rate-limit to correctly identify users
+app.set('trust proxy', 1);
+
 // =====================================================
 // SECURITY MIDDLEWARE
 // =====================================================
