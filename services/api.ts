@@ -341,7 +341,11 @@ export const logsAPI = {
 export const shopAPI = {
     // Products
     getProducts: async (params?: { category?: string; brand?: string; recommended?: boolean }) => {
-        const query = new URLSearchParams(params as any).toString();
+        // Filter out undefined values to avoid sending ?category=undefined
+        const filteredParams = Object.fromEntries(
+            Object.entries(params || {}).filter(([_, v]) => v !== undefined && v !== null)
+        );
+        const query = new URLSearchParams(filteredParams as any).toString();
         return fetchAPI(`/shop/products${query ? `?${query}` : ''}`);
     },
 
@@ -410,7 +414,10 @@ export const shopAdminAPI = {
         limit?: number;
         offset?: number;
     }) => {
-        const query = new URLSearchParams(params as any).toString();
+        const filteredParams = Object.fromEntries(
+            Object.entries(params || {}).filter(([_, v]) => v !== undefined && v !== null)
+        );
+        const query = new URLSearchParams(filteredParams as any).toString();
         return fetchAPI(`/shop/admin/orders${query ? `?${query}` : ''}`);
     },
 
@@ -447,7 +454,10 @@ export const shopAdminAPI = {
         limit?: number;
         offset?: number;
     }) => {
-        const query = new URLSearchParams(params as any).toString();
+        const filteredParams = Object.fromEntries(
+            Object.entries(params || {}).filter(([_, v]) => v !== undefined && v !== null)
+        );
+        const query = new URLSearchParams(filteredParams as any).toString();
         return fetchAPI(`/shop/admin/products${query ? `?${query}` : ''}`);
     },
 
