@@ -5,6 +5,7 @@ import ShopPage from './pages/ShopPage';
 import AdminPanel from './pages/AdminPanel';
 import AdminPanelMobile from './pages/AdminPanelMobile';
 import './styles/admin.css';
+import './styles/shop.css';
 
 // Responsive Admin Component
 const ResponsiveAdmin: React.FC = () => {

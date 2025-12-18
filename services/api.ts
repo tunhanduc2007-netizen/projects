@@ -335,6 +335,154 @@ export const logsAPI = {
     }
 };
 
+// ============================================
+// SHOP API - Public
+// ============================================
+export const shopAPI = {
+    // Products
+    getProducts: async (params?: { category?: string; brand?: string; recommended?: boolean }) => {
+        const query = new URLSearchParams(params as any).toString();
+        return fetchAPI(`/shop/products${query ? `?${query}` : ''}`);
+    },
+
+    getProductBySlug: async (slug: string) => {
+        return fetchAPI(`/shop/products/${slug}`);
+    },
+
+    getCategories: async () => {
+        return fetchAPI('/shop/categories');
+    },
+
+    getBrands: async () => {
+        return fetchAPI('/shop/brands');
+    },
+
+    // Orders
+    createOrder: async (data: {
+        customer_name: string;
+        customer_phone: string;
+        customer_note?: string;
+        payment_method?: 'qr' | 'bank';
+        items: {
+            product_id?: string;
+            product_name: string;
+            product_brand?: string;
+            price: number;
+            product_image?: string;
+            quantity: number;
+        }[];
+    }) => {
+        return fetchAPI('/shop/orders', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    lookupOrder: async (code: string, phone: string) => {
+        const query = new URLSearchParams({ code, phone }).toString();
+        return fetchAPI(`/shop/orders/lookup?${query}`);
+    },
+
+    getBankInfo: async () => {
+        return fetchAPI('/shop/bank-info');
+    },
+
+    getQRCode: async (orderCode: string, phone: string) => {
+        const query = new URLSearchParams({ phone }).toString();
+        return fetchAPI(`/shop/qr/${orderCode}?${query}`);
+    }
+};
+
+// ============================================
+// SHOP ADMIN API - Protected
+// ============================================
+export const shopAdminAPI = {
+    // Stats
+    getStats: async () => {
+        return fetchAPI('/shop/admin/stats');
+    },
+
+    // Orders Management
+    getOrders: async (params?: {
+        payment_status?: string;
+        order_status?: string;
+        search?: string;
+        limit?: number;
+        offset?: number;
+    }) => {
+        const query = new URLSearchParams(params as any).toString();
+        return fetchAPI(`/shop/admin/orders${query ? `?${query}` : ''}`);
+    },
+
+    getOrderById: async (id: string) => {
+        return fetchAPI(`/shop/admin/orders/${id}`);
+    },
+
+    updateOrderStatus: async (id: string, order_status: string) => {
+        return fetchAPI(`/shop/admin/orders/${id}/status`, {
+            method: 'PUT',
+            body: JSON.stringify({ order_status }),
+        });
+    },
+
+    confirmPayment: async (id: string, note?: string) => {
+        return fetchAPI(`/shop/admin/orders/${id}/confirm`, {
+            method: 'PUT',
+            body: JSON.stringify({ note }),
+        });
+    },
+
+    updateOrderNote: async (id: string, note: string) => {
+        return fetchAPI(`/shop/admin/orders/${id}/note`, {
+            method: 'PUT',
+            body: JSON.stringify({ note }),
+        });
+    },
+
+    // Products Management
+    getProducts: async (params?: {
+        category?: string;
+        brand?: string;
+        is_active?: boolean;
+        limit?: number;
+        offset?: number;
+    }) => {
+        const query = new URLSearchParams(params as any).toString();
+        return fetchAPI(`/shop/admin/products${query ? `?${query}` : ''}`);
+    },
+
+    getProductById: async (id: string) => {
+        return fetchAPI(`/shop/admin/products/${id}`);
+    },
+
+    createProduct: async (data: any) => {
+        return fetchAPI('/shop/admin/products', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    updateProduct: async (id: string, data: any) => {
+        return fetchAPI(`/shop/admin/products/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    },
+
+    deleteProduct: async (id: string, hard?: boolean) => {
+        return fetchAPI(`/shop/admin/products/${id}${hard ? '?hard=true' : ''}`, {
+            method: 'DELETE',
+        });
+    },
+
+    updateStock: async (id: string, quantity: number) => {
+        return fetchAPI(`/shop/admin/products/${id}/stock`, {
+            method: 'PUT',
+            body: JSON.stringify({ quantity }),
+        });
+    }
+};
+
 export default {
     auth: authAPI,
     coaches: coachesAPI,
@@ -346,4 +494,7 @@ export default {
     contact: contactAPI,
     orders: ordersAPI,
     logs: logsAPI,
+    shop: shopAPI,
+    shopAdmin: shopAdminAPI,
 };
+

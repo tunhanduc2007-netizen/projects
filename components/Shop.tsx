@@ -1,27 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { ordersAPI } from '../services/api';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { shopAPI } from '../services/api';
 
 // ===== INTERFACES =====
 interface Product {
     id: string;
     name: string;
+    slug: string;
     brand: string;
     category: string;
     price: number;
-    originalPrice?: number;
-    image: string;
+    original_price?: number;
+    image_url: string;
     description: string;
-    suitableFor: string[];
-    coachReview: string;
-    availability: 'in-stock' | 'pre-order';
-    isRecommended?: boolean;
+    short_description?: string;
+    suitable_for: string[];
+    coach_review: string;
+    availability: 'in-stock' | 'pre-order' | 'out-of-stock';
+    is_recommended?: boolean;
     specs?: { label: string; value: string }[];
+    stock?: number;
+}
+
+interface CartItem {
+    product: Product;
+    quantity: number;
+}
+
+interface OrderData {
+    customer_name: string;
+    customer_phone: string;
+    customer_note: string;
+    payment_method: 'qr' | 'bank';
+}
+
+interface OrderResult {
+    order_code: string;
+    total_amount: number;
+    transfer_content: string;
+    qr_code_url: string;
+    bank: {
+        bank_name: string;
+        account_number: string;
+        account_holder: string;
+    };
+    items: any[];
 }
 
 type CategoryKey = 'all' | 'vot-hoan-chinh' | 'cot-vot' | 'mat-vot' | 'bong' | 'phu-kien';
+type ViewMode = 'products' | 'product-detail' | 'checkout' | 'order-result' | 'lookup';
 
-// ===== DATA =====
+// ===== CATEGORY DATA =====
 const categories: { key: CategoryKey; label: string; icon: string }[] = [
     { key: 'all', label: 'Tất cả', icon: 'fa-th-large' },
     { key: 'vot-hoan-chinh', label: 'Vợt hoàn chỉnh', icon: 'fa-table-tennis-paddle-ball' },
@@ -31,1307 +60,768 @@ const categories: { key: CategoryKey; label: string; icon: string }[] = [
     { key: 'phu-kien', label: 'Phụ kiện', icon: 'fa-bag-shopping' },
 ];
 
-const products: Product[] = [
+// ===== HELPER FUNCTIONS =====
+const formatPrice = (price: number): string => {
+    return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+};
 
+const getStatusLabel = (status: string): { label: string; color: string } => {
+    const statusMap: Record<string, { label: string; color: string }> = {
+        'pending': { label: 'CHỜ THANH TOÁN', color: '#f59e0b' },
+        'paid': { label: 'ĐÃ THANH TOÁN', color: '#3b82f6' },
+        'confirmed': { label: 'ĐÃ XÁC NHẬN', color: '#10b981' },
+        'new': { label: 'MỚI', color: '#6366f1' },
+        'processing': { label: 'ĐANG XỬ LÝ', color: '#3b82f6' },
+        'done': { label: 'HOÀN TẤT', color: '#10b981' },
+        'cancelled': { label: 'ĐÃ HUỶ', color: '#ef4444' },
+    };
+    return statusMap[status] || { label: status.toUpperCase(), color: '#6b7280' };
+};
 
-    // ===== MẶT VỢT BUTTERFLY =====
-    // Dòng Tenergy
-    {
-        id: 'tenergy-05',
-        name: 'Tenergy 05',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-05.jpg',
-        description: 'Mặt vợt cao cấp hàng đầu thế giới. Xoáy cực mạnh, được VĐV chuyên nghiệp sử dụng. Phù hợp lối chơi tấn công mạnh mẽ.',
-        suitableFor: ['Người chơi cao cấp', 'Thi đấu chuyên nghiệp', 'Đã có kỹ thuật vững'],
-        coachReview: 'Mặt vợt "trong mơ" của nhiều người. Xoáy và tốc độ cực tốt nhưng cần kỹ thuật cao.',
-        availability: 'in-stock',
-        isRecommended: true,
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Công nghệ', value: 'Spring Sponge X' },
-            { label: 'Tốc độ', value: '13.0' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-    {
-        id: 'tenergy-05-fx',
-        name: 'Tenergy 05 FX',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-05-fx.jpg',
-        description: 'Phiên bản FX của Tenergy 05 với mút mềm hơn, dễ kiểm soát hơn nhưng vẫn giữ xoáy tốt.',
-        suitableFor: ['Người chơi trung cấp đến cao', 'Thích cảm giác mềm', 'Chơi đa dạng'],
-        coachReview: 'Dễ đánh hơn Tenergy 05 thường, phù hợp ai muốn xoáy tốt mà không quá khó kiểm soát.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor FX' },
-            { label: 'Tốc độ', value: '12.5' },
-            { label: 'Xoáy', value: '11.0' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'tenergy-05-hard',
-        name: 'Tenergy 05 Hard',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-05-hard.jpg',
-        description: 'Phiên bản Hard của Tenergy 05 với mút cứng hơn, tốc độ cao hơn cho người chơi mạnh.',
-        suitableFor: ['Người chơi cao cấp', 'Lối chơi tấn công mạnh', 'Cần tốc độ cực cao'],
-        coachReview: 'Cho ai đánh mạnh và cần độ bật cao. Khó kiểm soát nếu kỹ thuật chưa vững.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor Hard' },
-            { label: 'Tốc độ', value: '13.5' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '8.0' },
-        ],
-    },
-    {
-        id: 'tenergy-80',
-        name: 'Tenergy 80',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-80.jpg',
-        description: 'Cân bằng giữa tốc độ và xoáy. Phù hợp các kiểu đánh đa dạng.',
-        suitableFor: ['Người chơi trung cấp đến cao', 'Lối chơi đa dạng', 'Cần cân bằng tốc độ/xoáy'],
-        coachReview: 'Lựa chọn cân bằng trong dòng Tenergy. Đánh được nhiều kiểu.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '12.5' },
-            { label: 'Xoáy', value: '11.0' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-    {
-        id: 'tenergy-80-fx',
-        name: 'Tenergy 80 FX',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-80-fx.jpg',
-        description: 'Phiên bản FX mềm hơn của Tenergy 80, dễ kiểm soát và phù hợp nhiều người.',
-        suitableFor: ['Người chơi trung cấp', 'Thích cảm giác mềm', 'Chơi đa dạng'],
-        coachReview: 'Dễ đánh, cân bằng tốt. Phù hợp nhiều người chơi.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor FX' },
-            { label: 'Tốc độ', value: '12.0' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'tenergy-64',
-        name: 'Tenergy 64',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-64.jpg',
-        description: 'Nhẹ và nhanh. Phù hợp lối chơi đặt bóng xa bàn và phản công nhanh.',
-        suitableFor: ['Người chơi trung cấp đến cao', 'Lối chơi xa bàn', 'Cần tốc độ cao'],
-        coachReview: 'Nhanh nhẹ, tốt cho đánh xa bàn và phản công. Xoáy ít hơn Tenergy 05.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '13.0' },
-            { label: 'Xoáy', value: '10.0' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-    {
-        id: 'tenergy-64-fx',
-        name: 'Tenergy 64 FX',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-64-fx.jpg',
-        description: 'Phiên bản FX mềm hơn của Tenergy 64, dễ kiểm soát hơn.',
-        suitableFor: ['Người chơi trung cấp', 'Thích tốc độ nhưng cần kiểm soát'],
-        coachReview: 'Nhanh và dễ đánh hơn Tenergy 64 thường.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor FX' },
-            { label: 'Tốc độ', value: '12.5' },
-            { label: 'Xoáy', value: '9.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'tenergy-19',
-        name: 'Tenergy 19',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1300000,
-        image: '/images/products/tenergy-19.jpg',
-        description: 'Mới nhất trong dòng Tenergy. Tốc độ cao với độ bám tốt.',
-        suitableFor: ['Người chơi cao cấp', 'Lối chơi tấn công', 'Cần tốc độ + bám'],
-        coachReview: 'Phiên bản mới nhất, kết hợp ưu điểm của các dòng Tenergy trước.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '12.5' },
-            { label: 'Xoáy', value: '11.0' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-
-    // Dòng Dignics
-    {
-        id: 'dignics-05',
-        name: 'Dignics 05',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1500000,
-        image: '/images/products/dignics-05.jpg',
-        description: 'Dòng cao cấp nhất của Butterfly. Xoáy và tốc độ vượt trội, được VĐV đỉnh cao sử dụng.',
-        suitableFor: ['VĐV chuyên nghiệp', 'Thi đấu cấp cao', 'Kỹ thuật rất vững'],
-        coachReview: 'Mặt vợt đỉnh cao. Chỉ dành cho ai đã làm chủ kỹ thuật hoàn toàn.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor Pro' },
-            { label: 'Tốc độ', value: '14.0' },
-            { label: 'Xoáy', value: '12.0' },
-            { label: 'Kiểm soát', value: '7.5' },
-        ],
-    },
-    {
-        id: 'dignics-80',
-        name: 'Dignics 80',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1500000,
-        image: '/images/products/dignics-80.jpg',
-        description: 'Cân bằng giữa tốc độ và xoáy trong dòng Dignics. Phù hợp lối chơi đa dạng.',
-        suitableFor: ['VĐV cao cấp', 'Lối chơi đa dạng', 'Cần cân bằng cao'],
-        coachReview: 'Cân bằng tốt trong dòng Dignics. Vẫn rất nhanh và xoáy.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor Pro' },
-            { label: 'Tốc độ', value: '13.5' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '8.0' },
-        ],
-    },
-    {
-        id: 'dignics-64',
-        name: 'Dignics 64',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1500000,
-        image: '/images/products/dignics-64.jpg',
-        description: 'Nhanh nhất trong dòng Dignics. Tốc độ cực cao cho lối chơi tấn công mạnh.',
-        suitableFor: ['VĐV cao cấp', 'Lối chơi tấn công xa bàn', 'Cần tốc độ tối đa'],
-        coachReview: 'Cực nhanh. Phù hợp ai chơi xa bàn và cần độ bật cao.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor Pro' },
-            { label: 'Tốc độ', value: '14.5' },
-            { label: 'Xoáy', value: '11.0' },
-            { label: 'Kiểm soát', value: '7.5' },
-        ],
-    },
-    {
-        id: 'dignics-09c',
-        name: 'Dignics 09C',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 1500000,
-        image: '/images/products/dignics-09c.jpg',
-        description: 'Mặt vợt dính (tacky). Cực kỳ xoáy, phù hợp lối chơi xoáy đỉnh cao.',
-        suitableFor: ['VĐV cao cấp', 'Lối chơi xoáy mạnh', 'Thích mặt dính'],
-        coachReview: 'Xoáy khủng khiếp. Cho ai chuyên về lối chơi xoáy.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor Tacky' },
-            { label: 'Tốc độ', value: '12.5' },
-            { label: 'Xoáy', value: '13.0' },
-            { label: 'Kiểm soát', value: '8.0' },
-        ],
-    },
-
-    // Dòng Glayzer
-    {
-        id: 'glayzer',
-        name: 'Glayzer',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 900000,
-        image: '/images/products/glayzer.jpg',
-        description: 'Mặt vợt trung cấp mới. Cân bằng tốt giữa hiệu suất và giá cả.',
-        suitableFor: ['Người chơi trung cấp', 'Muốn nâng cấp từ Rozena', 'Ngân sách vừa phải'],
-        coachReview: 'Lựa chọn tốt cho ai muốn mặt tốt hơn Rozena mà chưa cần Tenergy.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '12.0' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'glayzer-09c',
-        name: 'Glayzer 09C',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 900000,
-        image: '/images/products/glayzer-09c.jpg',
-        description: 'Phiên bản tacky (dính) của Glayzer. Xoáy mạnh hơn, phù hợp lối chơi xoáy.',
-        suitableFor: ['Người chơi trung cấp', 'Thích mặt dính', 'Lối chơi xoáy'],
-        coachReview: 'Dính và xoáy tốt với giá phải chăng. Tốt cho ai đang tập lối chơi xoáy.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor Tacky' },
-            { label: 'Tốc độ', value: '11.5' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-
-    // Dòng Rozena & Sriver
-    {
-        id: 'rozena',
-        name: 'Rozena',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 700000,
-        image: '/images/products/rozena.jpg',
-        description: 'Mặt vợt tensor phổ biến. Dễ đánh, xoáy tốt, giá hợp lý. Lựa chọn tuyệt vời cho người mới nâng cấp.',
-        suitableFor: ['Người mới đến trung cấp', 'Muốn nâng cấp từ Sriver', 'Ngân sách hợp lý'],
-        coachReview: 'HLV hay khuyên cho ai đã chơi được 6 tháng-1 năm. Dễ đánh mà vẫn xoáy tốt.',
-        availability: 'in-stock',
-        isRecommended: true,
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Công nghệ', value: 'Spring Sponge' },
-            { label: 'Tốc độ', value: '11.5' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '9.5' },
-        ],
-    },
-    {
-        id: 'sriver',
-        name: 'Sriver',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 550000,
-        image: '/images/products/sriver.jpg',
-        description: 'Mặt vợt huyền thoại, cân bằng hoàn hảo. Dễ đánh, dễ kiểm soát, bền bỉ. Lựa chọn kinh điển.',
-        suitableFor: ['Mọi trình độ', 'Người mới chọn mặt đầu tiên', 'Rèn kỹ thuật'],
-        coachReview: 'Mặt vợt "kinh điển" mà HLV hay recommend. Không quá nhanh, không quá chậm.',
-        availability: 'in-stock',
-        isRecommended: true,
-        specs: [
-            { label: 'Loại', value: 'Inverted' },
-            { label: 'Độ dày', value: '1.5-2.1mm' },
-            { label: 'Tốc độ', value: '10.5' },
-            { label: 'Xoáy', value: '10.0' },
-            { label: 'Kiểm soát', value: '10.0' },
-        ],
-    },
-    {
-        id: 'sriver-fx',
-        name: 'Sriver FX',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 550000,
-        image: '/images/products/sriver-fx.jpg',
-        description: 'Phiên bản FX mềm hơn của Sriver. Dễ kiểm soát hơn, phù hợp người mới.',
-        suitableFor: ['Người mới bắt đầu', 'Thích cảm giác mềm', 'Rèn kỹ thuật cơ bản'],
-        coachReview: 'Mềm và dễ đánh hơn Sriver thường. Tốt cho người mới.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Inverted FX' },
-            { label: 'Tốc độ', value: '10.0' },
-            { label: 'Xoáy', value: '9.5' },
-            { label: 'Kiểm soát', value: '10.5' },
-        ],
-    },
-    {
-        id: 'tackiness-drive',
-        name: 'Tackiness Drive',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 550000,
-        image: '/images/products/tackiness-drive.jpg',
-        description: 'Mặt vợt dính giá rẻ. Phù hợp tập lối chơi xoáy với ngân sách thấp.',
-        suitableFor: ['Người mới', 'Muốn thử mặt dính', 'Ngân sách thấp'],
-        coachReview: 'Tốt để tập làm quen với mặt dính trước khi nâng cấp.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tacky' },
-            { label: 'Tốc độ', value: '9.5' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '10.0' },
-        ],
-    },
-    {
-        id: 'super-anti',
-        name: 'Super Anti',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 550000,
-        image: '/images/products/super-anti.jpg',
-        description: 'Mặt vợt anti-spin. Dùng để hóa giải xoáy của đối thủ, lối chơi phòng thủ đặc biệt.',
-        suitableFor: ['Lối chơi phòng thủ', 'Cần hóa giải xoáy', 'Chơi gai/chop'],
-        coachReview: 'Mặt anti đặc biệt. Dùng cho lối chơi phòng thủ hoặc gây khó cho đối thủ.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Anti-Spin' },
-            { label: 'Tốc độ', value: '7.0' },
-            { label: 'Xoáy', value: '2.0' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-
-    // Dòng Zyre
-    {
-        id: 'zyre-03',
-        name: 'Zyre-03',
-        brand: 'Butterfly',
-        category: 'mat-vot',
-        price: 2100000,
-        image: '/images/products/zyre-03.jpg',
-        description: 'Dòng cao cấp mới nhất. Công nghệ tiên tiến cho hiệu suất tối đa.',
-        suitableFor: ['VĐV chuyên nghiệp', 'Cần công nghệ mới nhất', 'Thi đấu đỉnh cao'],
-        coachReview: 'Mặt vợt công nghệ mới nhất của Butterfly. Dành cho cấp đấu cao.',
-        availability: 'pre-order',
-        specs: [
-            { label: 'Loại', value: 'Tensor Pro+' },
-            { label: 'Tốc độ', value: '14.0' },
-            { label: 'Xoáy', value: '12.0' },
-            { label: 'Kiểm soát', value: '7.5' },
-        ],
-    },
-
-    // ===== MẶT VỢT YASAKA =====
-    // Dòng Rakza
-    {
-        id: 'rakza-xx',
-        name: 'Rakza XX',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 1100000,
-        image: '/images/products/rakza-xx.jpg',
-        description: 'Mặt vợt cao cấp nhất của Yasaka. Tốc độ và xoáy tuyệt vời.',
-        suitableFor: ['Người chơi cao cấp', 'Thi đấu', 'Cần hiệu suất cao'],
-        coachReview: 'Đỉnh cao của Yasaka. Cạnh tranh tốt với các dòng cao cấp Butterfly.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '13.0' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-    {
-        id: 'rakza-z',
-        name: 'Rakza Z',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 790000,
-        image: '/images/products/rakza-z.jpg',
-        description: 'Dòng Rakza trung cấp. Cân bằng tốt với giá hợp lý.',
-        suitableFor: ['Người chơi trung cấp', 'Muốn nâng cấp', 'Ngân sách vừa phải'],
-        coachReview: 'Lựa chọn tốt trong tầm giá. Hiệu suất tốt cho người chơi trung cấp.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '12.0' },
-            { label: 'Xoáy', value: '11.0' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'rakza-x',
-        name: 'Rakza X',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 790000,
-        image: '/images/products/rakza-x.jpg',
-        description: 'Dòng Rakza phổ biến. Tốc độ nhanh với kiểm soát tốt.',
-        suitableFor: ['Người chơi trung cấp', 'Lối chơi tấn công', 'Cần tốc độ tốt'],
-        coachReview: 'Nhanh và ổn định. Phù hợp lối chơi tấn công.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '12.5' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-    {
-        id: 'rakza-x-soft',
-        name: 'Rakza X Soft',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 790000,
-        image: '/images/products/rakza-x-soft.jpg',
-        description: 'Phiên bản mềm của Rakza X. Dễ kiểm soát hơn.',
-        suitableFor: ['Người chơi trung cấp', 'Thích cảm giác mềm', 'Cần kiểm soát tốt'],
-        coachReview: 'Mềm và dễ đánh hơn Rakza X thường.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor Soft' },
-            { label: 'Tốc độ', value: '12.0' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'rakza-9',
-        name: 'Rakza 9',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 750000,
-        image: '/images/products/rakza-9.jpg',
-        description: 'Dòng Rakza entry-level. Tốc độ tốt với giá rẻ.',
-        suitableFor: ['Người mới đến trung cấp', 'Muốn thử Yasaka', 'Ngân sách hợp lý'],
-        coachReview: 'Lựa chọn tốt để bắt đầu với Yasaka.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '11.5' },
-            { label: 'Xoáy', value: '10.0' },
-            { label: 'Kiểm soát', value: '9.5' },
-        ],
-    },
-    {
-        id: 'rakza-7',
-        name: 'Rakza 7',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 750000,
-        image: '/images/products/rakza-7.jpg',
-        description: 'Dòng Rakza entry-level với độ cứng trung bình.',
-        suitableFor: ['Người mới đến trung cấp', 'Cần cân bằng', 'Ngân sách hợp lý'],
-        coachReview: 'Cân bằng tốt. Dễ đánh cho nhiều người.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor' },
-            { label: 'Tốc độ', value: '11.0' },
-            { label: 'Xoáy', value: '10.0' },
-            { label: 'Kiểm soát', value: '9.5' },
-        ],
-    },
-    {
-        id: 'rakza-7-soft',
-        name: 'Rakza 7 Soft',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 750000,
-        image: '/images/products/rakza-7-soft.jpg',
-        description: 'Phiên bản mềm của Rakza 7. Dễ kiểm soát và dễ đánh.',
-        suitableFor: ['Người mới', 'Thích cảm giác mềm', 'Rèn kỹ thuật'],
-        coachReview: 'Rất dễ đánh. Tốt cho người mới làm quen với Yasaka.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor Soft' },
-            { label: 'Tốc độ', value: '10.5' },
-            { label: 'Xoáy', value: '9.5' },
-            { label: 'Kiểm soát', value: '10.0' },
-        ],
-    },
-
-    // Dòng Rising Dragon / Shining Dragon
-    {
-        id: 'rising-dragon',
-        name: 'Rising Dragon',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 700000,
-        image: '/images/products/rising-dragon.jpg',
-        description: 'Mặt vợt tacky (dính). Xoáy mạnh với giá tốt.',
-        suitableFor: ['Người chơi trung cấp', 'Thích mặt dính', 'Lối chơi xoáy'],
-        coachReview: 'Dính và xoáy tốt. Giá hợp lý cho mặt dính.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tacky' },
-            { label: 'Tốc độ', value: '11.0' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'rising-dragon-ii',
-        name: 'Rising Dragon II',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 760000,
-        image: '/images/products/rising-dragon-ii.jpg',
-        description: 'Phiên bản 2 của Rising Dragon. Nâng cấp xoáy và tốc độ.',
-        suitableFor: ['Người chơi trung cấp đến cao', 'Thích mặt dính', 'Muốn nâng cấp từ Rising Dragon'],
-        coachReview: 'Nâng cấp tốt từ Rising Dragon. Xoáy và tốc độ tốt hơn.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tacky' },
-            { label: 'Tốc độ', value: '11.5' },
-            { label: 'Xoáy', value: '12.0' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-    {
-        id: 'shining-dragon',
-        name: 'Shining Dragon',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 700000,
-        image: '/images/products/shining-dragon.jpg',
-        description: 'Dòng Dragon với đặc tính tốc độ hơn xoáy.',
-        suitableFor: ['Người chơi trung cấp', 'Thích mặt dính nhanh', 'Lối chơi tấn công'],
-        coachReview: 'Nhanh hơn Rising Dragon. Phù hợp lối chơi tấn công.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tacky' },
-            { label: 'Tốc độ', value: '11.5' },
-            { label: 'Xoáy', value: '11.0' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'shining-dragon-ii',
-        name: 'Shining Dragon II',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 760000,
-        image: '/images/products/shining-dragon-ii.jpg',
-        description: 'Phiên bản 2 của Shining Dragon. Cân bằng giữa tốc độ và xoáy.',
-        suitableFor: ['Người chơi trung cấp đến cao', 'Thích mặt dính', 'Lối chơi đa dạng'],
-        coachReview: 'Cân bằng tốt. Phù hợp nhiều lối chơi.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tacky' },
-            { label: 'Tốc độ', value: '12.0' },
-            { label: 'Xoáy', value: '11.5' },
-            { label: 'Kiểm soát', value: '8.5' },
-        ],
-    },
-
-    // Dòng Mark V & Rigan
-    {
-        id: 'mark-v',
-        name: 'Mark V',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 450000,
-        image: '/images/products/mark-v.jpg',
-        description: 'Mặt vợt huyền thoại của Yasaka. Cân bằng hoàn hảo, bền bỉ. Lựa chọn kinh điển.',
-        suitableFor: ['Mọi trình độ', 'Người mới bắt đầu', 'Rèn kỹ thuật'],
-        coachReview: 'Huyền thoại trong làng bóng bàn. Dễ đánh, bền, giá rẻ.',
-        availability: 'in-stock',
-        isRecommended: true,
-        specs: [
-            { label: 'Loại', value: 'Inverted' },
-            { label: 'Tốc độ', value: '9.5' },
-            { label: 'Xoáy', value: '10.0' },
-            { label: 'Kiểm soát', value: '10.5' },
-        ],
-    },
-    {
-        id: 'mark-v-hps',
-        name: 'Mark V HPS',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 670000,
-        image: '/images/products/mark-v-hps.jpg',
-        description: 'Phiên bản cao cấp của Mark V. Nhanh hơn và xoáy hơn.',
-        suitableFor: ['Người chơi trung cấp', 'Muốn nâng cấp từ Mark V', 'Cần hiệu suất cao hơn'],
-        coachReview: 'Nâng cấp tốt từ Mark V thường. Hiệu suất cao hơn.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Inverted Pro' },
-            { label: 'Tốc độ', value: '11.0' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '9.5' },
-        ],
-    },
-    {
-        id: 'mark-v-hps-soft',
-        name: 'Mark V HPS Soft',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 670000,
-        image: '/images/products/mark-v-hps-soft.jpg',
-        description: 'Phiên bản mềm của Mark V HPS. Dễ kiểm soát hơn.',
-        suitableFor: ['Người chơi trung cấp', 'Thích cảm giác mềm', 'Cần kiểm soát tốt'],
-        coachReview: 'Mềm và dễ đánh. Tốt cho ai thích cảm giác êm.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Inverted Soft' },
-            { label: 'Tốc độ', value: '10.5' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '10.0' },
-        ],
-    },
-    {
-        id: 'rigan',
-        name: 'Rigan',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 550000,
-        image: '/images/products/rigan.jpg',
-        description: 'Mặt vợt entry-level của Yasaka. Giá rẻ, dễ đánh.',
-        suitableFor: ['Người mới bắt đầu', 'Ngân sách thấp', 'Rèn kỹ thuật cơ bản'],
-        coachReview: 'Giá rẻ, chất lượng ổn. Tốt cho người mới.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Inverted' },
-            { label: 'Tốc độ', value: '9.0' },
-            { label: 'Xoáy', value: '9.0' },
-            { label: 'Kiểm soát', value: '10.5' },
-        ],
-    },
-    {
-        id: 'rigan-spin',
-        name: 'Rigan Spin',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 550000,
-        image: '/images/products/rigan-spin.jpg',
-        description: 'Phiên bản xoáy hơn của Rigan. Tập trung vào khả năng tạo xoáy.',
-        suitableFor: ['Người mới', 'Muốn tập xoáy', 'Ngân sách thấp'],
-        coachReview: 'Xoáy tốt với giá rẻ. Tốt để tập làm xoáy.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Inverted Spin' },
-            { label: 'Tốc độ', value: '8.5' },
-            { label: 'Xoáy', value: '10.0' },
-            { label: 'Kiểm soát', value: '10.5' },
-        ],
-    },
-
-    // Dòng đặc biệt
-    {
-        id: 'xtend-hs',
-        name: 'Xtend HS',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 670000,
-        image: '/images/products/xtend-hs.jpg',
-        description: 'Mặt vợt tensor với công nghệ mới. Hiệu suất cao.',
-        suitableFor: ['Người chơi trung cấp', 'Muốn thử công nghệ mới', 'Lối chơi tấn công'],
-        coachReview: 'Công nghệ tensor mới của Yasaka. Đáng để thử.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Tensor HS' },
-            { label: 'Tốc độ', value: '11.5' },
-            { label: 'Xoáy', value: '10.5' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-    {
-        id: 'trick-anti',
-        name: 'Trick Anti',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 690000,
-        image: '/images/products/trick-anti.jpg',
-        description: 'Mặt vợt anti-spin đặc biệt. Gây khó chịu cho đối thủ.',
-        suitableFor: ['Lối chơi phòng thủ', 'Cần hóa giải xoáy', 'Chơi gai/chop'],
-        coachReview: 'Mặt anti đặc biệt. Gây khó cho đối thủ bằng cách hóa giải xoáy.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Anti-Spin' },
-            { label: 'Tốc độ', value: '6.5' },
-            { label: 'Xoáy', value: '2.5' },
-            { label: 'Kiểm soát', value: '9.5' },
-        ],
-    },
-    {
-        id: 'anti-power',
-        name: 'Anti Power',
-        brand: 'Yasaka',
-        category: 'mat-vot',
-        price: 450000,
-        image: '/images/products/anti-power.jpg',
-        description: 'Mặt anti giá rẻ. Phù hợp tập lối chơi phòng thủ.',
-        suitableFor: ['Người mới chơi anti', 'Lối chơi phòng thủ', 'Ngân sách thấp'],
-        coachReview: 'Giá rẻ để thử lối chơi anti.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Loại', value: 'Anti-Spin' },
-            { label: 'Tốc độ', value: '6.0' },
-            { label: 'Xoáy', value: '2.0' },
-            { label: 'Kiểm soát', value: '9.0' },
-        ],
-    },
-
-    // BÓNG
-
-    {
-        id: 'bong-nittaku-premium',
-        name: 'Nittaku Premium 3 sao',
-        brand: 'Nittaku',
-        category: 'bong',
-        price: 130000,
-        image: '/images/products/nittaku-premium.jpg',
-        description: 'Bóng thi đấu cao cấp của Nittaku, độ nảy và độ tròn hoàn hảo.',
-        suitableFor: ['Thi đấu chính thức', 'Người chơi chuyên nghiệp'],
-        coachReview: 'Bóng chất lượng cao, nhiều giải lớn sử dụng.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Tiêu chuẩn', value: 'ITTF Approved' },
-            { label: 'Số lượng', value: '3 quả/hộp' },
-            { label: 'Đường kính', value: '40+mm' },
-        ],
-    },
-
-
-    // PHỤ KIỆN
-    {
-        id: 'bao-vot-butterfly',
-        name: 'Bao vợt Butterfly đơn',
-        brand: 'Butterfly',
-        category: 'phu-kien',
-        price: 250000,
-        image: '/images/products/placeholder.jpg',
-        description: 'Bao vợt đơn chính hãng, bảo vệ vợt tốt, gọn nhẹ.',
-        suitableFor: ['Tất cả mọi người'],
-        coachReview: 'Bao vợt cơ bản, đủ dùng cho việc mang vợt đi tập.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Chất liệu', value: 'Vải chống nước' },
-            { label: 'Số ngăn', value: '1 ngăn' },
-        ],
-    },
-    {
-        id: 'bao-vot-doi',
-        name: 'Bao vợt Butterfly đôi cao cấp',
-        brand: 'Butterfly',
-        category: 'phu-kien',
-        price: 450000,
-        image: '/images/products/placeholder.jpg',
-        description: 'Bao vợt đôi, đựng được 2 vợt + bóng + phụ kiện.',
-        suitableFor: ['Người chơi thường xuyên', 'Cần mang nhiều đồ'],
-        coachReview: 'Tiện lợi khi cần mang cả vợt dự phòng.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Chất liệu', value: 'Da PU cao cấp' },
-            { label: 'Số ngăn', value: '3 ngăn' },
-        ],
-    },
-    {
-        id: 'keo-dan-vot',
-        name: 'Keo dán mặt vợt Butterfly Free Chack',
-        brand: 'Butterfly',
-        category: 'phu-kien',
-        price: 180000,
-        image: '/images/products/placeholder.jpg',
-        description: 'Keo dán mặt vợt dạng nước, dễ dán và dễ bóc. Chai 37ml.',
-        suitableFor: ['Người tự ráp vợt', 'Cần thay mặt thường xuyên'],
-        coachReview: 'Keo chuẩn, dùng được lâu. CLB hay dùng loại này.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Dung tích', value: '37ml' },
-            { label: 'Loại', value: 'Water-based' },
-        ],
-    },
-    {
-        id: 'mieng-bao-ve-mat',
-        name: 'Miếng bảo vệ mặt vợt Butterfly',
-        brand: 'Butterfly',
-        category: 'phu-kien',
-        price: 80000,
-        image: '/images/products/placeholder.jpg',
-        description: 'Miếng dán bảo vệ mặt vợt khỏi bụi và hư hại. Bộ 2 miếng.',
-        suitableFor: ['Tất cả mọi người'],
-        coachReview: 'Phụ kiện nhỏ nhưng quan trọng, giúp mặt vợt bền hơn.',
-        availability: 'in-stock',
-        specs: [
-            { label: 'Số lượng', value: '2 miếng/bộ' },
-            { label: 'Chất liệu', value: 'Nhựa dẻo' },
-        ],
-    },
-];
-
-
-
-// ===== COMPONENT =====
+// ===== MAIN COMPONENT =====
 const Shop: React.FC = () => {
-    const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-    const [showOrderModal, setShowOrderModal] = useState(false);
-    const [orderItem, setOrderItem] = useState<{ type: 'product'; item: Product } | null>(null);
-
-    // Order Form State
-    const [customerName, setCustomerName] = useState('');
-    const [customerPhone, setCustomerPhone] = useState('');
-    const [orderNote, setOrderNote] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [orderSuccess, setOrderSuccess] = useState(false);
-
-    const [selectedBrand, setSelectedBrand] = useState('all');
-    const [sortOption, setSortOption] = useState<'default' | 'price-asc' | 'price-desc'>('default');
-
-    // Routing & History Management
     const [searchParams, setSearchParams] = useSearchParams();
-    const lastScrollPos = useRef(0);
+    const navigate = useNavigate();
 
-    // Sync URL with Selected Product & Handle Scroll Restoration
-    useEffect(() => {
-        const productId = searchParams.get('product');
-        if (productId) {
-            const product = products.find(p => p.id === productId);
-            if (product) {
-                // If entering detail view from list, save scroll position
-                if (!selectedProduct) {
-                    lastScrollPos.current = window.scrollY;
-                }
-                setSelectedProduct(product);
-                window.scrollTo(0, 0);
-            }
-        } else {
-            // Returning to list view
-            if (selectedProduct) {
-                setSelectedProduct(null);
-                // Restore scroll position after render
-                setTimeout(() => {
-                    window.scrollTo(0, lastScrollPos.current);
-                }, 0);
-            }
-        }
-    }, [searchParams]);
+    // State
+    const [viewMode, setViewMode] = useState<ViewMode>('products');
+    const [products, setProducts] = useState<Product[]>([]);
+    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<CategoryKey>('all');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Get unique brands from products
-    const brands = ['all', ...Array.from(new Set(products.map(p => p.brand)))];
+    // Cart state
+    const [cart, setCart] = useState<CartItem[]>([]);
+    const [quantity, setQuantity] = useState(1);
 
-    const filteredProducts = products.filter(p => {
-        const matchCategory = selectedCategory === 'all' || p.category === selectedCategory;
-        const matchBrand = selectedBrand === 'all' || p.brand === selectedBrand;
-        return matchCategory && matchBrand;
-    }).sort((a, b) => {
-        if (sortOption === 'price-asc') return a.price - b.price;
-        if (sortOption === 'price-desc') return b.price - a.price;
-        return 0;
+    // Order form state
+    const [orderData, setOrderData] = useState<OrderData>({
+        customer_name: '',
+        customer_phone: '',
+        customer_note: '',
+        payment_method: 'qr'
     });
+    const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
+    const [submitting, setSubmitting] = useState(false);
 
-    // Pagination Logic
-    const [currentPage, setCurrentPage] = useState(1);
-    const productsPerPage = 12;
+    // Lookup state
+    const [lookupCode, setLookupCode] = useState('');
+    const [lookupPhone, setLookupPhone] = useState('');
+    const [lookupResult, setLookupResult] = useState<any>(null);
+    const [lookupError, setLookupError] = useState<string | null>(null);
 
-    React.useEffect(() => {
-        setCurrentPage(1);
-    }, [selectedCategory, selectedBrand, sortOption]);
+    // Refs
+    const topRef = useRef<HTMLDivElement>(null);
 
-    const indexOfLastProduct = currentPage * productsPerPage;
-    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+    // ===== EFFECTS =====
+    useEffect(() => {
+        loadProducts();
+    }, [selectedCategory]);
 
-    const handlePageChange = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-        const gridElement = document.querySelector('.shop-categories');
-        if (gridElement) {
-            gridElement.scrollIntoView({ behavior: 'smooth' });
+    useEffect(() => {
+        const productSlug = searchParams.get('product');
+        if (productSlug && products.length > 0) {
+            const product = products.find(p => p.slug === productSlug);
+            if (product) {
+                setSelectedProduct(product);
+                setViewMode('product-detail');
+            }
         }
-    };
+    }, [searchParams, products]);
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('vi-VN').format(price);
-    };
-
-    const handleOrder = (item: Product) => {
-        setOrderItem({ type: 'product', item });
-        setCustomerName('');
-        setCustomerPhone('');
-        setOrderNote('');
-        setOrderSuccess(false);
-        setShowOrderModal(true);
-    };
-
-    const submitOrder = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!orderItem) return;
-
-        setIsSubmitting(true);
+    // ===== API CALLS =====
+    const loadProducts = async () => {
         try {
-            await ordersAPI.create({
-                customer_name: customerName,
-                customer_phone: customerPhone,
-                product_name: orderItem.item.name,
-                product_price: orderItem.item.price,
-                notes: orderNote,
-                quantity: 1
+            setLoading(true);
+            setError(null);
+            const response = await shopAPI.getProducts({
+                category: selectedCategory === 'all' ? undefined : selectedCategory
             });
-            setOrderSuccess(true);
-        } catch (error) {
-            alert('Có lỗi xảy ra, vui lòng thử lại hoặc liên hệ trực tiếp.');
+            setProducts(response.data || []);
+        } catch (err: any) {
+            setError('Không thể tải danh sách sản phẩm');
+            console.error('Error loading products:', err);
         } finally {
-            setIsSubmitting(false);
+            setLoading(false);
         }
     };
 
-    return (
-        <section id="shop" className="section shop-section">
-            <div className="container">
-                {/* Header */}
-                <div className="shop-header">
-                    <div className="shop-title-wrapper">
-                        <span className="shop-badge">
-                            <i className="fas fa-store"></i>
-                            Shop Nội Bộ CLB
-                        </span>
-                        <h2 className="shop-main-title">
-                            Dụng Cụ Bóng Bàn <span>Chính Hãng</span>
-                        </h2>
-                        <p className="shop-subtitle">
-                            Sản phẩm được HLV CLB chọn lọc và kiểm chứng,
-                            phù hợp cho người mới, người đang tập và thi đấu phong trào.
-                        </p>
-                    </div>
+    const submitOrder = async () => {
+        if (!selectedProduct) return;
 
-                    {/* Trust Badges */}
-                    <div className="shop-trust-badges">
+        // Validate
+        if (!orderData.customer_name.trim()) {
+            alert('Vui lòng nhập họ tên');
+            return;
+        }
+        if (!orderData.customer_phone.match(/^(0[1-9])[0-9]{8}$/)) {
+            alert('Số điện thoại không hợp lệ (VD: 0912345678)');
+            return;
+        }
 
-                        <div className="trust-badge">
-                            <i className="fas fa-user-check"></i>
-                            <span>HLV kiểm chứng</span>
-                        </div>
-                        <div className="trust-badge">
-                            <i className="fas fa-map-marker-alt"></i>
-                            <span>Nhận tại CLB</span>
-                        </div>
-                    </div>
+        try {
+            setSubmitting(true);
+            const response = await shopAPI.createOrder({
+                ...orderData,
+                items: [{
+                    product_id: selectedProduct.id,
+                    product_name: selectedProduct.name,
+                    product_brand: selectedProduct.brand,
+                    price: selectedProduct.price,
+                    product_image: selectedProduct.image_url,
+                    quantity: quantity
+                }]
+            });
 
+            setOrderResult(response.data);
+            setViewMode('order-result');
+            scrollToTop();
+        } catch (err: any) {
+            alert(err.message || 'Lỗi khi đặt hàng. Vui lòng thử lại.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
+    const lookupOrder = async () => {
+        if (!lookupCode.trim() || !lookupPhone.trim()) {
+            setLookupError('Vui lòng nhập đủ mã đơn và số điện thoại');
+            return;
+        }
+
+        try {
+            setLookupError(null);
+            const response = await shopAPI.lookupOrder(lookupCode, lookupPhone);
+            setLookupResult(response.data);
+        } catch (err: any) {
+            setLookupError(err.message || 'Không tìm thấy đơn hàng');
+            setLookupResult(null);
+        }
+    };
+
+    // ===== HANDLERS =====
+    const scrollToTop = () => {
+        topRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    const selectProduct = (product: Product) => {
+        setSelectedProduct(product);
+        setQuantity(1);
+        setViewMode('product-detail');
+        setSearchParams({ product: product.slug });
+        scrollToTop();
+    };
+
+    const goBack = () => {
+        if (viewMode === 'product-detail') {
+            setViewMode('products');
+            setSelectedProduct(null);
+            setSearchParams({});
+        } else if (viewMode === 'checkout') {
+            setViewMode('product-detail');
+        } else if (viewMode === 'order-result') {
+            // Reset everything
+            setViewMode('products');
+            setSelectedProduct(null);
+            setOrderResult(null);
+            setQuantity(1);
+            setOrderData({
+                customer_name: '',
+                customer_phone: '',
+                customer_note: '',
+                payment_method: 'qr'
+            });
+            setSearchParams({});
+        } else if (viewMode === 'lookup') {
+            setViewMode('products');
+            setLookupResult(null);
+            setLookupError(null);
+        }
+        scrollToTop();
+    };
+
+    const proceedToCheckout = () => {
+        if (!selectedProduct) return;
+        setViewMode('checkout');
+        scrollToTop();
+    };
+
+    // ===== RENDER FUNCTIONS =====
+
+    // Product Card
+    const renderProductCard = (product: Product) => (
+        <div
+            key={product.id}
+            className="shop-product-card"
+            onClick={() => selectProduct(product)}
+        >
+            <div className="product-image">
+                <img
+                    src={product.image_url || '/images/products/placeholder.jpg'}
+                    alt={product.name}
+                    onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/images/products/placeholder.jpg';
+                    }}
+                />
+                {product.is_recommended && (
+                    <span className="badge recommended">
+                        <i className="fas fa-star"></i> Đề xuất
+                    </span>
+                )}
+                {product.availability === 'pre-order' && (
+                    <span className="badge preorder">Đặt trước</span>
+                )}
+            </div>
+            <div className="product-info">
+                <span className="product-brand">{product.brand}</span>
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-price">{formatPrice(product.price)}</p>
+                {product.original_price && product.original_price > product.price && (
+                    <p className="product-original-price">{formatPrice(product.original_price)}</p>
+                )}
+            </div>
+        </div>
+    );
+
+    // Products List View
+    const renderProductsList = () => (
+        <div className="shop-products-view">
+            {/* Categories */}
+            <div className="shop-categories">
+                {categories.map(cat => (
+                    <button
+                        key={cat.key}
+                        className={`category-btn ${selectedCategory === cat.key ? 'active' : ''}`}
+                        onClick={() => setSelectedCategory(cat.key)}
+                    >
+                        <i className={`fas ${cat.icon}`}></i>
+                        <span>{cat.label}</span>
+                    </button>
+                ))}
+            </div>
+
+            {/* Lookup Button */}
+            <div className="shop-actions">
+                <button className="lookup-btn" onClick={() => setViewMode('lookup')}>
+                    <i className="fas fa-search"></i> Tra cứu đơn hàng
+                </button>
+            </div>
+
+            {/* Loading / Error */}
+            {loading && (
+                <div className="shop-loading">
+                    <i className="fas fa-spinner fa-spin"></i>
+                    <span>Đang tải sản phẩm...</span>
                 </div>
+            )}
 
-                {/* Products View */}
-                {!selectedProduct && (
-                    <>
-                        {/* Category Filter */}
-                        <div className="shop-categories">
-                            {categories.map(cat => (
-                                <button
-                                    key={cat.key}
-                                    className={`category-btn ${selectedCategory === cat.key ? 'active' : ''}`}
-                                    onClick={() => setSelectedCategory(cat.key)}
-                                >
-                                    <i className={`fas ${cat.icon}`}></i>
-                                    <span>{cat.label}</span>
-                                </button>
-                            ))}
+            {error && (
+                <div className="shop-error">
+                    <i className="fas fa-exclamation-circle"></i>
+                    <span>{error}</span>
+                    <button onClick={loadProducts}>Thử lại</button>
+                </div>
+            )}
+
+            {/* Products Grid */}
+            {!loading && !error && (
+                <div className="shop-products-grid">
+                    {products.length > 0 ? (
+                        products.map(renderProductCard)
+                    ) : (
+                        <div className="shop-no-products">
+                            <i className="fas fa-box-open"></i>
+                            <p>Không có sản phẩm trong danh mục này</p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+
+    // Product Detail View
+    const renderProductDetail = () => {
+        if (!selectedProduct) return null;
+
+        return (
+            <div className="shop-product-detail">
+                <button className="back-btn" onClick={goBack}>
+                    <i className="fas fa-arrow-left"></i> Quay lại
+                </button>
+
+                <div className="product-detail-content">
+                    <div className="product-image-section">
+                        <img
+                            src={selectedProduct.image_url || '/images/products/placeholder.jpg'}
+                            alt={selectedProduct.name}
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/products/placeholder.jpg';
+                            }}
+                        />
+                        {selectedProduct.is_recommended && (
+                            <span className="badge recommended">
+                                <i className="fas fa-star"></i> HLV đề xuất
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="product-info-section">
+                        <span className="product-brand">{selectedProduct.brand}</span>
+                        <h1 className="product-name">{selectedProduct.name}</h1>
+
+                        <div className="product-price-section">
+                            <span className="product-price">{formatPrice(selectedProduct.price)}</span>
+                            {selectedProduct.original_price && selectedProduct.original_price > selectedProduct.price && (
+                                <span className="product-original-price">{formatPrice(selectedProduct.original_price)}</span>
+                            )}
                         </div>
 
-                        {/* Brand Filter */}
-                        <div className="shop-brands">
-                            {brands.map(brand => (
-                                <button
-                                    key={brand}
-                                    className={`brand-btn ${selectedBrand === brand ? 'active' : ''}`}
-                                    onClick={() => setSelectedBrand(brand)}
-                                >
-                                    {brand === 'all' ? 'Tất cả thương hiệu' : brand}
-                                </button>
-                            ))}
+                        <div className={`product-availability ${selectedProduct.availability}`}>
+                            {selectedProduct.availability === 'in-stock' ? (
+                                <><i className="fas fa-check-circle"></i> Còn hàng</>
+                            ) : selectedProduct.availability === 'pre-order' ? (
+                                <><i className="fas fa-clock"></i> Đặt trước (2-5 ngày)</>
+                            ) : (
+                                <><i className="fas fa-times-circle"></i> Hết hàng</>
+                            )}
                         </div>
 
-                        {/* Sort Filter */}
-                        <div className="shop-sort-container">
-                            <div className="sort-wrapper">
-                                <label htmlFor="sort-price">
-                                    <i className="fas fa-sort"></i> Sắp xếp:
-                                </label>
-                                <select
-                                    id="sort-price"
-                                    value={sortOption}
-                                    onChange={(e) => setSortOption(e.target.value as any)}
-                                    className="sort-select"
-                                >
-                                    <option value="default">Mặc định (Mới nhất)</option>
-                                    <option value="price-asc">Giá tăng dần</option>
-                                    <option value="price-desc">Giá giảm dần</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Products Grid */}
-                        <div className="shop-products-grid">
-                            {currentProducts.map(product => (
-                                <div key={product.id} className="shop-product-card">
-                                    {product.isRecommended && (
-                                        <div className="product-badge recommended">
-                                            <i className="fas fa-star"></i> HLV Khuyên Dùng
+                        {/* Specs */}
+                        {selectedProduct.specs && selectedProduct.specs.length > 0 && (
+                            <div className="product-specs">
+                                <h3>Thông số kỹ thuật</h3>
+                                <div className="specs-grid">
+                                    {selectedProduct.specs.map((spec, idx) => (
+                                        <div key={idx} className="spec-item">
+                                            <span className="spec-label">{spec.label}</span>
+                                            <span className="spec-value">{spec.value}</span>
                                         </div>
-                                    )}
-                                    {product.availability === 'pre-order' && (
-                                        <div className="product-badge pre-order">
-                                            <i className="fas fa-clock"></i> Đặt trước
-                                        </div>
-                                    )}
-
-                                    <div className="product-image" onClick={() => setSearchParams({ product: product.id })}>
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x300?text=No+Image';
-                                            }}
-                                        />
-                                        <div className="product-overlay">
-                                            <span>Xem chi tiết</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="product-info">
-                                        <span className="product-brand">{product.brand}</span>
-                                        <h4 className="product-name" onClick={() => setSearchParams({ product: product.id })}>
-                                            {product.name}
-                                        </h4>
-                                        <p className="product-desc-short">{product.description.slice(0, 80)}...</p>
-
-                                        <div className="product-suitable">
-                                            <i className="fas fa-user-check"></i>
-                                            <span>{product.suitableFor[0]}</span>
-                                        </div>
-
-                                        <div className="product-pricing">
-                                            <div className="price-main">
-                                                <span className="price-current">₫{formatPrice(product.price)}</span>
-                                                {product.originalPrice && (
-                                                    <span className="price-original">₫{formatPrice(product.originalPrice)}</span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="product-actions">
-                                            <button
-                                                className="btn-product-detail"
-                                                onClick={() => setSearchParams({ product: product.id })}
-                                            >
-                                                <i className="fas fa-info-circle"></i>
-                                                Chi tiết
-                                            </button>
-                                            <button
-                                                className="btn-product-order"
-                                                onClick={() => handleOrder(product)}
-                                            >
-                                                <i className="fas fa-shopping-bag"></i>
-                                                Đặt hàng
-                                            </button>
-                                        </div>
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-
-                        {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="shop-pagination">
-                                <button
-                                    className="pagination-btn icon"
-                                    onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
-                                    disabled={currentPage === 1}
-                                    aria-label="Previous Page"
-                                >
-                                    <i className="fas fa-chevron-left"></i>
-                                </button>
-
-                                {Array.from({ length: totalPages }, (_, i) => (
-                                    <button
-                                        key={i + 1}
-                                        className={`pagination-btn ${currentPage === i + 1 ? 'active' : ''}`}
-                                        onClick={() => handlePageChange(i + 1)}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                ))}
-
-                                <button
-                                    className="pagination-btn icon"
-                                    onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                    aria-label="Next Page"
-                                >
-                                    <i className="fas fa-chevron-right"></i>
-                                </button>
                             </div>
                         )}
-                    </>
-                )}
 
-                {/* Product Detail View */}
-                {selectedProduct && (
-                    <div className="product-detail-view">
-                        <button className="btn-back" onClick={() => setSearchParams({})}>
-                            <i className="fas fa-arrow-left"></i>
-                            Quay lại
-                        </button>
-
-                        <div className="product-detail-grid">
-                            <div className="product-detail-image">
-                                <img
-                                    src={selectedProduct.image}
-                                    alt={selectedProduct.name}
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/500x500?text=No+Image';
-                                    }}
-                                />
-                                {selectedProduct.isRecommended && (
-                                    <div className="detail-badge">
-                                        <i className="fas fa-star"></i> HLV CLB Khuyên Dùng
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="product-detail-info">
-                                <span className="detail-brand">{selectedProduct.brand}</span>
-                                <h2 className="detail-name">{selectedProduct.name}</h2>
-
-                                <div className="detail-price-box">
-                                    <span className="detail-price">₫{formatPrice(selectedProduct.price)}</span>
-                                    {selectedProduct.originalPrice && (
-                                        <span className="detail-original">₫{formatPrice(selectedProduct.originalPrice)}</span>
-                                    )}
-                                    <span className={`detail-stock ${selectedProduct.availability}`}>
-                                        {selectedProduct.availability === 'in-stock' ? '✓ Có sẵn' : '⏳ Đặt trước (2-5 ngày)'}
-                                    </span>
-                                </div>
-
-                                <p className="detail-description">{selectedProduct.description}</p>
-
-                                <div className="detail-section">
-                                    <h4><i className="fas fa-user-check"></i> Phù hợp với ai</h4>
-                                    <ul className="suitable-list">
-                                        {selectedProduct.suitableFor.map((s, i) => (
-                                            <li key={i}><i className="fas fa-check"></i> {s}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                <div className="detail-section coach-review-box">
-                                    <h4><i className="fas fa-comment-dots"></i> HLV CLB nhận xét</h4>
-                                    <p className="coach-review-text">"{selectedProduct.coachReview}"</p>
-                                </div>
-
-                                {selectedProduct.specs && (
-                                    <div className="detail-section">
-                                        <h4><i className="fas fa-list-check"></i> Thông số kỹ thuật</h4>
-                                        <div className="specs-grid">
-                                            {selectedProduct.specs.map((spec, i) => (
-                                                <div key={i} className="spec-item">
-                                                    <span className="spec-label">{spec.label}</span>
-                                                    <span className="spec-value">{spec.value}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="detail-source">
-                                    <i className="fas fa-check-circle"></i>
-                                    Sản phẩm chính hãng Butterfly
-                                </div>
-
-                                <div className="detail-actions">
-                                    <button
-                                        className="btn btn-primary btn-large"
-                                        onClick={() => handleOrder(selectedProduct!)}
-                                    >
-                                        <i className="fas fa-shopping-bag"></i>
-                                        Đặt trước – Nhận tại CLB
-                                    </button>
-                                    <a href="tel:0913909012" className="btn btn-outline btn-large">
-                                        <i className="fas fa-phone-alt"></i>
-                                        Hỏi HLV tư vấn
-                                    </a>
-                                </div>
-                            </div>
+                        {/* Description */}
+                        <div className="product-description">
+                            <h3>Mô tả</h3>
+                            <p>{selectedProduct.description}</p>
                         </div>
-                    </div>
-                )}
 
+                        {/* Suitable For */}
+                        {selectedProduct.suitable_for && selectedProduct.suitable_for.length > 0 && (
+                            <div className="product-suitable">
+                                <h3>Phù hợp với</h3>
+                                <ul>
+                                    {selectedProduct.suitable_for.map((item, idx) => (
+                                        <li key={idx}><i className="fas fa-check"></i> {item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
-                {/* CTA Section */}
-                <div className="shop-cta">
-                    <div className="shop-cta-content">
-                        <h3>Cần tư vấn chọn vợt?</h3>
-                        <p>HLV CLB sẵn sàng giúp bạn chọn dụng cụ phù hợp với trình độ và ngân sách.</p>
-                        <div className="shop-cta-buttons">
-                            <a href="tel:0913909012" className="btn btn-primary">
-                                <i className="fas fa-phone-alt"></i>
-                                Gọi: 0913 909 012
-                            </a>
-                            <a href="https://zalo.me/0913909012" target="_blank" rel="noopener noreferrer" className="btn btn-outline">
-                                <i className="fas fa-comment"></i>
-                                Nhắn Zalo
-                            </a>
+                        {/* Coach Review */}
+                        {selectedProduct.coach_review && (
+                            <div className="product-coach-review">
+                                <h3><i className="fas fa-user-tie"></i> Nhận xét của HLV</h3>
+                                <p>"{selectedProduct.coach_review}"</p>
+                            </div>
+                        )}
+
+                        {/* Quantity & Order */}
+                        <div className="product-order-section">
+                            <div className="quantity-selector">
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                                    <i className="fas fa-minus"></i>
+                                </button>
+                                <span>{quantity}</span>
+                                <button onClick={() => setQuantity(Math.min(99, quantity + 1))}>
+                                    <i className="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div className="total-price">
+                                Tổng: <strong>{formatPrice(selectedProduct.price * quantity)}</strong>
+                            </div>
+                            <button
+                                className="order-btn"
+                                onClick={proceedToCheckout}
+                                disabled={selectedProduct.availability === 'out-of-stock'}
+                            >
+                                <i className="fas fa-shopping-cart"></i>
+                                ĐẶT HÀNG NGAY
+                            </button>
+                        </div>
+
+                        {/* Hotline */}
+                        <div className="product-hotline">
+                            <i className="fas fa-phone"></i>
+                            <span>Cần tư vấn? Gọi ngay: <a href="tel:0937009075">0937 009 075</a></span>
                         </div>
                     </div>
                 </div>
             </div>
+        );
+    };
 
-            {/* Order Modal */}
-            {showOrderModal && orderItem && (
-                <div className="order-modal-overlay" onClick={() => setShowOrderModal(false)}>
-                    <div className="order-modal" onClick={(e) => e.stopPropagation()}>
-                        <button className="modal-close" onClick={() => setShowOrderModal(false)}>
-                            <i className="fas fa-times"></i>
-                        </button>
+    // Checkout View
+    const renderCheckout = () => {
+        if (!selectedProduct) return null;
 
-                        <div className="order-modal-header">
-                            <i className="fas fa-shopping-bag"></i>
-                            <h3>Đặt Hàng - Nhận Tại CLB</h3>
+        return (
+            <div className="shop-checkout">
+                <button className="back-btn" onClick={goBack}>
+                    <i className="fas fa-arrow-left"></i> Quay lại
+                </button>
+
+                <h1 className="checkout-title">THÔNG TIN ĐẶT HÀNG</h1>
+
+                {/* Order Summary */}
+                <div className="checkout-summary">
+                    <div className="summary-item">
+                        <img
+                            src={selectedProduct.image_url || '/images/products/placeholder.jpg'}
+                            alt={selectedProduct.name}
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/products/placeholder.jpg';
+                            }}
+                        />
+                        <div className="summary-info">
+                            <h3>{selectedProduct.name}</h3>
+                            <p>{selectedProduct.brand}</p>
+                            <p className="summary-price">{formatPrice(selectedProduct.price)} x {quantity}</p>
                         </div>
+                    </div>
+                    <div className="summary-total">
+                        <span>Tổng cộng:</span>
+                        <strong>{formatPrice(selectedProduct.price * quantity)}</strong>
+                    </div>
+                </div>
 
-                        <div className="order-modal-body">
-                            <div className="order-item-summary">
-                                <h4>{orderItem.item.name}</h4>
-                                <p className="order-price">
-                                    Giá: ₫{formatPrice(orderItem.item.price)}
-                                </p>
-                            </div>
+                {/* Customer Info Form */}
+                <div className="checkout-form">
+                    <div className="form-group">
+                        <label>
+                            <i className="fas fa-user"></i> Họ và tên *
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="Nhập họ và tên"
+                            value={orderData.customer_name}
+                            onChange={(e) => setOrderData({ ...orderData, customer_name: e.target.value })}
+                        />
+                    </div>
 
-                            <div className="order-steps">
-                                <div className="order-step">
-                                    <div className="step-number">1</div>
-                                    <div className="step-content">
-                                        <h5>Liên hệ đặt hàng</h5>
-                                        <p>Gọi hoặc nhắn Zalo cho CLB</p>
-                                    </div>
-                                </div>
-                                <div className="order-step">
-                                    <div className="step-number">2</div>
-                                    <div className="step-content">
-                                        <h5>Xác nhận & thanh toán</h5>
-                                        <p>Đặt cọc 50% hoặc thanh toán toàn bộ</p>
-                                    </div>
-                                </div>
-                                <div className="order-step">
-                                    <div className="step-number">3</div>
-                                    <div className="step-content">
-                                        <h5>Nhận hàng</h5>
-                                        <p>Nhận trực tiếp tại CLB (2-5 ngày)</p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="form-group">
+                        <label>
+                            <i className="fas fa-phone"></i> Số điện thoại *
+                        </label>
+                        <input
+                            type="tel"
+                            placeholder="VD: 0912345678"
+                            value={orderData.customer_phone}
+                            onChange={(e) => setOrderData({ ...orderData, customer_phone: e.target.value.replace(/\D/g, '') })}
+                            maxLength={10}
+                        />
+                    </div>
 
-                            <div className="order-contact-options">
-                                <a href="tel:0913909012" className="btn btn-primary btn-full">
-                                    <i className="fas fa-phone-alt"></i>
-                                    Gọi ngay: 0913 909 012
-                                </a>
-                                <a href="https://zalo.me/0913909012" target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-full">
-                                    <i className="fas fa-comment"></i>
-                                    Nhắn Zalo
-                                </a>
-                            </div>
+                    <div className="form-group">
+                        <label>
+                            <i className="fas fa-sticky-note"></i> Ghi chú (tuỳ chọn)
+                        </label>
+                        <textarea
+                            placeholder="Ghi chú thêm về đơn hàng..."
+                            value={orderData.customer_note}
+                            onChange={(e) => setOrderData({ ...orderData, customer_note: e.target.value })}
+                            rows={3}
+                        />
+                    </div>
 
-                            <p className="order-note">
-                                <i className="fas fa-info-circle"></i>
-                                Sản phẩm chính hãng được đặt và giao đến CLB trong 2-5 ngày.
-                            </p>
+                    {/* Payment Method */}
+                    <div className="form-group payment-method">
+                        <label>
+                            <i className="fas fa-credit-card"></i> Phương thức thanh toán
+                        </label>
+                        <div className="payment-options">
+                            <button
+                                className={`payment-option ${orderData.payment_method === 'qr' ? 'active' : ''}`}
+                                onClick={() => setOrderData({ ...orderData, payment_method: 'qr' })}
+                            >
+                                <i className="fas fa-qrcode"></i>
+                                <span>QR Code</span>
+                                <small>Quét mã thanh toán</small>
+                            </button>
+                            <button
+                                className={`payment-option ${orderData.payment_method === 'bank' ? 'active' : ''}`}
+                                onClick={() => setOrderData({ ...orderData, payment_method: 'bank' })}
+                            >
+                                <i className="fas fa-university"></i>
+                                <span>Chuyển khoản</span>
+                                <small>Nhập thủ công</small>
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                {/* Submit Button */}
+                <button
+                    className="submit-order-btn"
+                    onClick={submitOrder}
+                    disabled={submitting}
+                >
+                    {submitting ? (
+                        <>
+                            <i className="fas fa-spinner fa-spin"></i>
+                            Đang xử lý...
+                        </>
+                    ) : (
+                        <>
+                            <i className="fas fa-check"></i>
+                            XÁC NHẬN ĐẶT HÀNG
+                        </>
+                    )}
+                </button>
+
+                <p className="checkout-note">
+                    <i className="fas fa-info-circle"></i>
+                    Sau khi đặt hàng, bạn sẽ nhận được hướng dẫn thanh toán chi tiết
+                </p>
+            </div>
+        );
+    };
+
+    // Order Result View (Payment Instructions)
+    const renderOrderResult = () => {
+        if (!orderResult) return null;
+
+        return (
+            <div className="shop-order-result">
+                <div className="order-success-header">
+                    <i className="fas fa-check-circle"></i>
+                    <h1>ĐẶT HÀNG THÀNH CÔNG!</h1>
+                    <p>Mã đơn hàng của bạn là:</p>
+                    <div className="order-code">{orderResult.order_code}</div>
+                </div>
+
+                <div className="payment-instructions">
+                    <h2><i className="fas fa-credit-card"></i> HƯỚNG DẪN THANH TOÁN</h2>
+
+                    <div className="payment-amount">
+                        <span>Số tiền cần thanh toán:</span>
+                        <strong>{formatPrice(orderResult.total_amount)}</strong>
+                    </div>
+
+                    {/* QR Code */}
+                    <div className="qr-section">
+                        <h3>Quét mã QR để thanh toán</h3>
+                        <div className="qr-code-wrapper">
+                            <img
+                                src={orderResult.qr_code_url}
+                                alt="QR Code thanh toán"
+                                className="qr-code-image"
+                            />
+                        </div>
+                        <p className="qr-note">Mở app ngân hàng → Quét mã QR → Xác nhận thanh toán</p>
+                    </div>
+
+                    {/* Bank Info */}
+                    <div className="bank-info-section">
+                        <h3>Hoặc chuyển khoản thủ công</h3>
+                        <div className="bank-info">
+                            <div className="bank-row">
+                                <span>Ngân hàng:</span>
+                                <strong>{orderResult.bank.bank_name}</strong>
+                            </div>
+                            <div className="bank-row">
+                                <span>Số tài khoản:</span>
+                                <strong className="copyable" onClick={() => {
+                                    navigator.clipboard.writeText(orderResult.bank.account_number);
+                                    alert('Đã copy số tài khoản!');
+                                }}>
+                                    {orderResult.bank.account_number}
+                                    <i className="fas fa-copy"></i>
+                                </strong>
+                            </div>
+                            <div className="bank-row">
+                                <span>Chủ tài khoản:</span>
+                                <strong>{orderResult.bank.account_holder}</strong>
+                            </div>
+                            <div className="bank-row important">
+                                <span>Nội dung CK:</span>
+                                <strong className="copyable" onClick={() => {
+                                    navigator.clipboard.writeText(orderResult.transfer_content);
+                                    alert('Đã copy nội dung chuyển khoản!');
+                                }}>
+                                    {orderResult.transfer_content}
+                                    <i className="fas fa-copy"></i>
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div className="warning-box">
+                            <i className="fas fa-exclamation-triangle"></i>
+                            <p><strong>QUAN TRỌNG:</strong> Vui lòng ghi đúng nội dung chuyển khoản <code>{orderResult.transfer_content}</code> để đơn hàng được xử lý nhanh chóng!</p>
+                        </div>
+                    </div>
+
+                    {/* Status */}
+                    <div className="order-status-section">
+                        <div className="status-item pending">
+                            <i className="fas fa-clock"></i>
+                            <span>Trạng thái: <strong>CHỜ THANH TOÁN</strong></span>
+                        </div>
+                        <p>Đơn hàng sẽ được xác nhận sau khi CLB nhận được thanh toán.</p>
+                    </div>
+
+                    {/* Contact */}
+                    <div className="contact-section">
+                        <p>Cần hỗ trợ? Liên hệ Hotline:</p>
+                        <a href="tel:0937009075" className="hotline">
+                            <i className="fas fa-phone"></i>
+                            0937 009 075
+                        </a>
+                    </div>
+                </div>
+
+                <button className="done-btn" onClick={goBack}>
+                    <i className="fas fa-home"></i>
+                    TIẾP TỤC MUA SẮM
+                </button>
+            </div>
+        );
+    };
+
+    // Lookup View
+    const renderLookup = () => (
+        <div className="shop-lookup">
+            <button className="back-btn" onClick={goBack}>
+                <i className="fas fa-arrow-left"></i> Quay lại
+            </button>
+
+            <h1 className="lookup-title">
+                <i className="fas fa-search"></i>
+                TRA CỨU ĐƠN HÀNG
+            </h1>
+
+            <div className="lookup-form">
+                <div className="form-group">
+                    <label>Mã đơn hàng</label>
+                    <input
+                        type="text"
+                        placeholder="VD: 20231218ABCD"
+                        value={lookupCode}
+                        onChange={(e) => setLookupCode(e.target.value.toUpperCase())}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Số điện thoại</label>
+                    <input
+                        type="tel"
+                        placeholder="VD: 0912345678"
+                        value={lookupPhone}
+                        onChange={(e) => setLookupPhone(e.target.value.replace(/\D/g, ''))}
+                        maxLength={10}
+                    />
+                </div>
+                <button className="lookup-submit-btn" onClick={lookupOrder}>
+                    <i className="fas fa-search"></i>
+                    TRA CỨU
+                </button>
+            </div>
+
+            {lookupError && (
+                <div className="lookup-error">
+                    <i className="fas fa-exclamation-circle"></i>
+                    {lookupError}
+                </div>
             )}
+
+            {lookupResult && (
+                <div className="lookup-result">
+                    <h2>THÔNG TIN ĐƠN HÀNG</h2>
+
+                    <div className="result-header">
+                        <div className="result-code">
+                            <span>Mã đơn:</span>
+                            <strong>{lookupResult.order_code}</strong>
+                        </div>
+                        <div
+                            className="result-status"
+                            style={{ backgroundColor: getStatusLabel(lookupResult.payment_status).color }}
+                        >
+                            {getStatusLabel(lookupResult.payment_status).label}
+                        </div>
+                    </div>
+
+                    <div className="result-info">
+                        <div className="info-row">
+                            <span>Khách hàng:</span>
+                            <strong>{lookupResult.customer_name}</strong>
+                        </div>
+                        <div className="info-row">
+                            <span>Tổng tiền:</span>
+                            <strong>{formatPrice(lookupResult.total_amount)}</strong>
+                        </div>
+                        <div className="info-row">
+                            <span>Ngày đặt:</span>
+                            <strong>{new Date(lookupResult.created_at).toLocaleString('vi-VN')}</strong>
+                        </div>
+                        <div className="info-row">
+                            <span>Trạng thái đơn:</span>
+                            <strong style={{ color: getStatusLabel(lookupResult.order_status).color }}>
+                                {getStatusLabel(lookupResult.order_status).label}
+                            </strong>
+                        </div>
+                    </div>
+
+                    {lookupResult.items && lookupResult.items.length > 0 && (
+                        <div className="result-items">
+                            <h3>Sản phẩm</h3>
+                            {lookupResult.items.map((item: any, idx: number) => (
+                                <div key={idx} className="result-item">
+                                    <span>{item.product_name}</span>
+                                    <span>{item.quantity} x {formatPrice(item.product_price)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {lookupResult.payment_status === 'pending' && (
+                        <div className="result-payment-action">
+                            <p>Đơn hàng chưa được thanh toán. Quét mã QR bên dưới:</p>
+                            <img
+                                src={lookupResult.qr_code_url}
+                                alt="QR Code"
+                                className="result-qr"
+                            />
+                            <p className="transfer-content">
+                                Nội dung CK: <code>{lookupResult.transfer_content}</code>
+                            </p>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+
+    // ===== MAIN RENDER =====
+    return (
+        <section id="shop" className="shop-section" ref={topRef}>
+            <div className="shop-container">
+                {/* Header */}
+                {viewMode === 'products' && (
+                    <div className="shop-header">
+                        <h1>CỬA HÀNG DỤNG CỤ</h1>
+                        <p>Sản phẩm chính hãng - Tư vấn bởi HLV chuyên nghiệp</p>
+                    </div>
+                )}
+
+                {/* Content based on view mode */}
+                {viewMode === 'products' && renderProductsList()}
+                {viewMode === 'product-detail' && renderProductDetail()}
+                {viewMode === 'checkout' && renderCheckout()}
+                {viewMode === 'order-result' && renderOrderResult()}
+                {viewMode === 'lookup' && renderLookup()}
+            </div>
         </section>
     );
 };
