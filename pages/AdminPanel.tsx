@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { authAPI, membersAPI, coachesAPI, paymentsAPI, contactAPI, scheduleAPI, ordersAPI, logsAPI } from '../services/api';
+import { authAPI, membersAPI, coachesAPI, paymentsAPI, contactAPI, scheduleAPI, logsAPI, shopAdminAPI } from '../services/api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface AdminUser {
@@ -109,7 +109,7 @@ const AdminPanel: React.FC = () => {
 
     const handleUpdateOrderStatus = async (id: string, status: string) => {
         try {
-            await ordersAPI.updateStatus(id, status);
+            await shopAdminAPI.updateOrderStatus(id, status);
             loadDashboardData(); // Reload data
         } catch (error) {
             console.error('Failed to update order status:', error);
@@ -125,7 +125,7 @@ const AdminPanel: React.FC = () => {
                 coachesAPI.getAll(),
                 contactAPI.getAll().catch(() => ({ data: [] })),
                 scheduleAPI.getWeekly(),
-                ordersAPI.getAll().catch(() => ({ data: [] })),
+                shopAdminAPI.getOrders().catch(() => ({ data: [] })),
                 logsAPI.getRecent().catch(() => ({ data: [] }))
             ]);
 
@@ -502,8 +502,8 @@ const AdminPanel: React.FC = () => {
                                     <tr>
                                         <th>Mã đơn</th>
                                         <th>Khách hàng</th>
-                                        <th>Sản phẩm</th>
-                                        <th>Ghi chú</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Thanh toán</th>
                                         <th>Trạng thái</th>
                                         <th>Ngày đặt</th>
                                         <th>Thao tác</th>
@@ -513,8 +513,8 @@ const AdminPanel: React.FC = () => {
                                     {orders.map((order: any) => (
                                         <tr key={order.id}>
                                             <td>
-                                                <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#6b7280' }}>
-                                                    #{order.id.slice(0, 8)}
+                                                <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: '#e11d48', fontWeight: 600 }}>
+                                                    {order.order_code}
                                                 </span>
                                             </td>
                                             <td>
@@ -525,44 +525,55 @@ const AdminPanel: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <div style={{ fontWeight: 600, color: '#374151' }}>{order.product_name}</div>
-                                                <div style={{ fontSize: '0.85rem', color: '#e11d48', fontWeight: 600 }}>
-                                                    {Number(order.product_price).toLocaleString('vi-VN')}₫
+                                                <div style={{ fontWeight: 600, color: '#e11d48' }}>
+                                                    {Number(order.total_amount).toLocaleString('vi-VN')}₫
+                                                </div>
+                                                <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                                                    {order.item_count || 1} sản phẩm
                                                 </div>
                                             </td>
-                                            <td style={{ maxWidth: '200px' }}>
-                                                <span style={{ fontSize: '0.9rem', color: '#4b5563', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                                    {order.notes || '--'}
+                                            <td>
+                                                <span className={`badge`} style={{
+                                                    background: order.payment_status === 'pending' ? '#fef3c7' :
+                                                        order.payment_status === 'paid' ? '#dbeafe' :
+                                                            order.payment_status === 'confirmed' ? '#dcfce7' : '#f3f4f6',
+                                                    color: order.payment_status === 'pending' ? '#92400e' :
+                                                        order.payment_status === 'paid' ? '#1d4ed8' :
+                                                            order.payment_status === 'confirmed' ? '#166534' : '#374151'
+                                                }}>
+                                                    {order.payment_status === 'pending' && 'Chờ TT'}
+                                                    {order.payment_status === 'paid' && 'Đã TT'}
+                                                    {order.payment_status === 'confirmed' && 'Đã xác nhận'}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span className={`badge`} style={{
-                                                    background: order.status === 'new' ? '#fee2e2' :
-                                                        order.status === 'completed' ? '#dcfce7' :
-                                                            order.status === 'cancelled' ? '#f3f4f6' : '#fef3c7',
-                                                    color: order.status === 'new' ? '#991b1b' :
-                                                        order.status === 'completed' ? '#166534' :
-                                                            order.status === 'cancelled' ? '#374151' : '#92400e'
+                                                    background: order.order_status === 'new' ? '#fee2e2' :
+                                                        order.order_status === 'processing' ? '#fef3c7' :
+                                                            order.order_status === 'done' ? '#dcfce7' : '#f3f4f6',
+                                                    color: order.order_status === 'new' ? '#991b1b' :
+                                                        order.order_status === 'processing' ? '#92400e' :
+                                                            order.order_status === 'done' ? '#166534' : '#374151'
                                                 }}>
-                                                    {order.status === 'new' && 'Mới'}
-                                                    {order.status === 'pending' && 'Đang xử lý'}
-                                                    {order.status === 'completed' && 'Hoàn thành'}
-                                                    {order.status === 'cancelled' && 'Đã hủy'}
+                                                    {order.order_status === 'new' && 'Mới'}
+                                                    {order.order_status === 'processing' && 'Đang xử lý'}
+                                                    {order.order_status === 'done' && 'Hoàn tất'}
+                                                    {order.order_status === 'cancelled' && 'Đã hủy'}
                                                 </span>
                                             </td>
                                             <td style={{ fontSize: '0.85rem', color: '#6b7280' }}>
                                                 {new Date(order.created_at).toLocaleString('vi-VN')}
                                             </td>
                                             <td>
-                                                {order.status !== 'completed' && order.status !== 'cancelled' && (
+                                                {order.order_status !== 'done' && order.order_status !== 'cancelled' && (
                                                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                         <button
-                                                            onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
+                                                            onClick={() => handleUpdateOrderStatus(order.id, 'done')}
                                                             style={{
                                                                 background: '#10b981', color: 'white', border: 'none',
                                                                 padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem'
                                                             }}
-                                                            title="Hoàn thành"
+                                                            title="Hoàn tất"
                                                         >
                                                             <i className="fas fa-check"></i>
                                                         </button>
