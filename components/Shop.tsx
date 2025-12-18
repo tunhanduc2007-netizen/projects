@@ -552,7 +552,7 @@ const Shop: React.FC = () => {
                         {/* Hotline */}
                         <div className="product-hotline">
                             <i className="fas fa-phone"></i>
-                            <span>Cần tư vấn? Gọi ngay: <a href="tel:0937009075">0937 009 075</a></span>
+                            <span>Cần tư vấn? Gọi ngay: <a href="tel:0913909012">0913 909 012</a></span>
                         </div>
                     </div>
                 </div>
@@ -890,9 +890,9 @@ const Shop: React.FC = () => {
                     {/* Contact */}
                     <div className="contact-section">
                         <p>Cần hỗ trợ? Liên hệ Hotline:</p>
-                        <a href="tel:0937009075" className="hotline">
+                        <a href="tel:0913909012" className="hotline">
                             <i className="fas fa-phone"></i>
-                            0937 009 075
+                            0913 909 012
                         </a>
                     </div>
                 </div>

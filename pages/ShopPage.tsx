@@ -36,9 +36,9 @@ const ShopPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <a href="tel:0937009075" className="shop-header-contact">
+                        <a href="tel:0913909012" className="shop-header-contact">
                             <i className="fas fa-phone-alt"></i>
-                            <span>0937 009 075</span>
+                            <span>0913 909 012</span>
                         </a>
                     </div>
                 </div>
@@ -65,7 +65,7 @@ const ShopPage: React.FC = () => {
                             <h4>Liên hệ đặt hàng</h4>
                             <div className="shop-contact-item">
                                 <i className="fas fa-phone-alt"></i>
-                                <span>0937 009 075</span>
+                                <span>0913 909 012</span>
                             </div>
                             <div className="shop-contact-item">
                                 <i className="fas fa-map-marker-alt"></i>
@@ -94,7 +94,7 @@ const ShopPage: React.FC = () => {
             </footer>
 
             {/* Mobile FAB */}
-            <a href="tel:0937009075" className="shop-mobile-fab" aria-label="Gọi đặt hàng">
+            <a href="tel:0913909012" className="shop-mobile-fab" aria-label="Gọi đặt hàng">
                 <i className="fas fa-phone-alt"></i>
             </a>
         </div>
