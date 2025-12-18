@@ -7,6 +7,7 @@ require('dotenv').config();
 const app = require('./app');
 const logger = require('./utils/logger');
 const { pool } = require('./config/database');
+const autoMigrate = require('./utils/autoMigrate');
 
 const PORT = process.env.PORT || 3001;
 
@@ -16,6 +17,11 @@ async function startServer() {
         // Test database connection
         const result = await pool.query('SELECT NOW()');
         logger.info(`Database connected: ${result.rows[0].now}`);
+
+        // Run auto-migration BEFORE starting server
+        logger.info('Running auto-migration...');
+        await autoMigrate();
+        logger.info('Auto-migration complete');
 
         // Start server
         app.listen(PORT, () => {
