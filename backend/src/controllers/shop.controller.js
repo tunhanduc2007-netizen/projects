@@ -129,8 +129,14 @@ const ShopController = {
         try {
             const { customer_name, customer_phone, customer_note, payment_method, items } = req.body;
 
+            // Log incoming request
+            logger.info('=== CREATE ORDER REQUEST ===');
+            logger.info(`Customer: ${customer_name} | Phone: ${customer_phone}`);
+            logger.info(`Items count: ${items?.length || 0}`);
+
             // Validate required fields
             if (!customer_name || !customer_phone || !items || items.length === 0) {
+                logger.warn('Order validation failed: missing required fields');
                 return res.status(400).json({
                     success: false,
                     error: 'Vui lòng điền đầy đủ thông tin'
@@ -140,6 +146,7 @@ const ShopController = {
             // Validate phone format (Vietnam)
             const phoneRegex = /^(0[1-9])[0-9]{8}$/;
             if (!phoneRegex.test(customer_phone.replace(/\s/g, ''))) {
+                logger.warn('Order validation failed: invalid phone format');
                 return res.status(400).json({
                     success: false,
                     error: 'Số điện thoại không hợp lệ'
@@ -149,6 +156,7 @@ const ShopController = {
             // Validate items
             for (const item of items) {
                 if (!item.product_name || !item.price || !item.quantity) {
+                    logger.warn('Order validation failed: invalid item data');
                     return res.status(400).json({
                         success: false,
                         error: 'Thông tin sản phẩm không hợp lệ'
@@ -162,7 +170,8 @@ const ShopController = {
                 }
             }
 
-            // Create order
+            // Create order (with transaction)
+            logger.info('Calling ShopOrderModel.create()...');
             const order = await ShopOrderModel.create(
                 {
                     customer_name: customer_name.trim(),
@@ -173,7 +182,20 @@ const ShopController = {
                 items
             );
 
-            logger.info(`New order created: ${order.order_code}`);
+            // Verify order was created
+            if (!order || !order.order_code) {
+                logger.error('ORDER CREATION FAILED: No order_code returned');
+                return res.status(500).json({
+                    success: false,
+                    error: 'Lỗi tạo đơn hàng - không có mã đơn'
+                });
+            }
+
+            logger.info(`=== ORDER CREATED SUCCESSFULLY ===`);
+            logger.info(`Order Code: ${order.order_code}`);
+            logger.info(`Order ID: ${order.id}`);
+            logger.info(`Total: ${order.total_amount}`);
+            logger.info(`Items: ${order.items?.length || 0}`);
 
             res.status(201).json({
                 success: true,
@@ -192,7 +214,9 @@ const ShopController = {
                 }
             });
         } catch (error) {
-            logger.error('Error creating order:', error);
+            logger.error('=== ORDER CREATION ERROR ===');
+            logger.error(`Error: ${error.message}`);
+            logger.error(`Stack: ${error.stack}`);
             res.status(500).json({
                 success: false,
                 error: 'Lỗi khi tạo đơn hàng. Vui lòng thử lại.'

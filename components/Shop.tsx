@@ -162,7 +162,9 @@ const Shop: React.FC = () => {
 
         try {
             setSubmitting(true);
-            const response = await shopAPI.createOrder({
+
+            // Log payload for debugging
+            const payload = {
                 ...orderData,
                 items: [{
                     product_id: selectedProduct.id,
@@ -172,12 +174,25 @@ const Shop: React.FC = () => {
                     product_image: selectedProduct.image_url,
                     quantity: quantity
                 }]
-            });
+            };
+            console.log('[Shop] Creating order with payload:', payload);
+
+            const response = await shopAPI.createOrder(payload);
+
+            console.log('[Shop] Order response:', response);
+
+            // CRITICAL: Only show success if we have valid order_code
+            if (!response.success || !response.data?.order_code) {
+                throw new Error('Không nhận được mã đơn hàng từ server');
+            }
+
+            console.log('[Shop] Order created successfully:', response.data.order_code);
 
             setOrderResult(response.data);
             setViewMode('order-result');
             scrollToTop();
         } catch (err: any) {
+            console.error('[Shop] Order creation failed:', err);
             alert(err.message || 'Lỗi khi đặt hàng. Vui lòng thử lại.');
         } finally {
             setSubmitting(false);
