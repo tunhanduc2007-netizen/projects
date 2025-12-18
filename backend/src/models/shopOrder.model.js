@@ -86,10 +86,12 @@ const ShopOrderModel = {
             const shippingFee = shippingResult.shippingFee;
             const finalAmount = totalAmount + shippingFee;
 
-            // Check COD availability
-            const isCod = orderData.payment_method === 'cod';
+            // Check COD availability - fallback to QR if not available
+            let isCod = orderData.payment_method === 'cod';
             if (isCod && !isCodAvailable(orderData.address_district, orderData.address_city)) {
-                throw new Error('Thanh toán COD không hỗ trợ tại địa chỉ này');
+                // COD not available at this address - fallback to QR
+                isCod = false;
+                console.log('[Order] COD not available, falling back to QR payment');
             }
 
             // Generate QR URL (for both COD backup and transfer)
@@ -97,7 +99,7 @@ const ShopOrderModel = {
 
             // Determine payment status
             const paymentStatus = isCod ? 'unpaid' : 'pending';
-            const paymentMethod = isCod ? 'cod' : (orderData.payment_method || 'qr');
+            const paymentMethod = isCod ? 'cod' : (orderData.payment_method === 'cod' ? 'qr' : (orderData.payment_method || 'qr'));
 
             // Insert order with new fields
             const orderSql = `
