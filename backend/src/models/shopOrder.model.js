@@ -49,14 +49,16 @@ const ShopOrderModel = {
 
     /**
      * Create new order with items (transaction)
+     * Now supports: address, shipping fee, COD
      */
     async create(orderData, items) {
         const client = await getClient();
+        const { calculateShippingFee, isCodAvailable } = require('../utils/shipping');
 
         try {
             await client.query('BEGIN');
 
-            // Get bank account
+            // Get bank account (needed for QR even if COD)
             const bankResult = await client.query(`
                 SELECT * FROM shop_bank_accounts
                 WHERE is_primary = true AND is_active = true
@@ -72,19 +74,41 @@ const ShopOrderModel = {
             const orderCode = this.generateOrderCode();
             const transferContent = this.generateTransferContent(orderCode);
 
-            // Calculate total
+            // Calculate total product amount
             const totalAmount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-            // Generate QR URL
-            const qrCodeUrl = this.generateVietQRUrl(bankAccount, totalAmount, transferContent);
+            // Calculate shipping fee (backend logic only)
+            const shippingResult = calculateShippingFee(
+                totalAmount,
+                orderData.address_district,
+                orderData.address_city || 'TP. Hồ Chí Minh'
+            );
+            const shippingFee = shippingResult.shippingFee;
+            const finalAmount = totalAmount + shippingFee;
 
-            // Insert order
+            // Check COD availability
+            const isCod = orderData.payment_method === 'cod';
+            if (isCod && !isCodAvailable(orderData.address_district, orderData.address_city)) {
+                throw new Error('Thanh toán COD không hỗ trợ tại địa chỉ này');
+            }
+
+            // Generate QR URL (for both COD backup and transfer)
+            const qrCodeUrl = this.generateVietQRUrl(bankAccount, finalAmount, transferContent);
+
+            // Determine payment status
+            const paymentStatus = isCod ? 'unpaid' : 'pending';
+            const paymentMethod = isCod ? 'cod' : (orderData.payment_method || 'qr');
+
+            // Insert order with new fields
             const orderSql = `
                 INSERT INTO shop_orders (
                     order_code, customer_name, customer_phone, customer_note,
-                    total_amount, payment_method, transfer_content, qr_code_url
+                    address_street, address_ward, address_district, address_city,
+                    total_amount, shipping_fee, final_amount,
+                    payment_method, payment_status, is_cod,
+                    transfer_content, qr_code_url
                 )
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
                 RETURNING *
             `;
             const orderParams = [
@@ -92,8 +116,16 @@ const ShopOrderModel = {
                 orderData.customer_name,
                 orderData.customer_phone,
                 orderData.customer_note || null,
+                orderData.address_street || null,
+                orderData.address_ward || null,
+                orderData.address_district || null,
+                orderData.address_city || 'TP. Hồ Chí Minh',
                 totalAmount,
-                orderData.payment_method || 'qr',
+                shippingFee,
+                finalAmount,
+                paymentMethod,
+                paymentStatus,
+                isCod,
                 transferContent,
                 qrCodeUrl
             ];
@@ -125,32 +157,35 @@ const ShopOrderModel = {
                 insertedItems.push(itemResult.rows[0]);
             }
 
-            // Insert payment record
-            const paymentSql = `
-                INSERT INTO shop_payments (
-                    order_id, bank_name, bank_code, account_number,
-                    account_holder, amount, transfer_content
-                )
-                VALUES ($1, $2, $3, $4, $5, $6, $7)
-                RETURNING *
-            `;
-            const paymentParams = [
-                order.id,
-                bankAccount.bank_name,
-                bankAccount.bank_code,
-                bankAccount.account_number,
-                bankAccount.account_holder,
-                totalAmount,
-                transferContent
-            ];
-            await client.query(paymentSql, paymentParams);
+            // Insert payment record (skip if COD - will create when payment received)
+            if (!isCod) {
+                const paymentSql = `
+                    INSERT INTO shop_payments (
+                        order_id, bank_name, bank_code, account_number,
+                        account_holder, amount, transfer_content
+                    )
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                    RETURNING *
+                `;
+                const paymentParams = [
+                    order.id,
+                    bankAccount.bank_name,
+                    bankAccount.bank_code,
+                    bankAccount.account_number,
+                    bankAccount.account_holder,
+                    finalAmount,
+                    transferContent
+                ];
+                await client.query(paymentSql, paymentParams);
+            }
 
             await client.query('COMMIT');
 
             return {
                 ...order,
                 items: insertedItems,
-                bank: bankAccount
+                bank: bankAccount,
+                shipping: shippingResult
             };
 
         } catch (error) {

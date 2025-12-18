@@ -31,14 +31,30 @@ interface OrderData {
     customer_name: string;
     customer_phone: string;
     customer_note: string;
-    payment_method: 'qr' | 'bank';
+    payment_method: 'qr' | 'bank' | 'cod';
+    // Address fields
+    address_street: string;
+    address_ward: string;
+    address_district: string;
+    address_city: string;
+}
+
+interface ShippingInfo {
+    shippingFee: number;
+    isFreeShipping: boolean;
+    reason: string;
+    finalAmount: number;
+    codAvailable: boolean;
 }
 
 interface OrderResult {
     order_code: string;
     total_amount: number;
+    shipping_fee: number;
+    final_amount: number;
     transfer_content: string;
     qr_code_url: string;
+    is_cod: boolean;
     bank: {
         bank_name: string;
         account_number: string;
@@ -100,10 +116,16 @@ const Shop: React.FC = () => {
         customer_name: '',
         customer_phone: '',
         customer_note: '',
-        payment_method: 'qr'
+        payment_method: 'qr',
+        address_street: '',
+        address_ward: '',
+        address_district: '',
+        address_city: 'TP. Hồ Chí Minh'
     });
     const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
     const [submitting, setSubmitting] = useState(false);
+    const [shippingInfo, setShippingInfo] = useState<ShippingInfo | null>(null);
+    const [loadingShipping, setLoadingShipping] = useState(false);
 
     // Lookup state
     const [lookupCode, setLookupCode] = useState('');
@@ -147,16 +169,67 @@ const Shop: React.FC = () => {
         }
     };
 
+    // Calculate shipping fee when district changes
+    const calculateShipping = async () => {
+        if (!selectedProduct || !orderData.address_district.trim()) {
+            setShippingInfo(null);
+            return;
+        }
+
+        try {
+            setLoadingShipping(true);
+            const totalAmount = selectedProduct.price * quantity;
+            const response = await shopAPI.calculateShipping({
+                total_amount: totalAmount,
+                district: orderData.address_district,
+                city: orderData.address_city
+            });
+
+            if (response.success) {
+                setShippingInfo(response.data);
+                // If COD not available and user selected COD, switch to QR
+                if (!response.data.codAvailable && orderData.payment_method === 'cod') {
+                    setOrderData(prev => ({ ...prev, payment_method: 'qr' }));
+                }
+            }
+        } catch (err) {
+            console.error('Error calculating shipping:', err);
+        } finally {
+            setLoadingShipping(false);
+        }
+    };
+
+    // Recalculate shipping when district or quantity changes
+    useEffect(() => {
+        if (viewMode === 'checkout' && orderData.address_district) {
+            calculateShipping();
+        }
+    }, [orderData.address_district, quantity, viewMode]);
+
     const submitOrder = async () => {
         if (!selectedProduct) return;
 
-        // Validate
+        // Validate customer info
         if (!orderData.customer_name.trim()) {
             alert('Vui lòng nhập họ tên');
             return;
         }
         if (!orderData.customer_phone.match(/^(0[1-9])[0-9]{8}$/)) {
             alert('Số điện thoại không hợp lệ (VD: 0912345678)');
+            return;
+        }
+
+        // Validate address
+        if (!orderData.address_street.trim()) {
+            alert('Vui lòng nhập số nhà và tên đường');
+            return;
+        }
+        if (!orderData.address_ward.trim()) {
+            alert('Vui lòng nhập Phường/Xã');
+            return;
+        }
+        if (!orderData.address_district.trim()) {
+            alert('Vui lòng nhập Quận/Huyện');
             return;
         }
 
@@ -245,8 +318,13 @@ const Shop: React.FC = () => {
                 customer_name: '',
                 customer_phone: '',
                 customer_note: '',
-                payment_method: 'qr'
+                payment_method: 'qr',
+                address_street: '',
+                address_ward: '',
+                address_district: '',
+                address_city: 'TP. Hồ Chí Minh'
             });
+            setShippingInfo(null);
             setSearchParams({});
         } else if (viewMode === 'lookup') {
             setViewMode('products');
@@ -486,6 +564,10 @@ const Shop: React.FC = () => {
     const renderCheckout = () => {
         if (!selectedProduct) return null;
 
+        const productTotal = selectedProduct.price * quantity;
+        const shippingFee = shippingInfo?.shippingFee || 0;
+        const finalTotal = productTotal + shippingFee;
+
         return (
             <div className="shop-checkout">
                 <button className="back-btn" onClick={goBack}>
@@ -510,18 +592,16 @@ const Shop: React.FC = () => {
                             <p className="summary-price">{formatPrice(selectedProduct.price)} x {quantity}</p>
                         </div>
                     </div>
-                    <div className="summary-total">
-                        <span>Tổng cộng:</span>
-                        <strong>{formatPrice(selectedProduct.price * quantity)}</strong>
-                    </div>
                 </div>
 
                 {/* Customer Info Form */}
                 <div className="checkout-form">
+                    <h3 className="form-section-title">
+                        <i className="fas fa-user"></i> Thông tin người nhận
+                    </h3>
+
                     <div className="form-group">
-                        <label>
-                            <i className="fas fa-user"></i> Họ và tên *
-                        </label>
+                        <label>Họ và tên *</label>
                         <input
                             type="text"
                             placeholder="Nhập họ và tên"
@@ -531,9 +611,7 @@ const Shop: React.FC = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>
-                            <i className="fas fa-phone"></i> Số điện thoại *
-                        </label>
+                        <label>Số điện thoại *</label>
                         <input
                             type="tel"
                             placeholder="VD: 0912345678"
@@ -543,41 +621,157 @@ const Shop: React.FC = () => {
                         />
                     </div>
 
+                    {/* Address Section */}
+                    <h3 className="form-section-title" style={{ marginTop: '1.5rem' }}>
+                        <i className="fas fa-map-marker-alt"></i> Địa chỉ giao hàng
+                    </h3>
+
                     <div className="form-group">
-                        <label>
-                            <i className="fas fa-sticky-note"></i> Ghi chú (tuỳ chọn)
-                        </label>
+                        <label>Số nhà, tên đường *</label>
+                        <input
+                            type="text"
+                            placeholder="VD: 123 Nguyễn Văn A"
+                            value={orderData.address_street}
+                            onChange={(e) => setOrderData({ ...orderData, address_street: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Phường / Xã *</label>
+                            <input
+                                type="text"
+                                placeholder="VD: Phường 1"
+                                value={orderData.address_ward}
+                                onChange={(e) => setOrderData({ ...orderData, address_ward: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Quận / Huyện *</label>
+                            <input
+                                type="text"
+                                placeholder="VD: Phú Nhuận"
+                                value={orderData.address_district}
+                                onChange={(e) => setOrderData({ ...orderData, address_district: e.target.value })}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Thành phố</label>
+                        <input
+                            type="text"
+                            value={orderData.address_city}
+                            onChange={(e) => setOrderData({ ...orderData, address_city: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Ghi chú (tuỳ chọn)</label>
                         <textarea
                             placeholder="Ghi chú thêm về đơn hàng..."
                             value={orderData.customer_note}
                             onChange={(e) => setOrderData({ ...orderData, customer_note: e.target.value })}
-                            rows={3}
+                            rows={2}
                         />
                     </div>
 
                     {/* Payment Method */}
-                    <div className="form-group payment-method">
-                        <label>
-                            <i className="fas fa-credit-card"></i> Phương thức thanh toán
-                        </label>
-                        <div className="payment-options">
+                    <h3 className="form-section-title" style={{ marginTop: '1.5rem' }}>
+                        <i className="fas fa-credit-card"></i> Phương thức thanh toán
+                    </h3>
+
+                    <div className="payment-options">
+                        <button
+                            className={`payment-option ${orderData.payment_method === 'qr' ? 'active' : ''}`}
+                            onClick={() => setOrderData({ ...orderData, payment_method: 'qr' })}
+                        >
+                            <i className="fas fa-qrcode"></i>
+                            <span>QR Code</span>
+                            <small>Quét mã thanh toán</small>
+                        </button>
+                        <button
+                            className={`payment-option ${orderData.payment_method === 'bank' ? 'active' : ''}`}
+                            onClick={() => setOrderData({ ...orderData, payment_method: 'bank' })}
+                        >
+                            <i className="fas fa-university"></i>
+                            <span>Chuyển khoản</span>
+                            <small>Nhập thủ công</small>
+                        </button>
+                        {shippingInfo?.codAvailable && (
                             <button
-                                className={`payment-option ${orderData.payment_method === 'qr' ? 'active' : ''}`}
-                                onClick={() => setOrderData({ ...orderData, payment_method: 'qr' })}
+                                className={`payment-option ${orderData.payment_method === 'cod' ? 'active' : ''}`}
+                                onClick={() => setOrderData({ ...orderData, payment_method: 'cod' })}
                             >
-                                <i className="fas fa-qrcode"></i>
-                                <span>QR Code</span>
-                                <small>Quét mã thanh toán</small>
+                                <i className="fas fa-money-bill-wave"></i>
+                                <span>Tiền mặt (COD)</span>
+                                <small>Thanh toán khi nhận</small>
                             </button>
-                            <button
-                                className={`payment-option ${orderData.payment_method === 'bank' ? 'active' : ''}`}
-                                onClick={() => setOrderData({ ...orderData, payment_method: 'bank' })}
-                            >
-                                <i className="fas fa-university"></i>
-                                <span>Chuyển khoản</span>
-                                <small>Nhập thủ công</small>
-                            </button>
+                        )}
+                    </div>
+
+                    {/* COD Warning */}
+                    {orderData.payment_method === 'cod' && (
+                        <div className="cod-warning" style={{
+                            background: '#fef3c7',
+                            border: '1px solid #f59e0b',
+                            padding: '1rem',
+                            borderRadius: '8px',
+                            marginTop: '1rem',
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: '0.75rem'
+                        }}>
+                            <i className="fas fa-exclamation-triangle" style={{ color: '#d97706', fontSize: '1.2rem' }}></i>
+                            <div>
+                                <strong style={{ color: '#92400e' }}>Thanh toán khi nhận hàng</strong>
+                                <p style={{ margin: '0.25rem 0 0', color: '#78350f', fontSize: '0.9rem' }}>
+                                    Vui lòng chuẩn bị đúng số tiền <strong>{formatPrice(finalTotal)}</strong> khi nhận hàng.
+                                </p>
+                            </div>
                         </div>
+                    )}
+                </div>
+
+                {/* Order Total Summary */}
+                <div className="order-total-summary" style={{
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '1.25rem',
+                    marginTop: '1.5rem'
+                }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span>Tạm tính:</span>
+                        <span>{formatPrice(productTotal)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: shippingInfo?.isFreeShipping ? '#10b981' : '#64748b' }}>
+                        <span>Phí vận chuyển:</span>
+                        <span>
+                            {loadingShipping ? (
+                                <i className="fas fa-spinner fa-spin"></i>
+                            ) : shippingInfo ? (
+                                shippingInfo.isFreeShipping ? 'Miễn phí' : formatPrice(shippingFee)
+                            ) : (
+                                <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Nhập quận/huyện để tính</span>
+                            )}
+                        </span>
+                    </div>
+                    {shippingInfo?.reason && (
+                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem', fontStyle: 'italic' }}>
+                            {shippingInfo.reason}
+                        </div>
+                    )}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        paddingTop: '0.75rem',
+                        borderTop: '2px solid #e2e8f0',
+                        fontWeight: 700,
+                        fontSize: '1.1rem'
+                    }}>
+                        <span>Tổng thanh toán:</span>
+                        <span style={{ color: '#dc2626' }}>{formatPrice(finalTotal)}</span>
                     </div>
                 </div>
 
@@ -585,7 +779,7 @@ const Shop: React.FC = () => {
                 <button
                     className="submit-order-btn"
                     onClick={submitOrder}
-                    disabled={submitting}
+                    disabled={submitting || loadingShipping}
                 >
                     {submitting ? (
                         <>
@@ -595,14 +789,16 @@ const Shop: React.FC = () => {
                     ) : (
                         <>
                             <i className="fas fa-check"></i>
-                            XÁC NHẬN ĐẶT HÀNG
+                            XÁC NHẬN ĐẶT HÀNG - {formatPrice(finalTotal)}
                         </>
                     )}
                 </button>
 
                 <p className="checkout-note">
                     <i className="fas fa-info-circle"></i>
-                    Sau khi đặt hàng, bạn sẽ nhận được hướng dẫn thanh toán chi tiết
+                    {orderData.payment_method === 'cod'
+                        ? 'Đơn hàng sẽ được giao đến địa chỉ của bạn. Thanh toán khi nhận hàng.'
+                        : 'Sau khi đặt hàng, bạn sẽ nhận được hướng dẫn thanh toán chi tiết'}
                 </p>
             </div>
         );

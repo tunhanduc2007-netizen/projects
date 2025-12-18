@@ -53,7 +53,7 @@ router.get('/brands', ShopController.getBrands);
 
 /**
  * POST /api/shop/orders
- * Create new order
+ * Create new order - with address and shipping support
  */
 router.post('/orders', [
     body('customer_name')
@@ -68,9 +68,24 @@ router.post('/orders', [
         .optional()
         .trim()
         .isLength({ max: 500 }).withMessage('Ghi chú tối đa 500 ký tự'),
+    // Address fields - REQUIRED
+    body('address_street')
+        .trim()
+        .notEmpty().withMessage('Vui lòng nhập số nhà và tên đường'),
+    body('address_ward')
+        .trim()
+        .notEmpty().withMessage('Vui lòng nhập Phường/Xã'),
+    body('address_district')
+        .trim()
+        .notEmpty().withMessage('Vui lòng nhập Quận/Huyện'),
+    body('address_city')
+        .optional()
+        .trim()
+        .default('TP. Hồ Chí Minh'),
+    // Payment method - now supports COD
     body('payment_method')
         .optional()
-        .isIn(['qr', 'bank']).withMessage('Phương thức thanh toán không hợp lệ'),
+        .isIn(['qr', 'bank', 'cod']).withMessage('Phương thức thanh toán không hợp lệ'),
     body('items')
         .isArray({ min: 1 }).withMessage('Vui lòng chọn ít nhất 1 sản phẩm'),
     body('items.*.product_name')
@@ -81,6 +96,22 @@ router.post('/orders', [
         .isInt({ min: 1, max: 99 }).withMessage('Số lượng từ 1-99'),
     handleValidation
 ], ShopController.createOrder);
+
+/**
+ * POST /api/shop/calculate-shipping
+ * Calculate shipping fee preview
+ */
+router.post('/calculate-shipping', [
+    body('total_amount')
+        .isInt({ min: 1000 }).withMessage('Tổng tiền không hợp lệ'),
+    body('district')
+        .trim()
+        .notEmpty().withMessage('Vui lòng nhập Quận/Huyện'),
+    body('city')
+        .optional()
+        .trim(),
+    handleValidation
+], ShopController.calculateShipping);
 
 /**
  * GET /api/shop/orders/lookup

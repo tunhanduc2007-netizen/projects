@@ -340,6 +340,42 @@ const ShopController = {
                 error: 'Lỗi khi tạo mã QR'
             });
         }
+    },
+
+    /**
+     * POST /api/shop/calculate-shipping
+     * Calculate shipping fee for preview (before order)
+     */
+    async calculateShipping(req, res) {
+        try {
+            const { calculateShippingFee, isCodAvailable } = require('../utils/shipping');
+            const { total_amount, district, city = 'TP. Hồ Chí Minh' } = req.body;
+
+            if (!total_amount || !district) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Vui lòng cung cấp tổng tiền và quận/huyện'
+                });
+            }
+
+            const shippingResult = calculateShippingFee(total_amount, district, city);
+            const codAvailable = isCodAvailable(district, city);
+
+            res.json({
+                success: true,
+                data: {
+                    ...shippingResult,
+                    finalAmount: total_amount + shippingResult.shippingFee,
+                    codAvailable
+                }
+            });
+        } catch (error) {
+            logger.error('Error calculating shipping:', error);
+            res.status(500).json({
+                success: false,
+                error: 'Lỗi khi tính phí ship'
+            });
+        }
     }
 };
 

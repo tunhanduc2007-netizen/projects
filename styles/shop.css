@@ -1299,3 +1299,40 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== FORM SECTION TITLE ===== */
+.form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, #ffffff);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color, #27272a);
+}
+
+.form-section-title i {
+    color: var(--accent-primary, #ef4444);
+}
+
+/* ===== FORM ROW (2 columns) ===== */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== 3 PAYMENT OPTIONS ===== */
+@media (min-width: 600px) {
+    .payment-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

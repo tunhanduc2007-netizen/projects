@@ -366,7 +366,11 @@ export const shopAPI = {
         customer_name: string;
         customer_phone: string;
         customer_note?: string;
-        payment_method?: 'qr' | 'bank';
+        payment_method?: 'qr' | 'bank' | 'cod';
+        address_street: string;
+        address_ward: string;
+        address_district: string;
+        address_city?: string;
         items: {
             product_id?: string;
             product_name: string;
@@ -377,6 +381,18 @@ export const shopAPI = {
         }[];
     }) => {
         return fetchAPI('/shop/orders', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    },
+
+    // Calculate shipping fee
+    calculateShipping: async (data: {
+        total_amount: number;
+        district: string;
+        city?: string;
+    }) => {
+        return fetchAPI('/shop/calculate-shipping', {
             method: 'POST',
             body: JSON.stringify(data),
         });
