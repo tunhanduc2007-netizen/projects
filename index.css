@@ -1,20 +1,29 @@
 /* =====================================================
-   TABLE TENNIS CLUB LÊ QUÝ ĐÔN - MAIN STYLESHEET
+   TABLE TENNIS CLUB HOA LƯ - MAIN STYLESHEET
    ===================================================== */
 
 /* CSS Variables - Design Tokens */
 :root {
-  /* Primary Colors - Blue & Red Theme */
-  --primary-red: #e63946;
-  --primary-red-dark: #c1121f;
-  --primary-red-light: #ff6b6b;
-  --primary-blue: #0a2463;
-  --primary-blue-dark: #051937;
-  --primary-blue-light: #1e3a8a;
+  /* Primary Colors - Green & Yellow Theme (matching logo) */
+  --primary-green: #009640;
+  --primary-green-dark: #007030;
+  --primary-green-light: #00B050;
+  --primary-yellow: #FFF200;
+  --primary-yellow-dark: #E6D900;
+  --primary-yellow-light: #FFFF4D;
+
+  /* Legacy aliases for compatibility */
+  --primary-red: #009640;
+  --primary-red-dark: #007030;
+  --primary-red-light: #00B050;
+  --primary-blue: #009640;
+  --primary-blue-dark: #007030;
+  --primary-blue-light: #00B050;
 
   /* Accent Colors */
-  --accent-blue: #3b82f6;
-  --accent-red: #ef4444;
+  --accent-blue: #009640;
+  --accent-red: #009640;
+  --accent-yellow: #FFF200;
 
   /* Neutral Colors */
   --white: #ffffff;
@@ -31,18 +40,19 @@
   --black: #000000;
 
   /* Semantic Colors */
-  --success: #2e7d32;
-  --warning: #f9a825;
+  --success: #009640;
+  --warning: #FFF200;
   --error: #c62828;
   --info: #0277bd;
 
-  /* Gradients - Separated Colors */
-  --gradient-blue: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%);
-  --gradient-red: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-light) 100%);
-  --gradient-primary: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 100%);
-  --gradient-hero: linear-gradient(135deg, rgba(10, 36, 99, 0.95) 0%, rgba(30, 58, 138, 0.9) 100%);
+  /* Gradients - Green & Yellow Theme */
+  --gradient-blue: linear-gradient(135deg, #009640 0%, #00B050 100%);
+  --gradient-red: linear-gradient(135deg, #009640 0%, #00B050 100%);
+  --gradient-primary: linear-gradient(135deg, #009640 0%, #00B050 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(0, 150, 64, 0.95) 0%, rgba(0, 176, 80, 0.9) 100%);
   --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.95) 100%);
   --gradient-dark: linear-gradient(180deg, var(--gray-900) 0%, var(--gray-800) 100%);
+  --gradient-accent: linear-gradient(135deg, #FFF200 0%, #E6D900 100%);
 
   /* Typography - Be Vietnam Pro for Vietnamese */
   --font-heading: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -371,7 +381,7 @@ h6 {
 }
 
 .mini-stat i.fa-star {
-  color: #f59e0b;
+  color: #FFF200;
 }
 
 /* Price */
@@ -759,7 +769,7 @@ h6 {
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
-  background: rgba(46, 125, 50, 0.1);
+  background: rgba(0, 150, 64, 0.1);
   color: var(--success);
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
@@ -791,7 +801,7 @@ h6 {
 }
 
 .rank-hạng1 {
-  background: linear-gradient(135deg, #ffd700, #ffb800);
+  background: linear-gradient(135deg, #FFF200, #FBC02D);
   color: #7a5c00;
 }
 

@@ -20,7 +20,7 @@ const ShopCTA: React.FC = () => {
 
                         <p className="shop-cta-description">
                             Sở hữu ngay vợt, mặt vợt và phụ kiện bóng bàn chất lượng cao.
-                            Được HLV CLB Lê Quý Đôn trực tiếp tuyển chọn và tư vấn.
+                            Được HLV CLB Hoa Lư trực tiếp tuyển chọn và tư vấn.
                         </p>
 
                         <div className="shop-cta-actions">

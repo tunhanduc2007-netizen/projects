@@ -106,7 +106,7 @@ const Gallery: React.FC = () => {
                         HÌNH ẢNH <span>HOẠT ĐỘNG</span>
                     </h2>
                     <p className="section-description">
-                        Những khoảnh khắc đáng nhớ của CLB bóng bàn Lê Quý Đôn
+                        Những khoảnh khắc đáng nhớ của CLB bóng bàn Hoa Lư
                     </p>
                 </div>
 

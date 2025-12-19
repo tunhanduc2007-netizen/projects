@@ -24,7 +24,7 @@ const Hero: React.FC = () => {
       <div className="hero-content">
         <img
           src="/images/logo.png"
-          alt="CLB Bóng Bàn LQD"
+          alt="CLB Bóng Bàn Hoa Lư"
           className="hero-logo"
           loading="eager"
           onError={(e) => {
@@ -38,7 +38,7 @@ const Hero: React.FC = () => {
         </span>
 
         <h1 className="hero-title">
-          CLB BÓNG BÀN <span>LÊ QUÝ ĐÔN</span>
+          CLB BÓNG BÀN <span>HOA LƯ</span>
         </h1>
 
         <p className="hero-slogan">
@@ -46,7 +46,7 @@ const Hero: React.FC = () => {
         </p>
 
         <p className="hero-description">
-          Chào mừng bạn đến với CLB bóng bàn Lê Quý Đôn - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
+          Chào mừng bạn đến với CLB bóng bàn Hoa Lư - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
           Với đội ngũ huấn luyện viên chuyên nghiệp và cơ sở vật chất hiện đại, chúng tôi cam kết đem đến
           trải nghiệm tập luyện tốt nhất cho mọi lứa tuổi.
         </p>
