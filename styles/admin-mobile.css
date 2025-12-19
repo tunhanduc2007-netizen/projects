@@ -1,4 +1,4 @@
-/* =====================================================
+﻿/* =====================================================
    ADMIN PANEL - ELDERLY-FRIENDLY MOBILE DESIGN
    CLB Bóng Bàn Lê Quý Đôn
    Thiết kế cho người 40-60 tuổi, không rành công nghệ
@@ -24,7 +24,7 @@ body {
    ===================================================== */
 :root {
     /* Colors */
-    --elder-primary: #dc2626;
+    --elder-primary: #0d47a1;
     --elder-primary-dark: #b91c1c;
     --elder-bg: #f8fafc;
     --elder-card: #ffffff;
@@ -281,7 +281,7 @@ body {
 
 .elder-nav-item.active {
     color: var(--elder-primary);
-    background: rgba(220, 38, 38, 0.08);
+    background: rgba(13, 71, 161, 0.08);
 }
 
 .elder-nav-item.active i {
@@ -437,7 +437,7 @@ body {
 }
 
 .elder-order-status.new {
-    background: rgba(220, 38, 38, 0.12);
+    background: rgba(13, 71, 161, 0.12);
     color: var(--elder-primary);
 }
 
