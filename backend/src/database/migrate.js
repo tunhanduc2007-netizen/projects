@@ -46,6 +46,21 @@ async function migrate() {
         console.log('   - contact_forms');
         console.log('   - attendance');
 
+        // Read and execute shop migration
+        console.log('\n🛍️  Running shop system migration...');
+        const shopMigrationPath = path.join(__dirname, 'shop_migration.sql');
+        const shopMigration = fs.readFileSync(shopMigrationPath, 'utf8');
+
+        await pool.query(shopMigration);
+
+        console.log('✅ Shop system migration completed!');
+        console.log('📋 Shop tables created:');
+        console.log('   - shop_bank_accounts');
+        console.log('   - shop_products');
+        console.log('   - shop_orders');
+        console.log('   - shop_order_items');
+        console.log('   - shop_payments');
+
     } catch (error) {
         console.error('❌ Migration failed:', error.message);
         process.exit(1);
