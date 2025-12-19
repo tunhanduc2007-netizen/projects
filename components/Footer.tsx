@@ -17,11 +17,11 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div className="footer-about">
             <div className="footer-brand">
-              <img src="/images/logo.png" alt="CLB Bóng Bàn Hoa Lư" className="footer-logo" />
-              <span className="footer-title">BÓNG BÀN HOA LƯ</span>
+              <img src="/images/logo.png" alt="CLB Bóng Bàn Lê Quý Đôn" className="footer-logo" />
+              <span className="footer-title">BÓNG BÀN LÊ QUÝ ĐÔN</span>
             </div>
             <p className="footer-description">
-              CLB bóng bàn Hoa Lư - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
+              CLB bóng bàn Lê Quý Đôn - nơi đam mê được nuôi dưỡng và tài năng được phát triển.
               Tập chăm chỉ, chơi thông minh, chiến thắng cùng nhau.
             </p>
             <div className="footer-social">
@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
                 <span className="zalo-icon">Z</span>
               </a>
               <a
-                href="https://mail.google.com/mail/?view=cm&to=tunhanluan1971@gmail.com&su=Liên%20hệ%20CLB%20Bóng%20Bàn%20Hoa%20Lư"
+                href="https://mail.google.com/mail/?view=cm&to=tunhanluan1971@gmail.com&su=Liên%20hệ%20CLB%20Bóng%20Bàn%20Lê%20Quý%20Đôn"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Gmail"
@@ -100,7 +100,7 @@ const Footer: React.FC = () => {
 
         <div className="footer-bottom">
           <p className="footer-copyright">
-            © 2022-{currentYear} CLB bóng bàn Hoa Lư. Bảo lưu mọi quyền.
+            © 2022-{currentYear} CLB bóng bàn Lê Quý Đôn. Bảo lưu mọi quyền.
           </p>
         </div>
       </div>

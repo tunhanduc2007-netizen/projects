@@ -1,29 +1,29 @@
 /* =====================================================
-   TABLE TENNIS CLUB HOA LƯ - MAIN STYLESHEET
+   TABLE TENNIS CLUB LÊ QUÝ ĐÔN - MAIN STYLESHEET
    ===================================================== */
 
 /* CSS Variables - Design Tokens */
 :root {
-  /* Primary Colors - Green & Yellow Theme (matching logo) */
-  --primary-green: #009640;
-  --primary-green-dark: #007030;
-  --primary-green-light: #00B050;
-  --primary-yellow: #FFF200;
-  --primary-yellow-dark: #E6D900;
-  --primary-yellow-light: #FFFF4D;
+  /* Primary Colors - Red & Blue Theme (Lê Quý Đôn branding) */
+  --primary-red: #d32f2f;
+  --primary-red-dark: #b71c1c;
+  --primary-red-light: #e57373;
+  --primary-blue: #0d47a1;
+  --primary-blue-dark: #002171;
+  --primary-blue-light: #5472d3;
 
   /* Legacy aliases for compatibility */
-  --primary-red: #009640;
-  --primary-red-dark: #007030;
-  --primary-red-light: #00B050;
-  --primary-blue: #009640;
-  --primary-blue-dark: #007030;
-  --primary-blue-light: #00B050;
+  --primary-green: #d32f2f;
+  --primary-green-dark: #b71c1c;
+  --primary-green-light: #e57373;
+  --primary-yellow: #ffc107;
+  --primary-yellow-dark: #ffa000;
+  --primary-yellow-light: #ffecb3;
 
   /* Accent Colors */
-  --accent-blue: #009640;
-  --accent-red: #009640;
-  --accent-yellow: #FFF200;
+  --accent-blue: #0d47a1;
+  --accent-red: #d32f2f;
+  --accent-yellow: #ffc107;
 
   /* Neutral Colors */
   --white: #ffffff;
@@ -40,19 +40,19 @@
   --black: #000000;
 
   /* Semantic Colors */
-  --success: #009640;
-  --warning: #FFF200;
+  --success: #2e7d32;
+  --warning: #ffc107;
   --error: #c62828;
   --info: #0277bd;
 
-  /* Gradients - Green & Yellow Theme */
-  --gradient-blue: linear-gradient(135deg, #009640 0%, #00B050 100%);
-  --gradient-red: linear-gradient(135deg, #009640 0%, #00B050 100%);
-  --gradient-primary: linear-gradient(135deg, #009640 0%, #00B050 100%);
-  --gradient-hero: linear-gradient(135deg, rgba(0, 150, 64, 0.95) 0%, rgba(0, 176, 80, 0.9) 100%);
+  /* Gradients - Red & Blue Theme */
+  --gradient-blue: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+  --gradient-red: linear-gradient(135deg, #d32f2f 0%, #e53935 100%);
+  --gradient-primary: linear-gradient(135deg, #0d47a1 0%, #d32f2f 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(13, 71, 161, 0.95) 0%, rgba(211, 47, 47, 0.9) 100%);
   --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.95) 100%);
   --gradient-dark: linear-gradient(180deg, var(--gray-900) 0%, var(--gray-800) 100%);
-  --gradient-accent: linear-gradient(135deg, #FFF200 0%, #E6D900 100%);
+  --gradient-accent: linear-gradient(135deg, #ffc107 0%, #ffa000 100%);
 
   /* Typography - Be Vietnam Pro for Vietnamese */
   --font-heading: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

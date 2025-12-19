@@ -15,7 +15,7 @@ const About: React.FC = () => {
           <div className="about-image-container slide-in-left">
             <img
               src="/images/logo.png"
-              alt="CLB Bóng Bàn Hoa Lư"
+              alt="CLB Bóng Bàn Lê Quý Đôn"
               className="about-image"
             />
             <div className="about-image-badge">
@@ -27,11 +27,11 @@ const About: React.FC = () => {
           <div className="about-content slide-in-right">
             <span className="section-subtitle">VỀ CHÚNG TÔI</span>
             <h2>
-              CÂU LẠC BỘ BÓNG BÀN <span className="text-gradient">HOA LƯ</span>
+              CÂU LẠC BỘ BÓNG BÀN <span className="text-gradient">LÊ QUÝ ĐÔN</span>
             </h2>
 
             <p className="about-text">
-              CLB bóng bàn Hoa Lư được thành lập với sứ mệnh phát triển phong trào bóng bàn
+              CLB bóng bàn Lê Quý Đôn được thành lập với sứ mệnh phát triển phong trào bóng bàn
               trong cộng đồng học sinh, sinh viên và người yêu thể thao. Bóng bàn không chỉ rèn luyện
               thể chất mà còn phát triển tư duy chiến thuật, khả năng tập trung và tinh thần đồng đội.
             </p>
