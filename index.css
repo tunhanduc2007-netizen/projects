@@ -1630,14 +1630,15 @@ h6 {
 }
 
 .btn-primary {
-  background: var(--gradient-red);
+  background: var(--primary-blue);
   color: var(--white);
-  box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+  box-shadow: 0 4px 15px rgba(13, 71, 161, 0.4);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(230, 57, 70, 0.5);
+  box-shadow: 0 8px 25px rgba(13, 71, 161, 0.5);
+  background: var(--primary-blue-dark);
 }
 
 .btn-secondary {
