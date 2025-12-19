@@ -8,13 +8,25 @@ const { query, getClient } = require('../config/database');
 const ShopOrderModel = {
     /**
      * Generate unique order code
-     * Format: YYYYMMDD + 4 random alphanumeric
+     * Format: LQD-YYYYMMDD-XXX (XXX = sequential number per day)
      */
-    generateOrderCode() {
+    async generateOrderCode() {
         const date = new Date();
         const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
-        const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase();
-        return `${dateStr}${randomChars}`;
+        const prefix = `LQD-${dateStr}`;
+
+        // Đếm số đơn trong ngày để tạo sequential number
+        const sql = `
+            SELECT COUNT(*) as count 
+            FROM shop_orders 
+            WHERE order_code LIKE $1
+        `;
+        const result = await query(sql, [`${prefix}%`]);
+        const count = parseInt(result.rows[0].count) + 1;
+
+        // Format: LQD-20231219-001, LQD-20231219-002, ...
+        const sequentialNum = count.toString().padStart(3, '0');
+        return `${prefix}-${sequentialNum}`;
     },
 
     /**
@@ -70,8 +82,8 @@ const ShopOrderModel = {
                 throw new Error('Không tìm thấy tài khoản ngân hàng');
             }
 
-            // Generate order code
-            const orderCode = this.generateOrderCode();
+            // Generate order code (async - đếm số đơn trong ngày)
+            const orderCode = await this.generateOrderCode();
             const transferContent = this.generateTransferContent(orderCode);
 
             // Calculate total product amount
@@ -306,8 +318,9 @@ const ShopOrderModel = {
 
     /**
      * Get all orders (admin)
+     * Supports: payment_status, order_status, search, from_date, to_date
      */
-    async findAll({ payment_status, order_status, limit = 50, offset = 0, search } = {}) {
+    async findAll({ payment_status, order_status, limit = 50, offset = 0, search, from_date, to_date } = {}) {
         let sql = `
             SELECT 
                 o.*,
@@ -332,6 +345,17 @@ const ShopOrderModel = {
             sql += ` AND (o.order_code ILIKE $${paramIndex} OR o.customer_name ILIKE $${paramIndex} OR o.customer_phone ILIKE $${paramIndex})`;
             params.push(`%${search}%`);
             paramIndex++;
+        }
+
+        // Filter theo ngày (from_date, to_date)
+        if (from_date) {
+            sql += ` AND DATE(o.created_at) >= $${paramIndex++}`;
+            params.push(from_date);
+        }
+
+        if (to_date) {
+            sql += ` AND DATE(o.created_at) <= $${paramIndex++}`;
+            params.push(to_date);
         }
 
         sql += ` ORDER BY o.created_at DESC`;

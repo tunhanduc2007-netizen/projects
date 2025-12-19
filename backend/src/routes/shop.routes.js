@@ -8,6 +8,7 @@ const router = express.Router();
 const { body, param, query } = require('express-validator');
 const ShopController = require('../controllers/shop.controller');
 const { handleValidation } = require('../middlewares/validation.middleware');
+const { orderRateLimiter } = require('../middlewares/rateLimiter.middleware');
 
 // ============================================
 // PRODUCTS - PUBLIC
@@ -54,8 +55,9 @@ router.get('/brands', ShopController.getBrands);
 /**
  * POST /api/shop/orders
  * Create new order - with address and shipping support
+ * Rate limited: Tối đa 5 đơn/giờ/IP để chống spam
  */
-router.post('/orders', [
+router.post('/orders', orderRateLimiter, [
     body('customer_name')
         .trim()
         .notEmpty().withMessage('Vui lòng nhập họ tên')

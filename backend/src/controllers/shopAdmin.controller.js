@@ -47,12 +47,14 @@ const ShopAdminController = {
      */
     async getOrders(req, res) {
         try {
-            const { payment_status, order_status, search, limit = 50, offset = 0 } = req.query;
+            const { payment_status, order_status, search, from_date, to_date, limit = 50, offset = 0 } = req.query;
 
             const orders = await ShopOrderModel.findAll({
                 payment_status,
                 order_status,
                 search,
+                from_date,  // Format: YYYY-MM-DD
+                to_date,    // Format: YYYY-MM-DD
                 limit: parseInt(limit),
                 offset: parseInt(offset)
             });
@@ -109,6 +111,7 @@ const ShopAdminController = {
     /**
      * PUT /api/shop/admin/orders/:id/status
      * Update order status
+     * Lưu ý: Không cho sửa đơn đã hoàn tất (done) trừ khi huỷ
      */
     async updateOrderStatus(req, res) {
         try {
@@ -123,14 +126,32 @@ const ShopAdminController = {
                 });
             }
 
-            const order = await ShopOrderModel.updateOrderStatus(id, order_status);
-
-            if (!order) {
+            // Kiểm tra đơn hàng hiện tại
+            const currentOrder = await ShopOrderModel.findById(id);
+            if (!currentOrder) {
                 return res.status(404).json({
                     success: false,
                     error: 'Không tìm thấy đơn hàng'
                 });
             }
+
+            // Không cho sửa đơn đã hoàn tất (chỉ được huỷ)
+            if (currentOrder.order_status === 'done' && order_status !== 'cancelled') {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Đơn hàng đã hoàn tất, không thể thay đổi trạng thái. Chỉ có thể huỷ đơn.'
+                });
+            }
+
+            // Không cho sửa đơn đã bị huỷ
+            if (currentOrder.order_status === 'cancelled') {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Đơn hàng đã bị huỷ, không thể thay đổi trạng thái'
+                });
+            }
+
+            const order = await ShopOrderModel.updateOrderStatus(id, order_status);
 
             logger.info(`Order ${order.order_code} status updated to ${order_status} by ${req.user.username}`);
 
